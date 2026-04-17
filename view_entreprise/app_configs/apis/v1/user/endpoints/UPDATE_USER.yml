@@ -1,0 +1,57 @@
+# ------------------------------------------------------------------
+# UPDATE_USER - Modification des informations d'un utilisateur (Admin)
+# ------------------------------------------------------------------
+
+$path: /user/users/{user_id}/
+$method: PATCH
+$description: "Modifier les informations d'un utilisateur. Permission: user.update"
+$auth: true
+$skip: true
+$params:
+  $path:
+    user_id: { $type: string, $optional: false }
+  $body:
+    first_name: { $type: string, $optional: true }
+    last_name: { $type: string, $optional: true }
+    telephone: { $type: string, $optional: true, $nullable: true }
+    birth_date: { $type: string, $optional: true, $nullable: true, $description: "Format : YYYY-MM-DD" }
+    gender: { $type: string, $optional: true, $description: "ex: M, F" }
+    address: { $type: string, $optional: true }
+    nationality: { $type: string, $optional: true }
+$response:
+  $default:
+    $description: "Retourne le profil complet mis à jour"
+    $schema:
+      data:
+        $type: object
+        $schema:
+          id: { $type: string }
+          email: { $type: string }
+          first_name: { $type: string }
+          last_name: { $type: string }
+          pseudo: { $type: string }
+          photo: { $type: string, $nullable: true }
+          telephone: { $type: string, $nullable: true }
+          birth_date: { $type: string, $nullable: true }
+          gender: { $type: string, $optional: true }
+          nationality: { $type: string, $optional: true }
+          address: { $type: string, $optional: true }
+          status_activation: { $type: string }
+          status_verification: { $type: string }
+          preferences: { $type: object }
+          is_deleted: { $type: boolean }
+          deleted_at: { $type: string, $nullable: true }
+          roles: { $type: array, $items: { $type: object } }
+          permissions: { $type: array, $items: { $type: string } }
+  $byStatus:
+    "400":
+      $description: "Données invalides (champ manquant ou format incorrect)"
+      $schema:
+        error: { $type: string }
+        code: { $type: string }
+        details: { $type: object, $optional: true }
+    "404":
+      $description: "Utilisateur non trouvé"
+      $schema:
+        error: { $type: string }
+        code: { $type: string }

@@ -1,0 +1,18 @@
+# ------------------------------------------------------------------
+# GET_KITCHENS_STATS - Statistiques des cuisines
+# ------------------------------------------------------------------
+$path: /config/kitchens/stats/
+$method: GET
+$description: "Récupérer les statistiques des cuisines : total, actives, inactives"
+$auth: true
+$skip: false
+$response:
+  $default:
+    $schema:
+      total: { $type: number }
+      active: { $type: number }
+      inactive: { $type: number }
+  $byStatus:
+    "401":
+      $schema:
+        detail: { $type: string }

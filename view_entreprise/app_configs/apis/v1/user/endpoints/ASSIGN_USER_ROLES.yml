@@ -1,0 +1,41 @@
+# ------------------------------------------------------------------
+# ASSIGN_USER_ROLES - Assignation de rôles à un utilisateur (Admin)
+# ------------------------------------------------------------------
+
+$path: /user/users/{user_id}/roles/
+$method: POST
+$description: "Assigner des rôles à un utilisateur. Permission: role.assign"
+$auth: true
+$skip: true
+$params:
+  $path:
+    user_id: { $type: string, $optional: false }
+  $body:
+    roles: { $type: array, $items: { $type: string }, $optional: false, $description: "Codes de rôles ex: SERVEUR, LIVREUR" }
+$response:
+  $default:
+    $schema:
+      message: { $type: string, $description: "ex: 1 rôle(s) assigné(s)" }
+      data:
+        $type: object
+        $schema:
+          user_id: { $type: string }
+          email: { $type: string }
+          assigned_roles: { $type: array, $items: { $type: string }, $description: "Rôles nouvellement assignés" }
+          already_assigned: { $type: array, $items: { $type: string }, $description: "Rôles déjà possédés" }
+          current_roles: { $type: array, $items: { $type: string }, $description: "Tous les rôles actuels" }
+  $byStatus:
+    "400":
+      $description: "Rôle invalide ou déjà assigné à cet utilisateur"
+      $schema:
+        error: { $type: string }
+        code: { $type: string }
+    "403":
+      $description: "Permission insuffisante pour assigner des rôles"
+      $schema:
+        detail: { $type: string }
+    "404":
+      $description: "Utilisateur non trouvé"
+      $schema:
+        error: { $type: string }
+        code: { $type: string }

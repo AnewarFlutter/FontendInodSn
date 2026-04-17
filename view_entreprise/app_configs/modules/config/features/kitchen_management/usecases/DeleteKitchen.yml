@@ -1,0 +1,27 @@
+# --------------------------------------------------------------
+# DeleteKitchen - DELETE
+# --------------------------------------------------------------
+$name: deleteKitchen
+$description: "Supprime (soft delete) une cuisine par son identifiant"
+$skip: false
+$async: true
+
+$params:
+  - { $name: kitchenId, $type: string, $optional: false }
+
+$returnDescription: "Résultat de la suppression"
+$returnType:
+  $type: object
+  $nullable: true
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.DELETE_KITCHEN
+  $mapping:
+    $path:
+      kitchen_id: kitchenId
+  $responseMapping:
+    $returnValue: data

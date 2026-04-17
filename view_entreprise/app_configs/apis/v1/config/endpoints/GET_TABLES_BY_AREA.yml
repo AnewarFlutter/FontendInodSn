@@ -1,0 +1,28 @@
+# ------------------------------------------------------------------
+# GET_TABLES_BY_AREA - Tables par zone
+# ------------------------------------------------------------------
+$path: /config/tables/by-area/
+$method: GET
+$description: "Récupérer les tables filtrées par zone"
+$auth: true
+$skip: false
+$params:
+  $query:
+    area_id: { $type: number, $optional: false }
+$response:
+  $default:
+    $schema:
+      results:
+        $type: array
+        $items:
+          $type: object
+          $schema:
+            id: { $type: number }
+            table_number: { $type: string }
+            capacity: { $type: number }
+            status: { $type: string }
+            is_active: { $type: boolean }
+  $byStatus:
+    "400":
+      $schema:
+        error: { $type: string }

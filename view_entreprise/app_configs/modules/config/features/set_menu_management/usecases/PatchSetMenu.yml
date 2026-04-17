@@ -1,0 +1,62 @@
+# --------------------------------------------------------------
+# PatchSetMenu - PATCH
+# --------------------------------------------------------------
+$name: patchSetMenu
+$description: "Met à jour partiellement un menu composé"
+$skip: false
+$async: true
+
+$params:
+  - $name: setMenuId
+    $type: string
+    $optional: false
+  - $name: name
+    $type: string
+    $optional: true
+  - $name: description
+    $type: string
+    $optional: true
+  - $name: price
+    $type: number
+    $optional: true
+  - $name: display_order
+    $type: number
+    $optional: true
+  - $name: is_active
+    $type: boolean
+    $optional: true
+
+$returnDescription: "Le menu composé patché"
+$returnType:
+  $type: SetMenuBasic
+  $nullable: true
+  $related:
+    - $name: SetMenuBasic
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.PATCH_SET_MENU
+  $mapping:
+    $path:
+      set_menu_id: setMenuId
+    $body:
+      name: name
+      description: description
+      price: price
+      display_order: display_order
+      is_active: is_active
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: SetMenuBasic
+    $from: "--module config --kind custom --step module"
+    $step: module

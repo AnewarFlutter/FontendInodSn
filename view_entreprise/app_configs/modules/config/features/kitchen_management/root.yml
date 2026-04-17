@@ -1,0 +1,33 @@
+# ------------------------------------------------------------------
+# Feature : kitchen_management (gestion des cuisines / postes de cuisine)
+# ------------------------------------------------------------------
+$name: kitchen_management
+$description: "CRUD, activation/désactivation et regroupement par zone des cuisines"
+$fileNameCasing: snakeCase
+$override: false
+$delete: false
+$skip: false
+$rewriteInController: true
+$rewriteInDataSourceImpl: false
+
+$enums: []
+$types:
+  - $name: CreateKitchenPayload
+    $attributes:
+      - { $name: name, $type: string, $optional: false }
+      - { $name: description, $type: string, $optional: true }
+      - { $name: icon, $type: string, $optional: true }
+      - { $name: area, $type: string, $optional: true, $nullable: true }
+      - { $name: responsable_id, $type: string, $optional: true, $nullable: true }
+
+$usecases:
+  - $include: "./usecases/GetKitchensList.yml"
+  - $include: "./usecases/CreateKitchen.yml"
+  - $include: "./usecases/GetKitchenDetail.yml"
+  - $include: "./usecases/UpdateKitchen.yml"
+  - $include: "./usecases/PatchKitchen.yml"
+  - $include: "./usecases/DeleteKitchen.yml"
+  - $include: "./usecases/ActivateKitchen.yml"
+  - $include: "./usecases/DeactivateKitchen.yml"
+  - $include: "./usecases/GetKitchensStats.yml"
+  - $include: "./usecases/GetKitchensByArea.yml"

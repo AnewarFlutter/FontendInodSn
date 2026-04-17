@@ -1,0 +1,28 @@
+# ------------------------------------------------------------------
+# PATCH_SET_MENU - Modifier partiellement une formule
+# ------------------------------------------------------------------
+$path: /config/set-menus/{set_menu_id}/
+$method: PATCH
+$description: "Modifier partiellement une formule"
+$auth: true
+$skip: false
+$params:
+  $path:
+    set_menu_id: { $type: number, $optional: false }
+  $body:
+    name: { $type: string, $optional: true }
+    description: { $type: string, $optional: true }
+    price: { $type: number, $optional: true }
+    display_order: { $type: number, $optional: true }
+    is_active: { $type: boolean, $optional: true }
+$response:
+  $default:
+    $schema:
+      id: { $type: number }
+      name: { $type: string }
+      price: { $type: number }
+      is_active: { $type: boolean }
+  $byStatus:
+    "400":
+      $schema:
+        error: { $type: string }

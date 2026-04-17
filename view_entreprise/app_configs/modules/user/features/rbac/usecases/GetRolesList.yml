@@ -1,0 +1,24 @@
+# --------------------------------------------------------------
+# getRolesList - GET
+# --------------------------------------------------------------
+$name: getRolesList
+$description: "Liste les rôles assignables dans le système. Permission: role.list"
+$skip: true
+$async: true
+
+$params: []
+
+$returnDescription: "Liste des rôles assignables"
+$returnType:
+  $type: object
+  $list: true
+  $nullable: true
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: USER.GET_ROLES_LIST
+  $responseMapping:
+    $returnValue: results

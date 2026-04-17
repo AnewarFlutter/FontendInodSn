@@ -1,0 +1,46 @@
+# --------------------------------------------------------------
+# GetKitchensList - GET
+# --------------------------------------------------------------
+$name: getKitchensList
+$description: "Liste toutes les cuisines avec filtres optionnels"
+$skip: false
+$async: true
+
+$params:
+  - { $name: is_active, $type: boolean, $optional: true }
+  - { $name: area, $type: string, $optional: true }
+  - { $name: responsable_id, $type: string, $optional: true }
+  - { $name: search, $type: string, $optional: true }
+  - { $name: ordering, $type: string, $optional: true }
+
+$returnDescription: "Liste des cuisines"
+$returnType:
+  $type: KitchenBasic
+  $list: true
+  $nullable: true
+  $related:
+    - $name: KitchenBasic
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.GET_KITCHENS_LIST
+  $mapping:
+    $query:
+      is_active: is_active
+      area: area
+      responsable_id: responsable_id
+      search: search
+      ordering: ordering
+  $responseMapping:
+    $returnValue: data
+
+$imports:
+  - $name: KitchenBasic
+    $from: "--module config --kind custom --step module"
+    $step: module

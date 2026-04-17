@@ -1,0 +1,31 @@
+# ------------------------------------------------------------------
+# GET_OPTION_GROUP_OPTIONS - Options d'un groupe d'options
+# ------------------------------------------------------------------
+$path: /config/option-groups/{option_group_id}/options/
+$method: GET
+$description: "Récupérer les options d'un groupe d'options"
+$auth: true
+$skip: false
+$params:
+  $path:
+    option_group_id: { $type: number, $optional: false }
+  $query:
+    is_active: { $type: boolean, $optional: true }
+    ordering: { $type: string, $optional: true }
+$response:
+  $default:
+    $schema:
+      results:
+        $type: array
+        $items:
+          $type: object
+          $schema:
+            id: { $type: number }
+            name: { $type: string }
+            additional_amount: { $type: number }
+            display_order: { $type: number, $nullable: true }
+            is_active: { $type: boolean }
+  $byStatus:
+    "404":
+      $schema:
+        detail: { $type: string }

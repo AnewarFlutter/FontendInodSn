@@ -1,0 +1,23 @@
+# ------------------------------------------------------------------
+# REORDER_SET_MENU - Réordonner une formule
+# ------------------------------------------------------------------
+$path: /config/set-menus/{set_menu_id}/reorder/
+$method: PATCH
+$description: "Modifier l'ordre d'affichage d'une formule"
+$auth: true
+$skip: false
+$params:
+  $path:
+    set_menu_id: { $type: number, $optional: false }
+  $body:
+    new_order: { $type: number, $optional: false }
+$response:
+  $default:
+    $schema:
+      message: { $type: string }
+      id: { $type: number }
+      display_order: { $type: number }
+  $byStatus:
+    "404":
+      $schema:
+        detail: { $type: string }

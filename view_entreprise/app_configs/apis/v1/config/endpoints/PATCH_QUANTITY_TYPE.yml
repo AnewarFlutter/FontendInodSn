@@ -1,0 +1,26 @@
+# ------------------------------------------------------------------
+# PATCH_QUANTITY_TYPE - Modifier partiellement un type de quantité
+# ------------------------------------------------------------------
+$path: /config/quantity-types/{quantity_type_id}/
+$method: PATCH
+$description: "Modifier partiellement un type de quantité"
+$auth: true
+$skip: false
+$params:
+  $path:
+    quantity_type_id: { $type: number, $optional: false }
+  $body:
+    name: { $type: string, $optional: true }
+    abbreviation: { $type: string, $optional: true }
+    is_active: { $type: boolean, $optional: true }
+$response:
+  $default:
+    $schema:
+      id: { $type: number }
+      name: { $type: string }
+      abbreviation: { $type: string }
+      is_active: { $type: boolean }
+  $byStatus:
+    "400":
+      $schema:
+        error: { $type: string }

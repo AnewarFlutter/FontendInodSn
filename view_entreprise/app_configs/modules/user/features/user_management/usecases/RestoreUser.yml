@@ -1,0 +1,29 @@
+# --------------------------------------------------------------
+# restoreUser - POST
+# --------------------------------------------------------------
+$name: restoreUser
+$description: "Restaure un utilisateur soft-deleted. Permission: user.restore"
+$skip: true
+$async: true
+
+$params:
+  - $name: user_id
+    $type: string
+    $optional: false
+
+$returnDescription: "Confirmation de la restauration"
+$returnType:
+  $type: string
+  $nullable: true
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: USER.RESTORE_USER
+  $mapping:
+    $path:
+      user_id: user_id
+  $responseMapping:
+    $returnValue: message

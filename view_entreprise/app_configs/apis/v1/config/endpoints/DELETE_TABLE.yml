@@ -1,0 +1,20 @@
+# ------------------------------------------------------------------
+# DELETE_TABLE - Supprimer une table
+# ------------------------------------------------------------------
+$path: /config/tables/{table_id}/
+$method: DELETE
+$description: "Supprimer une table"
+$auth: true
+$skip: false
+$params:
+  $path:
+    table_id: { $type: number, $optional: false }
+$response:
+  $default:
+    $description: "204 No Content"
+    $schema:
+      message: { $type: string }
+  $byStatus:
+    "404":
+      $schema:
+        detail: { $type: string }

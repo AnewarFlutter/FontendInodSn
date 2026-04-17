@@ -1,0 +1,19 @@
+# ------------------------------------------------------------------
+# Feature : rbac (Gestion des rôles et permissions - Admin)
+# ------------------------------------------------------------------
+$name: rbac
+$description: "Consultation des rôles assignables et permissions du système pour l'interface admin RBAC"
+$fileNameCasing: snakeCase
+$override: false
+$delete: false
+$skip: true
+$rewriteInController: true
+$rewriteInDataSourceImpl: false
+
+$enums: []
+$types: []
+
+$usecases:
+  - $include: "./usecases/GetPermissionsList.yml"
+  - $include: "./usecases/GetRolesList.yml"
+  - $include: "./usecases/GetPermissionsCategories.yml"

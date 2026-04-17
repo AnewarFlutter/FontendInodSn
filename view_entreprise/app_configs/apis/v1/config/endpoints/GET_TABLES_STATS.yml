@@ -1,0 +1,23 @@
+# ------------------------------------------------------------------
+# GET_TABLES_STATS - Statistiques des tables
+# ------------------------------------------------------------------
+$path: /config/tables/stats/
+$method: GET
+$description: "Récupérer les statistiques des tables"
+$auth: true
+$skip: false
+$params:
+  $query: {}
+$response:
+  $default:
+    $schema:
+      total: { $type: number }
+      active: { $type: number }
+      inactive: { $type: number }
+      available: { $type: number }
+      occupied: { $type: number }
+      reserved: { $type: number }
+  $byStatus:
+    "401":
+      $schema:
+        detail: { $type: string }

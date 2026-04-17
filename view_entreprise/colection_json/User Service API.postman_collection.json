@@ -1,0 +1,3466 @@
+{
+  "info": {
+    "_postman_id": "cb309693-ea05-4b57-b843-eecf1a8042c5",
+    "name": "User Service API",
+    "description": "Collection User Service — My Restauration App\n\n**Base URL:** `https://api.hello-restauration.test-vps-online.xyz/api/v1`\n**Paths via gateway:** `/user/{endpoint}`\n\n## Authentification\nConnectez-vous via Auth Service (`POST /auth/login/`) pour obtenir un JWT, puis utilisez-le ici.\n\n## Variables de collection\n| Variable | Description |\n|----------|-------------|\n| `base_url` | URL de base (inclut /api/v1) |\n| `access_token` | JWT access token — copier depuis Auth Service |\n| `refresh_token` | JWT refresh token |\n| `auth_user_id` | UUID Auth Service de l'utilisateur |\n| `user_id` | UUID User Service (auto-sauvegardé à la création) |\n\n## Niveaux de rôles\n| Rôle | Level | Permissions principales |\n|------|-------|------------------------|\n| SUPER_ADMIN | 100 | Tout |\n| ADMIN | 90 | Gestion complète utilisateurs |\n| MANAGER | 70 | Gestion équipes |\n| CAISSIER_POS | 50 | Caisse, commandes POS |\n| SERVEUR | 20 | Tables, commandes |\n| CUISINIER | 20 | Cuisine, préparation |\n| LIVREUR | 20 | Livraisons |",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "38559843",
+    "_collection_link": "https://go.postman.co/collection/53115297-cb309693-ea05-4b57-b843-eecf1a8042c5?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "💚 Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/user/health/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "user",
+                "health",
+                ""
+              ]
+            },
+            "description": "## Health Check\n\nVérification que le service User est opérationnel.\n\n### Réponses\n\n**200 OK** — Service opérationnel\n```json\n{\n    \"status\": \"healthy\",\n    \"service\": \"user-service\"\n}\n```\n\n**503 Service Unavailable** — Service indisponible\n```json\n{\n    \"status\": \"unhealthy\",\n    \"error\": \"Database connection failed\"\n}\n```"
+          },
+          "response": [
+            {
+              "name": "200 OK — Service opérationnel",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/user/health/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "health",
+                    ""
+                  ]
+                },
+                "description": "## Health Check\n\nVérification que le service User est opérationnel.\n\n### Réponses\n\n**200 OK** — Service opérationnel\n```json\n{\n    \"status\": \"healthy\",\n    \"service\": \"user-service\"\n}\n```\n\n**503 Service Unavailable** — Service indisponible\n```json\n{\n    \"status\": \"unhealthy\",\n    \"error\": \"Database connection failed\"\n}\n```"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"healthy\",\n    \"service\": \"user-service\"\n}"
+            }
+          ]
+        }
+      ],
+      "description": "Vérification de l'état du service"
+    },
+    {
+      "name": "👤 Mon Profil",
+      "item": [
+        {
+          "name": "GET Mon profil complet",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/user/me/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "user",
+                "me",
+                ""
+              ]
+            },
+            "description": "## Mon profil complet\n\nRetourne les informations complètes du profil de l'utilisateur authentifié : infos personnelles, rôles actifs, permissions, et tous les profils métier (serveur, livreur, manager).\n\n### Réponses\n\n**200 OK** — Profil récupéré\n```json\n{\n    \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"auth_user_id\": \"660e8400-e29b-41d4-a716-446655440001\",\n    \"email\": \"john.doe@restaurant.com\",\n    \"telephone\": \"+33612345678\",\n    \"first_name\": \"John\",\n    \"last_name\": \"Doe\",\n    \"pseudo\": \"john_doe\",\n    \"gender\": \"M\",\n    \"birth_date\": \"1990-05-15\",\n    \"adresse\": \"123 Rue de Paris\",\n    \"photo\": \"/media/avatars/john_doe.jpg\",\n    \"status_activation\": \"ACTIVE\",\n    \"roles\": [\n        {\n            \"role\": {\"code\": \"SERVEUR\", \"name\": \"Serveur\", \"level\": 20},\n            \"assigned_at\": \"2025-01-01T10:00:00Z\",\n            \"is_active\": true\n        }\n    ],\n    \"permissions\": [\"user.view_own\", \"order.create\", \"table.manage\"],\n    \"serveur_profile\": {\n        \"experience_annees\": 2,\n        \"sections_assignees\": [\"Terrasse\", \"Salle 1\"],\n        \"specialites\": [\"Cocktails\", \"Vins\"],\n        \"performance_rating\": 4.5\n    },\n    \"livreur_profile\": null,\n    \"manager_profile\": null,\n    \"created_at\": \"2025-01-01T10:00:00Z\"\n}\n```\n\n**401 Unauthorized** — Token manquant ou invalide\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Authentication credentials were not provided.\",\n    \"code\": \"UNAUTHORIZED\"\n}\n```\n\n**404 Not Found** — Profil utilisateur non trouvé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Profil utilisateur non trouvé\",\n    \"code\": \"USER_NOT_FOUND\"\n}\n```"
+          },
+          "response": [
+            {
+              "name": "200 OK — Profil complet",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/user/me/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "me",
+                    ""
+                  ]
+                },
+                "description": "## Mon profil complet\n\nRetourne les informations complètes du profil de l'utilisateur authentifié : infos personnelles, rôles actifs, permissions, et tous les profils métier (serveur, livreur, manager).\n\n### Réponses\n\n**200 OK** — Profil récupéré\n```json\n{\n    \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"auth_user_id\": \"660e8400-e29b-41d4-a716-446655440001\",\n    \"email\": \"john.doe@restaurant.com\",\n    \"telephone\": \"+33612345678\",\n    \"first_name\": \"John\",\n    \"last_name\": \"Doe\",\n    \"pseudo\": \"john_doe\",\n    \"gender\": \"M\",\n    \"birth_date\": \"1990-05-15\",\n    \"adresse\": \"123 Rue de Paris\",\n    \"photo\": \"/media/avatars/john_doe.jpg\",\n    \"status_activation\": \"ACTIVE\",\n    \"roles\": [\n        {\n            \"role\": {\"code\": \"SERVEUR\", \"name\": \"Serveur\", \"level\": 20},\n            \"assigned_at\": \"2025-01-01T10:00:00Z\",\n            \"is_active\": true\n        }\n    ],\n    \"permissions\": [\"user.view_own\", \"order.create\", \"table.manage\"],\n    \"serveur_profile\": {\n        \"experience_annees\": 2,\n        \"sections_assignees\": [\"Terrasse\", \"Salle 1\"],\n        \"specialites\": [\"Cocktails\", \"Vins\"],\n        \"performance_rating\": 4.5\n    },\n    \"livreur_profile\": null,\n    \"manager_profile\": null,\n    \"created_at\": \"2025-01-01T10:00:00Z\"\n}\n```\n\n**401 Unauthorized** — Token manquant ou invalide\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Authentication credentials were not provided.\",\n    \"code\": \"UNAUTHORIZED\"\n}\n```\n\n**404 Not Found** — Profil utilisateur non trouvé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Profil utilisateur non trouvé\",\n    \"code\": \"USER_NOT_FOUND\"\n}\n```"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"auth_user_id\": \"660e8400-e29b-41d4-a716-446655440001\",\n    \"email\": \"john.doe@restaurant.com\",\n    \"telephone\": \"+33612345678\",\n    \"first_name\": \"John\",\n    \"last_name\": \"Doe\",\n    \"gender\": \"M\",\n    \"birth_date\": \"1990-05-15\",\n    \"status_activation\": \"ACTIVE\",\n    \"roles\": [\n        {\n            \"role\": {\"code\": \"SERVEUR\", \"name\": \"Serveur\", \"level\": 20},\n            \"assigned_at\": \"2025-01-01T10:00:00Z\",\n            \"is_active\": true\n        }\n    ],\n    \"permissions\": [\"user.view_own\", \"order.create\", \"table.manage\"],\n    \"serveur_profile\": {\n        \"experience_annees\": 2,\n        \"sections_assignees\": [\"Terrasse\", \"Salle 1\"],\n        \"performance_rating\": 4.5\n    },\n    \"livreur_profile\": null,\n    \"manager_profile\": null\n}"
+            },
+            {
+              "name": "401 Unauthorized",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/user/me/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "me",
+                    ""
+                  ]
+                },
+                "description": "## Mon profil complet\n\nRetourne les informations complètes du profil de l'utilisateur authentifié : infos personnelles, rôles actifs, permissions, et tous les profils métier (serveur, livreur, manager).\n\n### Réponses\n\n**200 OK** — Profil récupéré\n```json\n{\n    \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"auth_user_id\": \"660e8400-e29b-41d4-a716-446655440001\",\n    \"email\": \"john.doe@restaurant.com\",\n    \"telephone\": \"+33612345678\",\n    \"first_name\": \"John\",\n    \"last_name\": \"Doe\",\n    \"pseudo\": \"john_doe\",\n    \"gender\": \"M\",\n    \"birth_date\": \"1990-05-15\",\n    \"adresse\": \"123 Rue de Paris\",\n    \"photo\": \"/media/avatars/john_doe.jpg\",\n    \"status_activation\": \"ACTIVE\",\n    \"roles\": [\n        {\n            \"role\": {\"code\": \"SERVEUR\", \"name\": \"Serveur\", \"level\": 20},\n            \"assigned_at\": \"2025-01-01T10:00:00Z\",\n            \"is_active\": true\n        }\n    ],\n    \"permissions\": [\"user.view_own\", \"order.create\", \"table.manage\"],\n    \"serveur_profile\": {\n        \"experience_annees\": 2,\n        \"sections_assignees\": [\"Terrasse\", \"Salle 1\"],\n        \"specialites\": [\"Cocktails\", \"Vins\"],\n        \"performance_rating\": 4.5\n    },\n    \"livreur_profile\": null,\n    \"manager_profile\": null,\n    \"created_at\": \"2025-01-01T10:00:00Z\"\n}\n```\n\n**401 Unauthorized** — Token manquant ou invalide\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Authentication credentials were not provided.\",\n    \"code\": \"UNAUTHORIZED\"\n}\n```\n\n**404 Not Found** — Profil utilisateur non trouvé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Profil utilisateur non trouvé\",\n    \"code\": \"USER_NOT_FOUND\"\n}\n```"
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"ERROR\",\n    \"message\": \"Authentication credentials were not provided.\",\n    \"code\": \"UNAUTHORIZED\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "PATCH Mon profil",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"first_name\": \"Ahmadou\",\n    \"last_name\": \"Sylla\",\n    \"telephone\": \"+221771234569\",\n    \"birth_date\": \"1995-06-15\",\n    \"gender\": \"M\",\n    \"adresse\": \"Dakar, Plateau\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/user/me/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "user",
+                "me",
+                ""
+              ]
+            },
+            "description": "## Modifier mon profil\n\nMet à jour les informations personnelles de l'utilisateur connecté. Tous les champs sont optionnels (PATCH).\n\n**⚠️ Non modifiable ici:**\n- Email → utiliser `PATCH /user/me/change-email/`\n- Rôles → géré par admin\n- Profils métier → utiliser endpoints dédiés\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| first_name | string | Non | Prénom |\n| last_name | string | Non | Nom de famille |\n| telephone | string | Non | Numéro de téléphone |\n| birth_date | string (date) | Non | Date de naissance (YYYY-MM-DD) |\n| gender | string | Non | `M`, `F` ou `AUTRE` |\n| adresse | string | Non | Adresse postale |\n\n### Réponses\n\n**200 OK** — Profil mis à jour\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Profil mis à jour avec succès\",\n    \"data\": {\n        \"first_name\": \"Ahmadou\",\n        \"last_name\": \"Sylla\",\n        \"telephone\": \"+221771234569\"\n    }\n}\n```\n\n**400 Bad Request** — Données invalides\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Données invalides\",\n    \"errors\": {\n        \"telephone\": [\"Ce numéro est déjà utilisé par un autre compte\"]\n    }\n}\n```\n\n**401 Unauthorized** — Non authentifié\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Authentication credentials were not provided.\"\n}\n```"
+          },
+          "response": [
+            {
+              "name": "200 OK — Profil mis à jour",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"first_name\": \"Ahmadou\",\n    \"last_name\": \"Sylla\",\n    \"telephone\": \"+221771234569\",\n    \"birth_date\": \"1995-06-15\",\n    \"gender\": \"M\",\n    \"adresse\": \"Dakar, Plateau\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/user/me/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "me",
+                    ""
+                  ]
+                },
+                "description": "## Modifier mon profil\n\nMet à jour les informations personnelles de l'utilisateur connecté. Tous les champs sont optionnels (PATCH).\n\n**⚠️ Non modifiable ici:**\n- Email → utiliser `PATCH /user/me/change-email/`\n- Rôles → géré par admin\n- Profils métier → utiliser endpoints dédiés\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| first_name | string | Non | Prénom |\n| last_name | string | Non | Nom de famille |\n| telephone | string | Non | Numéro de téléphone |\n| birth_date | string (date) | Non | Date de naissance (YYYY-MM-DD) |\n| gender | string | Non | `M`, `F` ou `AUTRE` |\n| adresse | string | Non | Adresse postale |\n\n### Réponses\n\n**200 OK** — Profil mis à jour\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Profil mis à jour avec succès\",\n    \"data\": {\n        \"first_name\": \"Ahmadou\",\n        \"last_name\": \"Sylla\",\n        \"telephone\": \"+221771234569\"\n    }\n}\n```\n\n**400 Bad Request** — Données invalides\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Données invalides\",\n    \"errors\": {\n        \"telephone\": [\"Ce numéro est déjà utilisé par un autre compte\"]\n    }\n}\n```\n\n**401 Unauthorized** — Non authentifié\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Authentication credentials were not provided.\"\n}\n```"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Profil mis à jour avec succès\",\n    \"data\": {\n        \"first_name\": \"Ahmadou\",\n        \"last_name\": \"Sylla\",\n        \"telephone\": \"+221771234569\"\n    }\n}"
+            },
+            {
+              "name": "400 Bad Request — Téléphone déjà utilisé",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"first_name\": \"Ahmadou\",\n    \"last_name\": \"Sylla\",\n    \"telephone\": \"+221771234569\",\n    \"birth_date\": \"1995-06-15\",\n    \"gender\": \"M\",\n    \"adresse\": \"Dakar, Plateau\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/user/me/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "me",
+                    ""
+                  ]
+                },
+                "description": "## Modifier mon profil\n\nMet à jour les informations personnelles de l'utilisateur connecté. Tous les champs sont optionnels (PATCH).\n\n**⚠️ Non modifiable ici:**\n- Email → utiliser `PATCH /user/me/change-email/`\n- Rôles → géré par admin\n- Profils métier → utiliser endpoints dédiés\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| first_name | string | Non | Prénom |\n| last_name | string | Non | Nom de famille |\n| telephone | string | Non | Numéro de téléphone |\n| birth_date | string (date) | Non | Date de naissance (YYYY-MM-DD) |\n| gender | string | Non | `M`, `F` ou `AUTRE` |\n| adresse | string | Non | Adresse postale |\n\n### Réponses\n\n**200 OK** — Profil mis à jour\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Profil mis à jour avec succès\",\n    \"data\": {\n        \"first_name\": \"Ahmadou\",\n        \"last_name\": \"Sylla\",\n        \"telephone\": \"+221771234569\"\n    }\n}\n```\n\n**400 Bad Request** — Données invalides\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Données invalides\",\n    \"errors\": {\n        \"telephone\": [\"Ce numéro est déjà utilisé par un autre compte\"]\n    }\n}\n```\n\n**401 Unauthorized** — Non authentifié\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Authentication credentials were not provided.\"\n}\n```"
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"ERROR\",\n    \"message\": \"Données invalides\",\n    \"errors\": {\n        \"telephone\": [\"Ce numéro est déjà utilisé par un autre compte\"]\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "GET Mes rôles",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/user/me/roles/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "user",
+                "me",
+                "roles",
+                ""
+              ]
+            },
+            "description": "## Mes rôles actifs\n\nRetourne la liste de tous les rôles actifs de l'utilisateur authentifié avec leurs permissions associées.\n\n### Réponses\n\n**200 OK** — Liste des rôles\n```json\n{\n    \"roles\": [\n        {\n            \"role\": {\"code\": \"SERVEUR\", \"name\": \"Serveur\", \"level\": 20},\n            \"assigned_at\": \"2025-01-01T10:00:00Z\",\n            \"expires_at\": null,\n            \"is_active\": true\n        },\n        {\n            \"role\": {\"code\": \"LIVREUR\", \"name\": \"Livreur\", \"level\": 20},\n            \"assigned_at\": \"2025-06-01T10:00:00Z\",\n            \"expires_at\": null,\n            \"is_active\": true\n        }\n    ]\n}\n```\n\n**401 Unauthorized** — Non authentifié\n```json\n{\"status\": \"ERROR\", \"message\": \"Authentication credentials were not provided.\"}\n```"
+          },
+          "response": [
+            {
+              "name": "200 OK — Rôles actifs",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/user/me/roles/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "me",
+                    "roles",
+                    ""
+                  ]
+                },
+                "description": "## Mes rôles actifs\n\nRetourne la liste de tous les rôles actifs de l'utilisateur authentifié avec leurs permissions associées.\n\n### Réponses\n\n**200 OK** — Liste des rôles\n```json\n{\n    \"roles\": [\n        {\n            \"role\": {\"code\": \"SERVEUR\", \"name\": \"Serveur\", \"level\": 20},\n            \"assigned_at\": \"2025-01-01T10:00:00Z\",\n            \"expires_at\": null,\n            \"is_active\": true\n        },\n        {\n            \"role\": {\"code\": \"LIVREUR\", \"name\": \"Livreur\", \"level\": 20},\n            \"assigned_at\": \"2025-06-01T10:00:00Z\",\n            \"expires_at\": null,\n            \"is_active\": true\n        }\n    ]\n}\n```\n\n**401 Unauthorized** — Non authentifié\n```json\n{\"status\": \"ERROR\", \"message\": \"Authentication credentials were not provided.\"}\n```"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"roles\": [\n        {\n            \"role\": {\"code\": \"SERVEUR\", \"name\": \"Serveur\", \"level\": 20},\n            \"assigned_at\": \"2025-01-01T10:00:00Z\",\n            \"expires_at\": null,\n            \"is_active\": true\n        }\n    ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "GET Mes permissions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/user/me/permissions/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "user",
+                "me",
+                "permissions",
+                ""
+              ]
+            },
+            "description": "## Mes permissions effectives\n\nRetourne toutes les permissions effectives calculées :\n- Permissions des rôles actifs\n- + Permissions custom accordées individuellement\n- - Permissions custom révoquées\n\n### Réponses\n\n**200 OK** — Liste des permissions\n```json\n{\n    \"permissions\": [\n        \"user.view_own\",\n        \"user.update_own\",\n        \"order.create\",\n        \"order.update\",\n        \"table.assign\",\n        \"payment.process\",\n        \"menu.view\"\n    ]\n}\n```\n\n**401 Unauthorized** — Non authentifié\n```json\n{\"status\": \"ERROR\", \"message\": \"Authentication credentials were not provided.\"}\n```"
+          },
+          "response": [
+            {
+              "name": "200 OK — Permissions effectives",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/user/me/permissions/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "me",
+                    "permissions",
+                    ""
+                  ]
+                },
+                "description": "## Mes permissions effectives\n\nRetourne toutes les permissions effectives calculées :\n- Permissions des rôles actifs\n- + Permissions custom accordées individuellement\n- - Permissions custom révoquées\n\n### Réponses\n\n**200 OK** — Liste des permissions\n```json\n{\n    \"permissions\": [\n        \"user.view_own\",\n        \"user.update_own\",\n        \"order.create\",\n        \"order.update\",\n        \"table.assign\",\n        \"payment.process\",\n        \"menu.view\"\n    ]\n}\n```\n\n**401 Unauthorized** — Non authentifié\n```json\n{\"status\": \"ERROR\", \"message\": \"Authentication credentials were not provided.\"}\n```"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"permissions\": [\n        \"user.view_own\",\n        \"user.update_own\",\n        \"order.create\",\n        \"order.update\",\n        \"table.assign\",\n        \"menu.view\"\n    ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "POST Upload avatar",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "photo",
+                  "type": "file",
+                  "description": "Fichier image (JPEG/PNG, max 5 MB)",
+                  "value": ""
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/user/me/avatar/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "user",
+                "me",
+                "avatar",
+                ""
+              ]
+            },
+            "description": "## Upload photo de profil\n\nTélécharge une photo de profil (avatar) pour l'utilisateur connecté.\n\n**Format:** `multipart/form-data`\n\n### Body (form-data)\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| photo | file | Oui | Image JPEG ou PNG, max 5 MB, recommandé 400×400px |\n\n### Réponses\n\n**200 OK** — Photo uploadée\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Photo de profil mise à jour\",\n    \"photo_url\": \"/media/avatars/john_doe_20260311.jpg\"\n}\n```\n\n**400 Bad Request** — Format invalide\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Format de fichier non supporté. Utilisez JPEG ou PNG.\",\n    \"code\": \"INVALID_FILE_FORMAT\"\n}\n```\n\n**400 Bad Request** — Fichier trop volumineux\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Le fichier dépasse la taille maximale de 5 MB\",\n    \"code\": \"FILE_TOO_LARGE\"\n}\n```"
+          },
+          "response": [
+            {
+              "name": "200 OK — Photo uploadée",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "photo",
+                      "type": "file",
+                      "description": "Fichier image (JPEG/PNG, max 5 MB)",
+                      "value": ""
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{base_url}}/user/me/avatar/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "me",
+                    "avatar",
+                    ""
+                  ]
+                },
+                "description": "## Upload photo de profil\n\nTélécharge une photo de profil (avatar) pour l'utilisateur connecté.\n\n**Format:** `multipart/form-data`\n\n### Body (form-data)\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| photo | file | Oui | Image JPEG ou PNG, max 5 MB, recommandé 400×400px |\n\n### Réponses\n\n**200 OK** — Photo uploadée\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Photo de profil mise à jour\",\n    \"photo_url\": \"/media/avatars/john_doe_20260311.jpg\"\n}\n```\n\n**400 Bad Request** — Format invalide\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Format de fichier non supporté. Utilisez JPEG ou PNG.\",\n    \"code\": \"INVALID_FILE_FORMAT\"\n}\n```\n\n**400 Bad Request** — Fichier trop volumineux\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Le fichier dépasse la taille maximale de 5 MB\",\n    \"code\": \"FILE_TOO_LARGE\"\n}\n```"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Photo de profil mise à jour\",\n    \"photo_url\": \"/media/avatars/john_doe_20260311.jpg\"\n}"
+            },
+            {
+              "name": "400 Bad Request — Fichier invalide",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "photo",
+                      "type": "file",
+                      "description": "Fichier image (JPEG/PNG, max 5 MB)",
+                      "value": ""
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{base_url}}/user/me/avatar/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "me",
+                    "avatar",
+                    ""
+                  ]
+                },
+                "description": "## Upload photo de profil\n\nTélécharge une photo de profil (avatar) pour l'utilisateur connecté.\n\n**Format:** `multipart/form-data`\n\n### Body (form-data)\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| photo | file | Oui | Image JPEG ou PNG, max 5 MB, recommandé 400×400px |\n\n### Réponses\n\n**200 OK** — Photo uploadée\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Photo de profil mise à jour\",\n    \"photo_url\": \"/media/avatars/john_doe_20260311.jpg\"\n}\n```\n\n**400 Bad Request** — Format invalide\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Format de fichier non supporté. Utilisez JPEG ou PNG.\",\n    \"code\": \"INVALID_FILE_FORMAT\"\n}\n```\n\n**400 Bad Request** — Fichier trop volumineux\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Le fichier dépasse la taille maximale de 5 MB\",\n    \"code\": \"FILE_TOO_LARGE\"\n}\n```"
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"ERROR\",\n    \"message\": \"Format de fichier non supporté. Utilisez JPEG ou PNG.\",\n    \"code\": \"INVALID_FILE_FORMAT\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "GET Mon profil cuisinier",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/user/me/profile/cuisinier/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "user",
+                "me",
+                "profile",
+                "cuisinier",
+                ""
+              ]
+            },
+            "description": "## Mon profil cuisinier\n\nRécupère le profil métier cuisinier de l'utilisateur connecté.\n\n**Rôle requis:** `CUISINIER`\n\n### Réponses\n\n**200 OK** — Profil cuisinier\n```json\n{\n    \"id\": \"770e8400-e29b-41d4-a716-446655440002\",\n    \"specialites\": [\"Grillades\", \"Pâtisserie\"],\n    \"poste_principal\": \"Chef de partie\",\n    \"allergenes_maitrises\": [\"Gluten\", \"Lactose\"],\n    \"created_at\": \"2025-01-01T10:00:00Z\"\n}\n```\n\n**403 Forbidden** — Rôle insuffisant\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Permission refusée. Rôle CUISINIER requis.\",\n    \"code\": \"PERMISSION_DENIED\"\n}\n```"
+          },
+          "response": [
+            {
+              "name": "200 OK — Profil cuisinier",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/user/me/profile/cuisinier/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "me",
+                    "profile",
+                    "cuisinier",
+                    ""
+                  ]
+                },
+                "description": "## Mon profil cuisinier\n\nRécupère le profil métier cuisinier de l'utilisateur connecté.\n\n**Rôle requis:** `CUISINIER`\n\n### Réponses\n\n**200 OK** — Profil cuisinier\n```json\n{\n    \"id\": \"770e8400-e29b-41d4-a716-446655440002\",\n    \"specialites\": [\"Grillades\", \"Pâtisserie\"],\n    \"poste_principal\": \"Chef de partie\",\n    \"allergenes_maitrises\": [\"Gluten\", \"Lactose\"],\n    \"created_at\": \"2025-01-01T10:00:00Z\"\n}\n```\n\n**403 Forbidden** — Rôle insuffisant\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Permission refusée. Rôle CUISINIER requis.\",\n    \"code\": \"PERMISSION_DENIED\"\n}\n```"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"id\": \"770e8400-e29b-41d4-a716-446655440002\",\n    \"specialites\": [\"Grillades\", \"Pâtisserie\"],\n    \"poste_principal\": \"Chef de partie\",\n    \"allergenes_maitrises\": [\"Gluten\", \"Lactose\"]\n}"
+            }
+          ]
+        },
+        {
+          "name": "PATCH Mon profil cuisinier",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"specialites\": [\"Grillades\", \"Pâtisserie\", \"Cuisine africaine\"],\n    \"poste_principal\": \"Chef de partie\",\n    \"allergenes_maitrises\": [\"Gluten\", \"Lactose\"]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/user/me/profile/cuisinier/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "user",
+                "me",
+                "profile",
+                "cuisinier",
+                ""
+              ]
+            },
+            "description": "## Modifier mon profil cuisinier\n\n**Rôle requis:** `CUISINIER`\n\n### Body\n| Champ | Type | Description |\n|-------|------|-------------|\n| specialites | array[string] | Spécialités culinaires |\n| poste_principal | string | Poste dans la cuisine |\n| allergenes_maitrises | array[string] | Allergènes maîtrisés |\n\n### Réponses\n\n**200 OK** — Profil mis à jour\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Profil cuisinier mis à jour\"\n}\n```\n\n**403 Forbidden** — Rôle insuffisant\n```json\n{\"status\": \"ERROR\", \"message\": \"Permission refusée. Rôle CUISINIER requis.\", \"code\": \"PERMISSION_DENIED\"}\n```"
+          },
+          "response": [
+            {
+              "name": "200 OK — Profil cuisinier mis à jour",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"specialites\": [\"Grillades\", \"Pâtisserie\", \"Cuisine africaine\"],\n    \"poste_principal\": \"Chef de partie\",\n    \"allergenes_maitrises\": [\"Gluten\", \"Lactose\"]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/user/me/profile/cuisinier/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "me",
+                    "profile",
+                    "cuisinier",
+                    ""
+                  ]
+                },
+                "description": "## Modifier mon profil cuisinier\n\n**Rôle requis:** `CUISINIER`\n\n### Body\n| Champ | Type | Description |\n|-------|------|-------------|\n| specialites | array[string] | Spécialités culinaires |\n| poste_principal | string | Poste dans la cuisine |\n| allergenes_maitrises | array[string] | Allergènes maîtrisés |\n\n### Réponses\n\n**200 OK** — Profil mis à jour\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Profil cuisinier mis à jour\"\n}\n```\n\n**403 Forbidden** — Rôle insuffisant\n```json\n{\"status\": \"ERROR\", \"message\": \"Permission refusée. Rôle CUISINIER requis.\", \"code\": \"PERMISSION_DENIED\"}\n```"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Profil cuisinier mis à jour\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "GET Mon profil caissier",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/user/me/profile/caissier/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "user",
+                "me",
+                "profile",
+                "caissier",
+                ""
+              ]
+            },
+            "description": "## Mon profil caissier POS\n\nRécupère le profil métier caissier de l'utilisateur connecté.\n\n**Rôle requis:** `CAISSIER_POS`\n\n### Réponses\n\n**200 OK** — Profil caissier\n```json\n{\n    \"id\": \"880e8400-e29b-41d4-a716-446655440003\",\n    \"pos_terminal_id\": \"TERM-001\",\n    \"assigned_cash_register\": \"CASH_REGISTER_01\",\n    \"last_cash_register_opening\": \"2026-03-11T08:00:00Z\"\n}\n```\n\n**403 Forbidden** — Rôle insuffisant\n```json\n{\"status\": \"ERROR\", \"message\": \"Permission refusée. Rôle CAISSIER_POS requis.\", \"code\": \"PERMISSION_DENIED\"}\n```"
+          },
+          "response": [
+            {
+              "name": "200 OK — Profil caissier",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/user/me/profile/caissier/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "me",
+                    "profile",
+                    "caissier",
+                    ""
+                  ]
+                },
+                "description": "## Mon profil caissier POS\n\nRécupère le profil métier caissier de l'utilisateur connecté.\n\n**Rôle requis:** `CAISSIER_POS`\n\n### Réponses\n\n**200 OK** — Profil caissier\n```json\n{\n    \"id\": \"880e8400-e29b-41d4-a716-446655440003\",\n    \"pos_terminal_id\": \"TERM-001\",\n    \"assigned_cash_register\": \"CASH_REGISTER_01\",\n    \"last_cash_register_opening\": \"2026-03-11T08:00:00Z\"\n}\n```\n\n**403 Forbidden** — Rôle insuffisant\n```json\n{\"status\": \"ERROR\", \"message\": \"Permission refusée. Rôle CAISSIER_POS requis.\", \"code\": \"PERMISSION_DENIED\"}\n```"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"id\": \"880e8400-e29b-41d4-a716-446655440003\",\n    \"pos_terminal_id\": \"TERM-001\",\n    \"assigned_cash_register\": \"CASH_REGISTER_01\",\n    \"last_cash_register_opening\": \"2026-03-11T08:00:00Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "PATCH Mon profil caissier",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"pos_terminal_id\": \"TERM-001\",\n    \"assigned_cash_register\": \"CASH_REGISTER_01\",\n    \"last_cash_register_opening\": \"2026-02-17T08:00:00Z\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/user/me/profile/caissier/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "user",
+                "me",
+                "profile",
+                "caissier",
+                ""
+              ]
+            },
+            "description": "## Modifier mon profil caissier POS\n\n**Rôle requis:** `CAISSIER_POS`\n\n### Body\n| Champ | Type | Description |\n|-------|------|-------------|\n| pos_terminal_id | string | Identifiant du terminal POS |\n| assigned_cash_register | string | Caisse assignée |\n| last_cash_register_opening | string (datetime) | Dernière ouverture de caisse |\n\n### Réponses\n\n**200 OK** — Profil mis à jour\n```json\n{\"status\": \"SUCCESS\", \"message\": \"Profil caissier mis à jour\"}\n```"
+          },
+          "response": [
+            {
+              "name": "200 OK — Profil caissier mis à jour",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"pos_terminal_id\": \"TERM-001\",\n    \"assigned_cash_register\": \"CASH_REGISTER_01\",\n    \"last_cash_register_opening\": \"2026-02-17T08:00:00Z\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/user/me/profile/caissier/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "me",
+                    "profile",
+                    "caissier",
+                    ""
+                  ]
+                },
+                "description": "## Modifier mon profil caissier POS\n\n**Rôle requis:** `CAISSIER_POS`\n\n### Body\n| Champ | Type | Description |\n|-------|------|-------------|\n| pos_terminal_id | string | Identifiant du terminal POS |\n| assigned_cash_register | string | Caisse assignée |\n| last_cash_register_opening | string (datetime) | Dernière ouverture de caisse |\n\n### Réponses\n\n**200 OK** — Profil mis à jour\n```json\n{\"status\": \"SUCCESS\", \"message\": \"Profil caissier mis à jour\"}\n```"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Profil caissier mis à jour\"\n}"
+            }
+          ]
+        }
+      ],
+      "description": "Gestion du profil personnel — accessible par tous les utilisateurs authentifiés"
+    },
+    {
+      "name": "🍽️ Mon Profil Serveur",
+      "item": [
+        {
+          "name": "GET Mon profil serveur",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/user/me/profile/serveur/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "user",
+                "me",
+                "profile",
+                "serveur",
+                ""
+              ]
+            },
+            "description": "## Mon profil serveur\n\nRécupère le profil métier serveur de l'utilisateur connecté.\n\n**Rôle requis:** `SERVEUR`\n\n### Réponses\n\n**200 OK** — Profil serveur\n```json\n{\n    \"id\": \"990e8400-e29b-41d4-a716-446655440004\",\n    \"experience_annees\": 2,\n    \"sections_assignees\": [\"Terrasse\", \"Salle 1\"],\n    \"tables_assignees\": [1, 2, 3, 4],\n    \"specialites\": [\"Cocktails\", \"Vins\"],\n    \"langues_parlees\": [\"Français\", \"Anglais\"],\n    \"performance_rating\": 4.5,\n    \"commandes_servies\": 1250\n}\n```\n\n**403 Forbidden** — Rôle insuffisant\n```json\n{\"status\": \"ERROR\", \"message\": \"Permission refusée. Rôle SERVEUR requis.\", \"code\": \"PERMISSION_DENIED\"}\n```"
+          },
+          "response": [
+            {
+              "name": "200 OK — Profil serveur",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/user/me/profile/serveur/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "me",
+                    "profile",
+                    "serveur",
+                    ""
+                  ]
+                },
+                "description": "## Mon profil serveur\n\nRécupère le profil métier serveur de l'utilisateur connecté.\n\n**Rôle requis:** `SERVEUR`\n\n### Réponses\n\n**200 OK** — Profil serveur\n```json\n{\n    \"id\": \"990e8400-e29b-41d4-a716-446655440004\",\n    \"experience_annees\": 2,\n    \"sections_assignees\": [\"Terrasse\", \"Salle 1\"],\n    \"tables_assignees\": [1, 2, 3, 4],\n    \"specialites\": [\"Cocktails\", \"Vins\"],\n    \"langues_parlees\": [\"Français\", \"Anglais\"],\n    \"performance_rating\": 4.5,\n    \"commandes_servies\": 1250\n}\n```\n\n**403 Forbidden** — Rôle insuffisant\n```json\n{\"status\": \"ERROR\", \"message\": \"Permission refusée. Rôle SERVEUR requis.\", \"code\": \"PERMISSION_DENIED\"}\n```"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"id\": \"990e8400-e29b-41d4-a716-446655440004\",\n    \"experience_annees\": 2,\n    \"sections_assignees\": [\"Terrasse\", \"Salle 1\"],\n    \"tables_assignees\": [1, 2, 3, 4],\n    \"specialites\": [\"Cocktails\", \"Vins\"],\n    \"langues_parlees\": [\"Français\", \"Anglais\"],\n    \"performance_rating\": 4.5,\n    \"commandes_servies\": 1250\n}"
+            }
+          ]
+        },
+        {
+          "name": "PATCH Mon profil serveur",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"sections_assignees\": [\"Terrasse\", \"Salle 1\", \"Bar\"],\n    \"tables_assignees\": [1, 2, 3, 4, 5],\n    \"langues_parlees\": [\"Français\", \"Anglais\", \"Wolof\"]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/user/me/profile/serveur/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "user",
+                "me",
+                "profile",
+                "serveur",
+                ""
+              ]
+            },
+            "description": "## Modifier mon profil serveur\n\n**Rôle requis:** `SERVEUR`\n\n### Body\n| Champ | Type | Description |\n|-------|------|-------------|\n| sections_assignees | array[string] | Sections de la salle |\n| tables_assignees | array[int] | Numéros de tables assignées |\n| langues_parlees | array[string] | Langues maîtrisées |\n| specialites | array[string] | Spécialités (vin, cocktails, etc.) |\n\n### Réponses\n\n**200 OK** — Profil mis à jour\n```json\n{\"status\": \"SUCCESS\", \"message\": \"Profil serveur mis à jour\"}\n```"
+          },
+          "response": [
+            {
+              "name": "200 OK — Profil serveur mis à jour",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"sections_assignees\": [\"Terrasse\", \"Salle 1\", \"Bar\"],\n    \"tables_assignees\": [1, 2, 3, 4, 5],\n    \"langues_parlees\": [\"Français\", \"Anglais\", \"Wolof\"]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/user/me/profile/serveur/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "me",
+                    "profile",
+                    "serveur",
+                    ""
+                  ]
+                },
+                "description": "## Modifier mon profil serveur\n\n**Rôle requis:** `SERVEUR`\n\n### Body\n| Champ | Type | Description |\n|-------|------|-------------|\n| sections_assignees | array[string] | Sections de la salle |\n| tables_assignees | array[int] | Numéros de tables assignées |\n| langues_parlees | array[string] | Langues maîtrisées |\n| specialites | array[string] | Spécialités (vin, cocktails, etc.) |\n\n### Réponses\n\n**200 OK** — Profil mis à jour\n```json\n{\"status\": \"SUCCESS\", \"message\": \"Profil serveur mis à jour\"}\n```"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Profil serveur mis à jour\"\n}"
+            }
+          ]
+        }
+      ],
+      "description": "Gestion du profil serveur — rôle SERVEUR requis"
+    },
+    {
+      "name": "🚚 Mon Profil Livreur",
+      "item": [
+        {
+          "name": "GET Mon profil livreur",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/user/me/profile/livreur/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "user",
+                "me",
+                "profile",
+                "livreur",
+                ""
+              ]
+            },
+            "description": "## Mon profil livreur\n\nRécupère le profil métier livreur de l'utilisateur connecté.\n\n**Rôle requis:** `LIVREUR`\n\n### Réponses\n\n**200 OK** — Profil livreur\n```json\n{\n    \"id\": \"aa0e8400-e29b-41d4-a716-446655440005\",\n    \"type_vehicule\": \"MOTO\",\n    \"immatriculation\": \"DK-1234-AB\",\n    \"numero_permis\": \"A12345678\",\n    \"date_emission_permis\": \"2020-01-15\",\n    \"date_expiration_permis\": \"2027-12-31\",\n    \"zones_livraison\": [\"Dakar Plateau\", \"Almadies\"],\n    \"disponible\": true,\n    \"livraisons_effectuees\": 342,\n    \"note_moyenne\": 4.7\n}\n```\n\n**403 Forbidden** — Rôle insuffisant\n```json\n{\"status\": \"ERROR\", \"message\": \"Permission refusée. Rôle LIVREUR requis.\", \"code\": \"PERMISSION_DENIED\"}\n```"
+          },
+          "response": [
+            {
+              "name": "200 OK — Profil livreur",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/user/me/profile/livreur/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "me",
+                    "profile",
+                    "livreur",
+                    ""
+                  ]
+                },
+                "description": "## Mon profil livreur\n\nRécupère le profil métier livreur de l'utilisateur connecté.\n\n**Rôle requis:** `LIVREUR`\n\n### Réponses\n\n**200 OK** — Profil livreur\n```json\n{\n    \"id\": \"aa0e8400-e29b-41d4-a716-446655440005\",\n    \"type_vehicule\": \"MOTO\",\n    \"immatriculation\": \"DK-1234-AB\",\n    \"numero_permis\": \"A12345678\",\n    \"date_emission_permis\": \"2020-01-15\",\n    \"date_expiration_permis\": \"2027-12-31\",\n    \"zones_livraison\": [\"Dakar Plateau\", \"Almadies\"],\n    \"disponible\": true,\n    \"livraisons_effectuees\": 342,\n    \"note_moyenne\": 4.7\n}\n```\n\n**403 Forbidden** — Rôle insuffisant\n```json\n{\"status\": \"ERROR\", \"message\": \"Permission refusée. Rôle LIVREUR requis.\", \"code\": \"PERMISSION_DENIED\"}\n```"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"id\": \"aa0e8400-e29b-41d4-a716-446655440005\",\n    \"type_vehicule\": \"MOTO\",\n    \"immatriculation\": \"DK-1234-AB\",\n    \"zones_livraison\": [\"Dakar Plateau\", \"Almadies\"],\n    \"disponible\": true,\n    \"livraisons_effectuees\": 342,\n    \"note_moyenne\": 4.7\n}"
+            }
+          ]
+        },
+        {
+          "name": "PATCH Mon profil livreur",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "type_vehicule",
+                  "value": "MOTO",
+                  "type": "text",
+                  "description": "MOTO, VELO, VOITURE, SCOOTER"
+                },
+                {
+                  "key": "immatriculation",
+                  "value": "DK-1234-AB",
+                  "type": "text"
+                },
+                {
+                  "key": "numero_permis",
+                  "value": "A12345678",
+                  "type": "text"
+                },
+                {
+                  "key": "photo_permis",
+                  "type": "file",
+                  "description": "Photo du permis (JPEG/PNG)",
+                  "value": ""
+                },
+                {
+                  "key": "date_emission_permis",
+                  "value": "2020-01-15",
+                  "type": "text"
+                },
+                {
+                  "key": "date_expiration_permis",
+                  "value": "2027-12-31",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/user/me/profile/livreur/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "user",
+                "me",
+                "profile",
+                "livreur",
+                ""
+              ]
+            },
+            "description": "## Modifier mon profil livreur\n\nMise à jour via `multipart/form-data` (pour inclure la photo du permis).\n\n**Rôle requis:** `LIVREUR`\n\n### Body (form-data)\n| Champ | Type | Description |\n|-------|------|-------------|\n| type_vehicule | string | `MOTO`, `VELO`, `VOITURE`, `SCOOTER` |\n| immatriculation | string | Plaque d'immatriculation |\n| numero_permis | string | Numéro du permis |\n| photo_permis | file | Photo du permis (JPEG/PNG) |\n| date_emission_permis | date | Date d'émission (YYYY-MM-DD) |\n| date_expiration_permis | date | Date d'expiration (YYYY-MM-DD) |\n\n### Réponses\n\n**200 OK** — Profil mis à jour\n```json\n{\"status\": \"SUCCESS\", \"message\": \"Profil livreur mis à jour\"}\n```\n\n**400 Bad Request** — Permis expiré\n```json\n{\"status\": \"ERROR\", \"message\": \"Le permis est expiré\", \"code\": \"EXPIRED_LICENSE\"}\n```"
+          },
+          "response": [
+            {
+              "name": "200 OK — Profil livreur mis à jour",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "type_vehicule",
+                      "value": "MOTO",
+                      "type": "text",
+                      "description": "MOTO, VELO, VOITURE, SCOOTER"
+                    },
+                    {
+                      "key": "immatriculation",
+                      "value": "DK-1234-AB",
+                      "type": "text"
+                    },
+                    {
+                      "key": "numero_permis",
+                      "value": "A12345678",
+                      "type": "text"
+                    },
+                    {
+                      "key": "photo_permis",
+                      "type": "file",
+                      "description": "Photo du permis (JPEG/PNG)",
+                      "value": ""
+                    },
+                    {
+                      "key": "date_emission_permis",
+                      "value": "2020-01-15",
+                      "type": "text"
+                    },
+                    {
+                      "key": "date_expiration_permis",
+                      "value": "2027-12-31",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{base_url}}/user/me/profile/livreur/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "me",
+                    "profile",
+                    "livreur",
+                    ""
+                  ]
+                },
+                "description": "## Modifier mon profil livreur\n\nMise à jour via `multipart/form-data` (pour inclure la photo du permis).\n\n**Rôle requis:** `LIVREUR`\n\n### Body (form-data)\n| Champ | Type | Description |\n|-------|------|-------------|\n| type_vehicule | string | `MOTO`, `VELO`, `VOITURE`, `SCOOTER` |\n| immatriculation | string | Plaque d'immatriculation |\n| numero_permis | string | Numéro du permis |\n| photo_permis | file | Photo du permis (JPEG/PNG) |\n| date_emission_permis | date | Date d'émission (YYYY-MM-DD) |\n| date_expiration_permis | date | Date d'expiration (YYYY-MM-DD) |\n\n### Réponses\n\n**200 OK** — Profil mis à jour\n```json\n{\"status\": \"SUCCESS\", \"message\": \"Profil livreur mis à jour\"}\n```\n\n**400 Bad Request** — Permis expiré\n```json\n{\"status\": \"ERROR\", \"message\": \"Le permis est expiré\", \"code\": \"EXPIRED_LICENSE\"}\n```"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Profil livreur mis à jour\"\n}"
+            }
+          ]
+        }
+      ],
+      "description": "Gestion du profil livreur — rôle LIVREUR requis"
+    },
+    {
+      "name": "📊 Mon Profil Manager",
+      "item": [
+        {
+          "name": "GET Mon profil manager",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/user/me/profile/manager/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "user",
+                "me",
+                "profile",
+                "manager",
+                ""
+              ]
+            },
+            "description": "## Mon profil manager\n\n**Rôle requis:** `MANAGER`\n\n### Réponses\n\n**200 OK** — Profil manager\n```json\n{\n    \"id\": \"bb0e8400-e29b-41d4-a716-446655440006\",\n    \"notes\": \"Manager responsable de la gestion des équipes\",\n    \"responsabilites\": [\"Gestion équipes\", \"Planning\", \"Supervision\"]\n}\n```"
+          },
+          "response": [
+            {
+              "name": "200 OK — Profil manager",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/user/me/profile/manager/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "me",
+                    "profile",
+                    "manager",
+                    ""
+                  ]
+                },
+                "description": "## Mon profil manager\n\n**Rôle requis:** `MANAGER`\n\n### Réponses\n\n**200 OK** — Profil manager\n```json\n{\n    \"id\": \"bb0e8400-e29b-41d4-a716-446655440006\",\n    \"notes\": \"Manager responsable de la gestion des équipes\",\n    \"responsabilites\": [\"Gestion équipes\", \"Planning\", \"Supervision\"]\n}\n```"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"id\": \"bb0e8400-e29b-41d4-a716-446655440006\",\n    \"notes\": \"Manager responsable de la gestion des équipes\",\n    \"responsabilites\": [\"Gestion équipes\", \"Planning\", \"Supervision\"]\n}"
+            }
+          ]
+        },
+        {
+          "name": "PATCH Mon profil manager",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"notes\": \"Manager responsable de la gestion des équipes\",\n    \"responsabilites\": [\"Gestion équipes\", \"Planning\", \"Supervision\"]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/user/me/profile/manager/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "user",
+                "me",
+                "profile",
+                "manager",
+                ""
+              ]
+            },
+            "description": "## Modifier mon profil manager\n\n**Rôle requis:** `MANAGER`\n\n### Body\n| Champ | Type | Description |\n|-------|------|-------------|\n| notes | string | Notes sur le rôle |\n| responsabilites | array[string] | Responsabilités assignées |\n\n### Réponses\n\n**200 OK** — Profil mis à jour\n```json\n{\"status\": \"SUCCESS\", \"message\": \"Profil manager mis à jour\"}\n```"
+          },
+          "response": [
+            {
+              "name": "200 OK — Profil manager mis à jour",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"notes\": \"Manager responsable de la gestion des équipes\",\n    \"responsabilites\": [\"Gestion équipes\", \"Planning\", \"Supervision\"]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/user/me/profile/manager/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "me",
+                    "profile",
+                    "manager",
+                    ""
+                  ]
+                },
+                "description": "## Modifier mon profil manager\n\n**Rôle requis:** `MANAGER`\n\n### Body\n| Champ | Type | Description |\n|-------|------|-------------|\n| notes | string | Notes sur le rôle |\n| responsabilites | array[string] | Responsabilités assignées |\n\n### Réponses\n\n**200 OK** — Profil mis à jour\n```json\n{\"status\": \"SUCCESS\", \"message\": \"Profil manager mis à jour\"}\n```"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Profil manager mis à jour\"\n}"
+            }
+          ]
+        }
+      ],
+      "description": "Gestion du profil manager — rôle MANAGER requis"
+    },
+    {
+      "name": "👑 Gestion Utilisateurs",
+      "item": [
+        {
+          "name": "— CRUD Utilisateurs —",
+          "item": [
+            {
+              "name": "GET Liste utilisateurs",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/user/users/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "users",
+                    ""
+                  ]
+                },
+                "description": "## Liste des utilisateurs\n\nRetourne la liste paginée de tous les utilisateurs.\n\n**Permission requise:** `user.view_all`\n\n**Filtres disponibles (query params):**\n- `?role=SERVEUR` — filtrer par rôle\n- `?status=ACTIVE` — filtrer par statut (ACTIVE, SUSPENDED, DELETED)\n- `?search=john` — recherche par nom/email\n- `?page=1&page_size=20` — pagination\n\n### Réponses\n\n**200 OK** — Liste des utilisateurs\n```json\n{\n    \"count\": 45,\n    \"next\": \"{{base_url}}/user/users/?page=2\",\n    \"previous\": null,\n    \"results\": [\n        {\n            \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n            \"email\": \"john.doe@restaurant.com\",\n            \"first_name\": \"John\",\n            \"last_name\": \"Doe\",\n            \"status_activation\": \"ACTIVE\",\n            \"roles\": [{\"code\": \"SERVEUR\", \"name\": \"Serveur\"}]\n        }\n    ]\n}\n```\n\n**403 Forbidden** — Permission insuffisante\n```json\n{\"status\": \"ERROR\", \"message\": \"Permission refusée.\", \"required\": \"user.view_all\"}\n```"
+              },
+              "response": [
+                {
+                  "name": "200 OK — Liste utilisateurs",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{base_url}}/user/users/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "user",
+                        "users",
+                        ""
+                      ]
+                    },
+                    "description": "## Liste des utilisateurs\n\nRetourne la liste paginée de tous les utilisateurs.\n\n**Permission requise:** `user.view_all`\n\n**Filtres disponibles (query params):**\n- `?role=SERVEUR` — filtrer par rôle\n- `?status=ACTIVE` — filtrer par statut (ACTIVE, SUSPENDED, DELETED)\n- `?search=john` — recherche par nom/email\n- `?page=1&page_size=20` — pagination\n\n### Réponses\n\n**200 OK** — Liste des utilisateurs\n```json\n{\n    \"count\": 45,\n    \"next\": \"{{base_url}}/user/users/?page=2\",\n    \"previous\": null,\n    \"results\": [\n        {\n            \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n            \"email\": \"john.doe@restaurant.com\",\n            \"first_name\": \"John\",\n            \"last_name\": \"Doe\",\n            \"status_activation\": \"ACTIVE\",\n            \"roles\": [{\"code\": \"SERVEUR\", \"name\": \"Serveur\"}]\n        }\n    ]\n}\n```\n\n**403 Forbidden** — Permission insuffisante\n```json\n{\"status\": \"ERROR\", \"message\": \"Permission refusée.\", \"required\": \"user.view_all\"}\n```"
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"count\": 45,\n    \"next\": null,\n    \"previous\": null,\n    \"results\": [\n        {\n            \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n            \"email\": \"john.doe@restaurant.com\",\n            \"first_name\": \"John\",\n            \"last_name\": \"Doe\",\n            \"status_activation\": \"ACTIVE\",\n            \"roles\": [{\"code\": \"SERVEUR\", \"name\": \"Serveur\"}]\n        }\n    ]\n}"
+                },
+                {
+                  "name": "403 Forbidden — Permission insuffisante",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{base_url}}/user/users/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "user",
+                        "users",
+                        ""
+                      ]
+                    },
+                    "description": "## Liste des utilisateurs\n\nRetourne la liste paginée de tous les utilisateurs.\n\n**Permission requise:** `user.view_all`\n\n**Filtres disponibles (query params):**\n- `?role=SERVEUR` — filtrer par rôle\n- `?status=ACTIVE` — filtrer par statut (ACTIVE, SUSPENDED, DELETED)\n- `?search=john` — recherche par nom/email\n- `?page=1&page_size=20` — pagination\n\n### Réponses\n\n**200 OK** — Liste des utilisateurs\n```json\n{\n    \"count\": 45,\n    \"next\": \"{{base_url}}/user/users/?page=2\",\n    \"previous\": null,\n    \"results\": [\n        {\n            \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n            \"email\": \"john.doe@restaurant.com\",\n            \"first_name\": \"John\",\n            \"last_name\": \"Doe\",\n            \"status_activation\": \"ACTIVE\",\n            \"roles\": [{\"code\": \"SERVEUR\", \"name\": \"Serveur\"}]\n        }\n    ]\n}\n```\n\n**403 Forbidden** — Permission insuffisante\n```json\n{\"status\": \"ERROR\", \"message\": \"Permission refusée.\", \"required\": \"user.view_all\"}\n```"
+                  },
+                  "status": "Forbidden",
+                  "code": 403,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": \"ERROR\",\n    \"message\": \"Permission refusée.\",\n    \"required\": \"user.view_all\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "POST Créer utilisateur",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "if (pm.response.code === 201) {",
+                      "    var jsonData = pm.response.json();",
+                      "    if (jsonData.data && jsonData.data.id) {",
+                      "        pm.collectionVariables.set('user_id', jsonData.data.id);",
+                      "        console.log('user_id sauvegardé:', jsonData.data.id);",
+                      "    }",
+                      "}"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"email\": \"nouveau.user@restau.com\",\n    \"phone\": \"+221770001122\",\n    \"first_name\": \"Moussa\",\n    \"last_name\": \"Diop\",\n    \"gender\": \"M\",\n    \"roles\": [\"SERVEUR\"]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/user/users/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "users",
+                    ""
+                  ]
+                },
+                "description": "## Créer un utilisateur\n\nCrée un nouveau compte utilisateur via le **Saga Pattern** (Auth Service + User Service coordonnés).\n\n**Workflow interne:**\n1. User Service appelle Auth Service `POST /auth/admin/create-user/`\n2. Auth Service retourne `auth_user_id` + mot de passe temporaire\n3. User Service crée le profil métier\n4. User Service appelle Auth Service `POST /auth/admin/activate-and-notify/{id}/`\n5. Email de bienvenue envoyé avec le mot de passe temporaire\n\n**Permission requise:** `user.create`\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| email | string | Oui | Email unique |\n| phone | string | Non | Téléphone (permet le login par téléphone) |\n| first_name | string | Oui | Prénom |\n| last_name | string | Oui | Nom de famille |\n| gender | string | Non | `M`, `F` ou `AUTRE` |\n| roles | array[string] | Non | Rôles à assigner (`SERVEUR`, `CUISINIER`, `LIVREUR`, `CAISSIER_POS`, `MANAGER`, `ADMIN`) |\n\n### Réponses\n\n**201 Created** — Utilisateur créé\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Utilisateur créé avec succès. Un email de bienvenue a été envoyé.\",\n    \"data\": {\n        \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n        \"auth_user_id\": \"660e8400-e29b-41d4-a716-446655440001\",\n        \"email\": \"nouveau.user@restau.com\",\n        \"first_name\": \"Moussa\",\n        \"last_name\": \"Diop\",\n        \"status_activation\": \"ACTIVE\",\n        \"roles\": [{\"code\": \"SERVEUR\"}]\n    }\n}\n```\n\n**400 Bad Request** — Email déjà utilisé\n```json\n{\"status\": \"ERROR\", \"message\": \"Un compte avec cet email existe déjà\", \"code\": \"EMAIL_ALREADY_EXISTS\"}\n```\n\n**400 Bad Request** — Rôle invalide\n```json\n{\"status\": \"ERROR\", \"message\": \"Rôle invalide: INVALID_ROLE\", \"code\": \"INVALID_ROLE\"}\n```\n\n**403 Forbidden** — Permission insuffisante\n```json\n{\"status\": \"ERROR\", \"message\": \"Permission refusée.\", \"required\": \"user.create\"}\n```\n\n**500 Internal Server Error** — Saga échoué (rollback automatique)\n```json\n{\"status\": \"ERROR\", \"message\": \"Erreur lors de la création. Rollback effectué.\", \"code\": \"SAGA_FAILED\"}\n```"
+              },
+              "response": [
+                {
+                  "name": "201 Created — Utilisateur créé",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"email\": \"nouveau.user@restau.com\",\n    \"phone\": \"+221770001122\",\n    \"first_name\": \"Moussa\",\n    \"last_name\": \"Diop\",\n    \"gender\": \"M\",\n    \"roles\": [\"SERVEUR\"]\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/user/users/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "user",
+                        "users",
+                        ""
+                      ]
+                    },
+                    "description": "## Créer un utilisateur\n\nCrée un nouveau compte utilisateur via le **Saga Pattern** (Auth Service + User Service coordonnés).\n\n**Workflow interne:**\n1. User Service appelle Auth Service `POST /auth/admin/create-user/`\n2. Auth Service retourne `auth_user_id` + mot de passe temporaire\n3. User Service crée le profil métier\n4. User Service appelle Auth Service `POST /auth/admin/activate-and-notify/{id}/`\n5. Email de bienvenue envoyé avec le mot de passe temporaire\n\n**Permission requise:** `user.create`\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| email | string | Oui | Email unique |\n| phone | string | Non | Téléphone (permet le login par téléphone) |\n| first_name | string | Oui | Prénom |\n| last_name | string | Oui | Nom de famille |\n| gender | string | Non | `M`, `F` ou `AUTRE` |\n| roles | array[string] | Non | Rôles à assigner (`SERVEUR`, `CUISINIER`, `LIVREUR`, `CAISSIER_POS`, `MANAGER`, `ADMIN`) |\n\n### Réponses\n\n**201 Created** — Utilisateur créé\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Utilisateur créé avec succès. Un email de bienvenue a été envoyé.\",\n    \"data\": {\n        \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n        \"auth_user_id\": \"660e8400-e29b-41d4-a716-446655440001\",\n        \"email\": \"nouveau.user@restau.com\",\n        \"first_name\": \"Moussa\",\n        \"last_name\": \"Diop\",\n        \"status_activation\": \"ACTIVE\",\n        \"roles\": [{\"code\": \"SERVEUR\"}]\n    }\n}\n```\n\n**400 Bad Request** — Email déjà utilisé\n```json\n{\"status\": \"ERROR\", \"message\": \"Un compte avec cet email existe déjà\", \"code\": \"EMAIL_ALREADY_EXISTS\"}\n```\n\n**400 Bad Request** — Rôle invalide\n```json\n{\"status\": \"ERROR\", \"message\": \"Rôle invalide: INVALID_ROLE\", \"code\": \"INVALID_ROLE\"}\n```\n\n**403 Forbidden** — Permission insuffisante\n```json\n{\"status\": \"ERROR\", \"message\": \"Permission refusée.\", \"required\": \"user.create\"}\n```\n\n**500 Internal Server Error** — Saga échoué (rollback automatique)\n```json\n{\"status\": \"ERROR\", \"message\": \"Erreur lors de la création. Rollback effectué.\", \"code\": \"SAGA_FAILED\"}\n```"
+                  },
+                  "status": "Created",
+                  "code": 201,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Utilisateur créé avec succès. Un email de bienvenue a été envoyé.\",\n    \"data\": {\n        \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n        \"auth_user_id\": \"660e8400-e29b-41d4-a716-446655440001\",\n        \"email\": \"nouveau.user@restau.com\",\n        \"first_name\": \"Moussa\",\n        \"last_name\": \"Diop\",\n        \"status_activation\": \"ACTIVE\",\n        \"roles\": [{\"code\": \"SERVEUR\"}]\n    }\n}"
+                },
+                {
+                  "name": "400 Bad Request — Email déjà utilisé",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"email\": \"nouveau.user@restau.com\",\n    \"phone\": \"+221770001122\",\n    \"first_name\": \"Moussa\",\n    \"last_name\": \"Diop\",\n    \"gender\": \"M\",\n    \"roles\": [\"SERVEUR\"]\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/user/users/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "user",
+                        "users",
+                        ""
+                      ]
+                    },
+                    "description": "## Créer un utilisateur\n\nCrée un nouveau compte utilisateur via le **Saga Pattern** (Auth Service + User Service coordonnés).\n\n**Workflow interne:**\n1. User Service appelle Auth Service `POST /auth/admin/create-user/`\n2. Auth Service retourne `auth_user_id` + mot de passe temporaire\n3. User Service crée le profil métier\n4. User Service appelle Auth Service `POST /auth/admin/activate-and-notify/{id}/`\n5. Email de bienvenue envoyé avec le mot de passe temporaire\n\n**Permission requise:** `user.create`\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| email | string | Oui | Email unique |\n| phone | string | Non | Téléphone (permet le login par téléphone) |\n| first_name | string | Oui | Prénom |\n| last_name | string | Oui | Nom de famille |\n| gender | string | Non | `M`, `F` ou `AUTRE` |\n| roles | array[string] | Non | Rôles à assigner (`SERVEUR`, `CUISINIER`, `LIVREUR`, `CAISSIER_POS`, `MANAGER`, `ADMIN`) |\n\n### Réponses\n\n**201 Created** — Utilisateur créé\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Utilisateur créé avec succès. Un email de bienvenue a été envoyé.\",\n    \"data\": {\n        \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n        \"auth_user_id\": \"660e8400-e29b-41d4-a716-446655440001\",\n        \"email\": \"nouveau.user@restau.com\",\n        \"first_name\": \"Moussa\",\n        \"last_name\": \"Diop\",\n        \"status_activation\": \"ACTIVE\",\n        \"roles\": [{\"code\": \"SERVEUR\"}]\n    }\n}\n```\n\n**400 Bad Request** — Email déjà utilisé\n```json\n{\"status\": \"ERROR\", \"message\": \"Un compte avec cet email existe déjà\", \"code\": \"EMAIL_ALREADY_EXISTS\"}\n```\n\n**400 Bad Request** — Rôle invalide\n```json\n{\"status\": \"ERROR\", \"message\": \"Rôle invalide: INVALID_ROLE\", \"code\": \"INVALID_ROLE\"}\n```\n\n**403 Forbidden** — Permission insuffisante\n```json\n{\"status\": \"ERROR\", \"message\": \"Permission refusée.\", \"required\": \"user.create\"}\n```\n\n**500 Internal Server Error** — Saga échoué (rollback automatique)\n```json\n{\"status\": \"ERROR\", \"message\": \"Erreur lors de la création. Rollback effectué.\", \"code\": \"SAGA_FAILED\"}\n```"
+                  },
+                  "status": "Bad Request",
+                  "code": 400,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": \"ERROR\",\n    \"message\": \"Un compte avec cet email existe déjà\",\n    \"code\": \"EMAIL_ALREADY_EXISTS\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "GET Détails utilisateur",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/user/users/{{user_id}}/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "users",
+                    "{{user_id}}",
+                    ""
+                  ]
+                },
+                "description": "## Détails d'un utilisateur\n\nRécupère le profil complet d'un utilisateur par son ID User Service.\n\n**Permission requise:** `user.view_all`\n\n### Réponses\n\n**200 OK** — Détails utilisateur\n```json\n{\n    \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"auth_user_id\": \"660e8400-e29b-41d4-a716-446655440001\",\n    \"email\": \"john.doe@restaurant.com\",\n    \"first_name\": \"John\",\n    \"last_name\": \"Doe\",\n    \"status_activation\": \"ACTIVE\",\n    \"roles\": [{\"code\": \"SERVEUR\", \"name\": \"Serveur\", \"level\": 20}],\n    \"permissions\": [\"user.view_own\", \"order.create\"]\n}\n```\n\n**404 Not Found** — Utilisateur non trouvé\n```json\n{\"status\": \"ERROR\", \"message\": \"Utilisateur non trouvé\", \"code\": \"USER_NOT_FOUND\"}\n```"
+              },
+              "response": [
+                {
+                  "name": "200 OK — Détails utilisateur",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{base_url}}/user/users/{{user_id}}/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "user",
+                        "users",
+                        "{{user_id}}",
+                        ""
+                      ]
+                    },
+                    "description": "## Détails d'un utilisateur\n\nRécupère le profil complet d'un utilisateur par son ID User Service.\n\n**Permission requise:** `user.view_all`\n\n### Réponses\n\n**200 OK** — Détails utilisateur\n```json\n{\n    \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"auth_user_id\": \"660e8400-e29b-41d4-a716-446655440001\",\n    \"email\": \"john.doe@restaurant.com\",\n    \"first_name\": \"John\",\n    \"last_name\": \"Doe\",\n    \"status_activation\": \"ACTIVE\",\n    \"roles\": [{\"code\": \"SERVEUR\", \"name\": \"Serveur\", \"level\": 20}],\n    \"permissions\": [\"user.view_own\", \"order.create\"]\n}\n```\n\n**404 Not Found** — Utilisateur non trouvé\n```json\n{\"status\": \"ERROR\", \"message\": \"Utilisateur non trouvé\", \"code\": \"USER_NOT_FOUND\"}\n```"
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"auth_user_id\": \"660e8400-e29b-41d4-a716-446655440001\",\n    \"email\": \"john.doe@restaurant.com\",\n    \"first_name\": \"John\",\n    \"last_name\": \"Doe\",\n    \"status_activation\": \"ACTIVE\",\n    \"roles\": [{\"code\": \"SERVEUR\", \"name\": \"Serveur\", \"level\": 20}]\n}"
+                },
+                {
+                  "name": "404 Not Found",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{base_url}}/user/users/{{user_id}}/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "user",
+                        "users",
+                        "{{user_id}}",
+                        ""
+                      ]
+                    },
+                    "description": "## Détails d'un utilisateur\n\nRécupère le profil complet d'un utilisateur par son ID User Service.\n\n**Permission requise:** `user.view_all`\n\n### Réponses\n\n**200 OK** — Détails utilisateur\n```json\n{\n    \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"auth_user_id\": \"660e8400-e29b-41d4-a716-446655440001\",\n    \"email\": \"john.doe@restaurant.com\",\n    \"first_name\": \"John\",\n    \"last_name\": \"Doe\",\n    \"status_activation\": \"ACTIVE\",\n    \"roles\": [{\"code\": \"SERVEUR\", \"name\": \"Serveur\", \"level\": 20}],\n    \"permissions\": [\"user.view_own\", \"order.create\"]\n}\n```\n\n**404 Not Found** — Utilisateur non trouvé\n```json\n{\"status\": \"ERROR\", \"message\": \"Utilisateur non trouvé\", \"code\": \"USER_NOT_FOUND\"}\n```"
+                  },
+                  "status": "Not Found",
+                  "code": 404,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": \"ERROR\",\n    \"message\": \"Utilisateur non trouvé\",\n    \"code\": \"USER_NOT_FOUND\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "PATCH Modifier utilisateur",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"first_name\": \"Moussa\",\n    \"last_name\": \"Diop\",\n    \"telephone\": \"+221770001133\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/user/users/{{user_id}}/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "users",
+                    "{{user_id}}",
+                    ""
+                  ]
+                },
+                "description": "## Modifier un utilisateur\n\nModifie les informations personnelles d'un utilisateur.\n\n**Permission requise:** `user.update`\n\n### Body\n| Champ | Type | Description |\n|-------|------|-------------|\n| first_name | string | Prénom |\n| last_name | string | Nom de famille |\n| telephone | string | Téléphone |\n| birth_date | date | Date de naissance |\n| gender | string | `M`, `F`, `AUTRE` |\n| adresse | string | Adresse |\n\n### Réponses\n\n**200 OK** — Utilisateur modifié\n```json\n{\"status\": \"SUCCESS\", \"message\": \"Utilisateur mis à jour\"}\n```\n\n**404 Not Found** — Utilisateur non trouvé\n```json\n{\"status\": \"ERROR\", \"message\": \"Utilisateur non trouvé\", \"code\": \"USER_NOT_FOUND\"}\n```"
+              },
+              "response": [
+                {
+                  "name": "200 OK — Utilisateur modifié",
+                  "originalRequest": {
+                    "method": "PATCH",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"first_name\": \"Moussa\",\n    \"last_name\": \"Diop\",\n    \"telephone\": \"+221770001133\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/user/users/{{user_id}}/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "user",
+                        "users",
+                        "{{user_id}}",
+                        ""
+                      ]
+                    },
+                    "description": "## Modifier un utilisateur\n\nModifie les informations personnelles d'un utilisateur.\n\n**Permission requise:** `user.update`\n\n### Body\n| Champ | Type | Description |\n|-------|------|-------------|\n| first_name | string | Prénom |\n| last_name | string | Nom de famille |\n| telephone | string | Téléphone |\n| birth_date | date | Date de naissance |\n| gender | string | `M`, `F`, `AUTRE` |\n| adresse | string | Adresse |\n\n### Réponses\n\n**200 OK** — Utilisateur modifié\n```json\n{\"status\": \"SUCCESS\", \"message\": \"Utilisateur mis à jour\"}\n```\n\n**404 Not Found** — Utilisateur non trouvé\n```json\n{\"status\": \"ERROR\", \"message\": \"Utilisateur non trouvé\", \"code\": \"USER_NOT_FOUND\"}\n```"
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Utilisateur mis à jour\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "PATCH Modifier email utilisateur",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"new_email\": \"new.email@restau.com\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/user/users/{{user_id}}/update-email/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "users",
+                    "{{user_id}}",
+                    "update-email",
+                    ""
+                  ]
+                },
+                "description": "## Modifier l'email d'un utilisateur\n\nModifie l'email et synchronise automatiquement avec Auth Service.\n\n**Permission requise:** `user.update`\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| new_email | string | Oui | Nouvel email unique |\n\n### Réponses\n\n**200 OK** — Email mis à jour\n```json\n{\"status\": \"SUCCESS\", \"message\": \"Email mis à jour et synchronisé\"}\n```\n\n**400 Bad Request** — Email déjà utilisé\n```json\n{\"status\": \"ERROR\", \"message\": \"Cet email est déjà utilisé\", \"code\": \"EMAIL_ALREADY_EXISTS\"}\n```"
+              },
+              "response": [
+                {
+                  "name": "200 OK — Email mis à jour",
+                  "originalRequest": {
+                    "method": "PATCH",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"new_email\": \"new.email@restau.com\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/user/users/{{user_id}}/update-email/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "user",
+                        "users",
+                        "{{user_id}}",
+                        "update-email",
+                        ""
+                      ]
+                    },
+                    "description": "## Modifier l'email d'un utilisateur\n\nModifie l'email et synchronise automatiquement avec Auth Service.\n\n**Permission requise:** `user.update`\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| new_email | string | Oui | Nouvel email unique |\n\n### Réponses\n\n**200 OK** — Email mis à jour\n```json\n{\"status\": \"SUCCESS\", \"message\": \"Email mis à jour et synchronisé\"}\n```\n\n**400 Bad Request** — Email déjà utilisé\n```json\n{\"status\": \"ERROR\", \"message\": \"Cet email est déjà utilisé\", \"code\": \"EMAIL_ALREADY_EXISTS\"}\n```"
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Email mis à jour et synchronisé\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "PATCH Modifier téléphone utilisateur",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"new_phone\": \"+221770009988\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/user/users/{{user_id}}/update-phone/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "users",
+                    "{{user_id}}",
+                    "update-phone",
+                    ""
+                  ]
+                },
+                "description": "## Modifier le téléphone d'un utilisateur\n\nModifie le téléphone et synchronise automatiquement avec Auth Service.\n\n**Permission requise:** `user.update`\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| new_phone | string | Oui | Nouveau numéro (format international) |\n\n### Réponses\n\n**200 OK** — Téléphone mis à jour\n```json\n{\"status\": \"SUCCESS\", \"message\": \"Téléphone mis à jour et synchronisé\"}\n```\n\n**400 Bad Request** — Numéro déjà utilisé\n```json\n{\"status\": \"ERROR\", \"message\": \"Ce numéro est déjà utilisé\", \"code\": \"PHONE_ALREADY_EXISTS\"}\n```"
+              },
+              "response": [
+                {
+                  "name": "200 OK — Téléphone mis à jour",
+                  "originalRequest": {
+                    "method": "PATCH",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"new_phone\": \"+221770009988\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/user/users/{{user_id}}/update-phone/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "user",
+                        "users",
+                        "{{user_id}}",
+                        "update-phone",
+                        ""
+                      ]
+                    },
+                    "description": "## Modifier le téléphone d'un utilisateur\n\nModifie le téléphone et synchronise automatiquement avec Auth Service.\n\n**Permission requise:** `user.update`\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| new_phone | string | Oui | Nouveau numéro (format international) |\n\n### Réponses\n\n**200 OK** — Téléphone mis à jour\n```json\n{\"status\": \"SUCCESS\", \"message\": \"Téléphone mis à jour et synchronisé\"}\n```\n\n**400 Bad Request** — Numéro déjà utilisé\n```json\n{\"status\": \"ERROR\", \"message\": \"Ce numéro est déjà utilisé\", \"code\": \"PHONE_ALREADY_EXISTS\"}\n```"
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Téléphone mis à jour et synchronisé\"\n}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "— Gestion Statuts —",
+          "item": [
+            {
+              "name": "POST Suspendre utilisateur",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/user/users/{{user_id}}/suspend/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "users",
+                    "{{user_id}}",
+                    "suspend",
+                    ""
+                  ]
+                },
+                "description": "## Suspendre un utilisateur\n\nSuspend le compte d'un utilisateur et révoque toutes ses sessions actives (synchronisé avec Auth Service).\n\n**Permission requise:** `user.deactivate`\n\n### Réponses\n\n**200 OK** — Utilisateur suspendu\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Utilisateur suspendu\",\n    \"data\": {\"status_activation\": \"SUSPENDED\", \"sessions_revoked\": 2}\n}\n```\n\n**400 Bad Request** — Déjà suspendu\n```json\n{\"status\": \"ERROR\", \"message\": \"Cet utilisateur est déjà suspendu\", \"code\": \"ALREADY_SUSPENDED\"}\n```\n\n**403 Forbidden** — Permission insuffisante\n```json\n{\"status\": \"ERROR\", \"message\": \"Permission refusée.\", \"required\": \"user.deactivate\"}\n```\n\n**404 Not Found** — Utilisateur non trouvé\n```json\n{\"status\": \"ERROR\", \"message\": \"Utilisateur non trouvé\", \"code\": \"USER_NOT_FOUND\"}\n```"
+              },
+              "response": [
+                {
+                  "name": "200 OK — Utilisateur suspendu",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [],
+                    "url": {
+                      "raw": "{{base_url}}/user/users/{{user_id}}/suspend/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "user",
+                        "users",
+                        "{{user_id}}",
+                        "suspend",
+                        ""
+                      ]
+                    },
+                    "description": "## Suspendre un utilisateur\n\nSuspend le compte d'un utilisateur et révoque toutes ses sessions actives (synchronisé avec Auth Service).\n\n**Permission requise:** `user.deactivate`\n\n### Réponses\n\n**200 OK** — Utilisateur suspendu\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Utilisateur suspendu\",\n    \"data\": {\"status_activation\": \"SUSPENDED\", \"sessions_revoked\": 2}\n}\n```\n\n**400 Bad Request** — Déjà suspendu\n```json\n{\"status\": \"ERROR\", \"message\": \"Cet utilisateur est déjà suspendu\", \"code\": \"ALREADY_SUSPENDED\"}\n```\n\n**403 Forbidden** — Permission insuffisante\n```json\n{\"status\": \"ERROR\", \"message\": \"Permission refusée.\", \"required\": \"user.deactivate\"}\n```\n\n**404 Not Found** — Utilisateur non trouvé\n```json\n{\"status\": \"ERROR\", \"message\": \"Utilisateur non trouvé\", \"code\": \"USER_NOT_FOUND\"}\n```"
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Utilisateur suspendu\",\n    \"data\": {\"status_activation\": \"SUSPENDED\", \"sessions_revoked\": 2}\n}"
+                }
+              ]
+            },
+            {
+              "name": "POST Activer utilisateur",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/user/users/{{user_id}}/activate/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "users",
+                    "{{user_id}}",
+                    "activate",
+                    ""
+                  ]
+                },
+                "description": "## Activer un utilisateur\n\nRéactive un compte suspendu (synchronisé avec Auth Service).\n\n**Permission requise:** `user.activate`\n\n### Réponses\n\n**200 OK** — Utilisateur activé\n```json\n{\"status\": \"SUCCESS\", \"message\": \"Utilisateur activé\", \"data\": {\"status_activation\": \"ACTIVE\"}}\n```\n\n**400 Bad Request** — Déjà actif\n```json\n{\"status\": \"ERROR\", \"message\": \"Cet utilisateur est déjà actif\", \"code\": \"ALREADY_ACTIVE\"}\n```"
+              },
+              "response": [
+                {
+                  "name": "200 OK — Utilisateur activé",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [],
+                    "url": {
+                      "raw": "{{base_url}}/user/users/{{user_id}}/activate/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "user",
+                        "users",
+                        "{{user_id}}",
+                        "activate",
+                        ""
+                      ]
+                    },
+                    "description": "## Activer un utilisateur\n\nRéactive un compte suspendu (synchronisé avec Auth Service).\n\n**Permission requise:** `user.activate`\n\n### Réponses\n\n**200 OK** — Utilisateur activé\n```json\n{\"status\": \"SUCCESS\", \"message\": \"Utilisateur activé\", \"data\": {\"status_activation\": \"ACTIVE\"}}\n```\n\n**400 Bad Request** — Déjà actif\n```json\n{\"status\": \"ERROR\", \"message\": \"Cet utilisateur est déjà actif\", \"code\": \"ALREADY_ACTIVE\"}\n```"
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Utilisateur activé\",\n    \"data\": {\"status_activation\": \"ACTIVE\"}\n}"
+                }
+              ]
+            },
+            {
+              "name": "DELETE Soft delete utilisateur",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/user/users/{{user_id}}/delete/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "users",
+                    "{{user_id}}",
+                    "delete",
+                    ""
+                  ]
+                },
+                "description": "## Soft delete d'un utilisateur\n\nMarque l'utilisateur comme supprimé (restaurable). Synchronise avec Auth Service.\n\n**Permission requise:** `user.delete`\n\n### Réponses\n\n**200 OK** — Utilisateur supprimé (soft)\n```json\n{\"status\": \"SUCCESS\", \"message\": \"Utilisateur supprimé (restaurable)\"}\n```\n\n**404 Not Found** — Utilisateur non trouvé\n```json\n{\"status\": \"ERROR\", \"message\": \"Utilisateur non trouvé\", \"code\": \"USER_NOT_FOUND\"}\n```"
+              },
+              "response": [
+                {
+                  "name": "200 OK — Soft deleted",
+                  "originalRequest": {
+                    "method": "DELETE",
+                    "header": [],
+                    "url": {
+                      "raw": "{{base_url}}/user/users/{{user_id}}/delete/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "user",
+                        "users",
+                        "{{user_id}}",
+                        "delete",
+                        ""
+                      ]
+                    },
+                    "description": "## Soft delete d'un utilisateur\n\nMarque l'utilisateur comme supprimé (restaurable). Synchronise avec Auth Service.\n\n**Permission requise:** `user.delete`\n\n### Réponses\n\n**200 OK** — Utilisateur supprimé (soft)\n```json\n{\"status\": \"SUCCESS\", \"message\": \"Utilisateur supprimé (restaurable)\"}\n```\n\n**404 Not Found** — Utilisateur non trouvé\n```json\n{\"status\": \"ERROR\", \"message\": \"Utilisateur non trouvé\", \"code\": \"USER_NOT_FOUND\"}\n```"
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Utilisateur supprimé (restaurable)\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "POST Restaurer utilisateur",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/user/users/{{user_id}}/restore/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "users",
+                    "{{user_id}}",
+                    "restore",
+                    ""
+                  ]
+                },
+                "description": "## Restaurer un utilisateur\n\nRestaure un compte précédemment soft-deleted. Synchronise avec Auth Service.\n\n**Permission requise:** `user.restore`\n\n### Réponses\n\n**200 OK** — Utilisateur restauré\n```json\n{\"status\": \"SUCCESS\", \"message\": \"Utilisateur restauré avec succès\"}\n```\n\n**400 Bad Request** — Compte non supprimé\n```json\n{\"status\": \"ERROR\", \"message\": \"Ce compte n'est pas supprimé\", \"code\": \"NOT_DELETED\"}\n```"
+              },
+              "response": [
+                {
+                  "name": "200 OK — Utilisateur restauré",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [],
+                    "url": {
+                      "raw": "{{base_url}}/user/users/{{user_id}}/restore/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "user",
+                        "users",
+                        "{{user_id}}",
+                        "restore",
+                        ""
+                      ]
+                    },
+                    "description": "## Restaurer un utilisateur\n\nRestaure un compte précédemment soft-deleted. Synchronise avec Auth Service.\n\n**Permission requise:** `user.restore`\n\n### Réponses\n\n**200 OK** — Utilisateur restauré\n```json\n{\"status\": \"SUCCESS\", \"message\": \"Utilisateur restauré avec succès\"}\n```\n\n**400 Bad Request** — Compte non supprimé\n```json\n{\"status\": \"ERROR\", \"message\": \"Ce compte n'est pas supprimé\", \"code\": \"NOT_DELETED\"}\n```"
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Utilisateur restauré avec succès\"\n}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "— Gestion Profils (Admin) —",
+          "item": [
+            {
+              "name": "PATCH Profil cuisinier d'un utilisateur",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"specialites\": [\"Grillades\", \"Pâtisserie\", \"Cuisine africaine\"],\n    \"poste_principal\": \"Chef de partie\",\n    \"allergenes_maitrises\": [\"Gluten\", \"Lactose\", \"Arachides\"]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/user/users/{{user_id}}/profile/cuisinier/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "users",
+                    "{{user_id}}",
+                    "profile",
+                    "cuisinier",
+                    ""
+                  ]
+                },
+                "description": "**Permission requise:** `user.update`\n\n### Réponses\n\n**200 OK** — Profil cuisinier mis à jour\n```json\n{\"status\": \"SUCCESS\", \"message\": \"Profil cuisinier mis à jour\"}\n```"
+              },
+              "response": [
+                {
+                  "name": "200 OK",
+                  "originalRequest": {
+                    "method": "PATCH",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"specialites\": [\"Grillades\", \"Pâtisserie\", \"Cuisine africaine\"],\n    \"poste_principal\": \"Chef de partie\",\n    \"allergenes_maitrises\": [\"Gluten\", \"Lactose\", \"Arachides\"]\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/user/users/{{user_id}}/profile/cuisinier/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "user",
+                        "users",
+                        "{{user_id}}",
+                        "profile",
+                        "cuisinier",
+                        ""
+                      ]
+                    },
+                    "description": "**Permission requise:** `user.update`\n\n### Réponses\n\n**200 OK** — Profil cuisinier mis à jour\n```json\n{\"status\": \"SUCCESS\", \"message\": \"Profil cuisinier mis à jour\"}\n```"
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\"status\": \"SUCCESS\", \"message\": \"Profil cuisinier mis à jour\"}"
+                }
+              ]
+            },
+            {
+              "name": "PATCH Profil serveur d'un utilisateur",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"sections_assignees\": [\"Terrasse\", \"Salle 1\"],\n    \"tables_assignees\": [1, 2, 3],\n    \"langues_parlees\": [\"Français\", \"Wolof\"]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/user/users/{{user_id}}/profile/serveur/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "users",
+                    "{{user_id}}",
+                    "profile",
+                    "serveur",
+                    ""
+                  ]
+                },
+                "description": "**Permission requise:** `user.update`\n\n### Réponses\n\n**200 OK** — Profil serveur mis à jour\n```json\n{\"status\": \"SUCCESS\", \"message\": \"Profil serveur mis à jour\"}\n```"
+              },
+              "response": [
+                {
+                  "name": "200 OK",
+                  "originalRequest": {
+                    "method": "PATCH",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"sections_assignees\": [\"Terrasse\", \"Salle 1\"],\n    \"tables_assignees\": [1, 2, 3],\n    \"langues_parlees\": [\"Français\", \"Wolof\"]\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/user/users/{{user_id}}/profile/serveur/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "user",
+                        "users",
+                        "{{user_id}}",
+                        "profile",
+                        "serveur",
+                        ""
+                      ]
+                    },
+                    "description": "**Permission requise:** `user.update`\n\n### Réponses\n\n**200 OK** — Profil serveur mis à jour\n```json\n{\"status\": \"SUCCESS\", \"message\": \"Profil serveur mis à jour\"}\n```"
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\"status\": \"SUCCESS\", \"message\": \"Profil serveur mis à jour\"}"
+                }
+              ]
+            },
+            {
+              "name": "PATCH Profil caissier d'un utilisateur",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"pos_terminal_id\": \"TERM-001\",\n    \"assigned_cash_register\": \"CASH_REGISTER_01\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/user/users/{{user_id}}/profile/caissier/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "users",
+                    "{{user_id}}",
+                    "profile",
+                    "caissier",
+                    ""
+                  ]
+                },
+                "description": "**Permission requise:** `user.update`\n\n### Réponses\n\n**200 OK** — Profil caissier mis à jour\n```json\n{\"status\": \"SUCCESS\", \"message\": \"Profil caissier mis à jour\"}\n```"
+              },
+              "response": [
+                {
+                  "name": "200 OK",
+                  "originalRequest": {
+                    "method": "PATCH",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"pos_terminal_id\": \"TERM-001\",\n    \"assigned_cash_register\": \"CASH_REGISTER_01\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/user/users/{{user_id}}/profile/caissier/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "user",
+                        "users",
+                        "{{user_id}}",
+                        "profile",
+                        "caissier",
+                        ""
+                      ]
+                    },
+                    "description": "**Permission requise:** `user.update`\n\n### Réponses\n\n**200 OK** — Profil caissier mis à jour\n```json\n{\"status\": \"SUCCESS\", \"message\": \"Profil caissier mis à jour\"}\n```"
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\"status\": \"SUCCESS\", \"message\": \"Profil caissier mis à jour\"}"
+                }
+              ]
+            },
+            {
+              "name": "PATCH Profil livreur d'un utilisateur",
+              "request": {
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "type_vehicule",
+                      "value": "MOTO",
+                      "type": "text"
+                    },
+                    {
+                      "key": "immatriculation",
+                      "value": "DK-1234-AB",
+                      "type": "text"
+                    },
+                    {
+                      "key": "zones_livraison",
+                      "value": "[\"Dakar Plateau\", \"Almadies\"]",
+                      "type": "text"
+                    },
+                    {
+                      "key": "disponible",
+                      "value": "true",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{base_url}}/user/users/{{user_id}}/profile/livreur/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "users",
+                    "{{user_id}}",
+                    "profile",
+                    "livreur",
+                    ""
+                  ]
+                },
+                "description": "**Permission requise:** `user.update`\n\n### Réponses\n\n**200 OK** — Profil livreur mis à jour\n```json\n{\"status\": \"SUCCESS\", \"message\": \"Profil livreur mis à jour\"}\n```"
+              },
+              "response": [
+                {
+                  "name": "200 OK",
+                  "originalRequest": {
+                    "method": "PATCH",
+                    "header": [],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "type_vehicule",
+                          "value": "MOTO",
+                          "type": "text"
+                        },
+                        {
+                          "key": "immatriculation",
+                          "value": "DK-1234-AB",
+                          "type": "text"
+                        },
+                        {
+                          "key": "zones_livraison",
+                          "value": "[\"Dakar Plateau\", \"Almadies\"]",
+                          "type": "text"
+                        },
+                        {
+                          "key": "disponible",
+                          "value": "true",
+                          "type": "text"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/user/users/{{user_id}}/profile/livreur/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "user",
+                        "users",
+                        "{{user_id}}",
+                        "profile",
+                        "livreur",
+                        ""
+                      ]
+                    },
+                    "description": "**Permission requise:** `user.update`\n\n### Réponses\n\n**200 OK** — Profil livreur mis à jour\n```json\n{\"status\": \"SUCCESS\", \"message\": \"Profil livreur mis à jour\"}\n```"
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\"status\": \"SUCCESS\", \"message\": \"Profil livreur mis à jour\"}"
+                }
+              ]
+            },
+            {
+              "name": "POST Activer profil livreur",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/user/users/{{user_id}}/profile/livreur/activate/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "users",
+                    "{{user_id}}",
+                    "profile",
+                    "livreur",
+                    "activate",
+                    ""
+                  ]
+                },
+                "description": "## Activer le profil livreur\n\nActive le profil livreur d'un utilisateur (après validation des documents).\n\n**Permission requise:** `user.update`\n\n### Réponses\n\n**200 OK** — Profil livreur activé\n```json\n{\"status\": \"SUCCESS\", \"message\": \"Profil livreur activé\"}\n```\n\n**400 Bad Request** — Documents manquants\n```json\n{\"status\": \"ERROR\", \"message\": \"Le permis de conduire est requis pour activer le profil livreur\", \"code\": \"MISSING_LICENSE\"}\n```"
+              },
+              "response": [
+                {
+                  "name": "200 OK — Profil livreur activé",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [],
+                    "url": {
+                      "raw": "{{base_url}}/user/users/{{user_id}}/profile/livreur/activate/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "user",
+                        "users",
+                        "{{user_id}}",
+                        "profile",
+                        "livreur",
+                        "activate",
+                        ""
+                      ]
+                    },
+                    "description": "## Activer le profil livreur\n\nActive le profil livreur d'un utilisateur (après validation des documents).\n\n**Permission requise:** `user.update`\n\n### Réponses\n\n**200 OK** — Profil livreur activé\n```json\n{\"status\": \"SUCCESS\", \"message\": \"Profil livreur activé\"}\n```\n\n**400 Bad Request** — Documents manquants\n```json\n{\"status\": \"ERROR\", \"message\": \"Le permis de conduire est requis pour activer le profil livreur\", \"code\": \"MISSING_LICENSE\"}\n```"
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Profil livreur activé\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "PATCH Profil manager d'un utilisateur",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"notes\": \"Manager zone Nord\",\n    \"responsabilites\": [\"Gestion équipes\", \"Planning\"]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/user/users/{{user_id}}/profile/manager/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "users",
+                    "{{user_id}}",
+                    "profile",
+                    "manager",
+                    ""
+                  ]
+                },
+                "description": "**Permission requise:** `user.update` (ADMIN uniquement)\n\n### Réponses\n\n**200 OK** — Profil manager mis à jour\n```json\n{\"status\": \"SUCCESS\", \"message\": \"Profil manager mis à jour\"}\n```"
+              },
+              "response": [
+                {
+                  "name": "200 OK",
+                  "originalRequest": {
+                    "method": "PATCH",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"notes\": \"Manager zone Nord\",\n    \"responsabilites\": [\"Gestion équipes\", \"Planning\"]\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/user/users/{{user_id}}/profile/manager/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "user",
+                        "users",
+                        "{{user_id}}",
+                        "profile",
+                        "manager",
+                        ""
+                      ]
+                    },
+                    "description": "**Permission requise:** `user.update` (ADMIN uniquement)\n\n### Réponses\n\n**200 OK** — Profil manager mis à jour\n```json\n{\"status\": \"SUCCESS\", \"message\": \"Profil manager mis à jour\"}\n```"
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\"status\": \"SUCCESS\", \"message\": \"Profil manager mis à jour\"}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "— Rôles & Permissions —",
+          "item": [
+            {
+              "name": "POST Assigner rôles",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"roles\": [\"SERVEUR\", \"LIVREUR\"]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/user/users/{{user_id}}/roles/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "users",
+                    "{{user_id}}",
+                    "roles",
+                    ""
+                  ]
+                },
+                "description": "## Assigner des rôles\n\nAssigne un ou plusieurs rôles à un utilisateur.\n\n**Permission requise:** `role.assign`\n\n**Rôles disponibles:** `SUPER_ADMIN`, `ADMIN`, `MANAGER`, `CAISSIER_POS`, `SERVEUR`, `CUISINIER`, `LIVREUR`\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| roles | array[string] | Oui | Liste des codes de rôles à assigner |\n\n### Réponses\n\n**200 OK** — Rôles assignés\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Rôles assignés avec succès\",\n    \"data\": {\n        \"assigned\": [\"SERVEUR\", \"LIVREUR\"],\n        \"already_had\": []\n    }\n}\n```\n\n**400 Bad Request** — Rôle invalide\n```json\n{\"status\": \"ERROR\", \"message\": \"Rôle invalide: UNKNOWN\", \"code\": \"INVALID_ROLE\"}\n```\n\n**403 Forbidden** — Permission insuffisante\n```json\n{\"status\": \"ERROR\", \"message\": \"Permission refusée.\", \"required\": \"role.assign\"}\n```"
+              },
+              "response": [
+                {
+                  "name": "200 OK — Rôles assignés",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"roles\": [\"SERVEUR\", \"LIVREUR\"]\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/user/users/{{user_id}}/roles/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "user",
+                        "users",
+                        "{{user_id}}",
+                        "roles",
+                        ""
+                      ]
+                    },
+                    "description": "## Assigner des rôles\n\nAssigne un ou plusieurs rôles à un utilisateur.\n\n**Permission requise:** `role.assign`\n\n**Rôles disponibles:** `SUPER_ADMIN`, `ADMIN`, `MANAGER`, `CAISSIER_POS`, `SERVEUR`, `CUISINIER`, `LIVREUR`\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| roles | array[string] | Oui | Liste des codes de rôles à assigner |\n\n### Réponses\n\n**200 OK** — Rôles assignés\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Rôles assignés avec succès\",\n    \"data\": {\n        \"assigned\": [\"SERVEUR\", \"LIVREUR\"],\n        \"already_had\": []\n    }\n}\n```\n\n**400 Bad Request** — Rôle invalide\n```json\n{\"status\": \"ERROR\", \"message\": \"Rôle invalide: UNKNOWN\", \"code\": \"INVALID_ROLE\"}\n```\n\n**403 Forbidden** — Permission insuffisante\n```json\n{\"status\": \"ERROR\", \"message\": \"Permission refusée.\", \"required\": \"role.assign\"}\n```"
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Rôles assignés avec succès\",\n    \"data\": {\"assigned\": [\"SERVEUR\", \"LIVREUR\"], \"already_had\": []}\n}"
+                }
+              ]
+            },
+            {
+              "name": "DELETE Révoquer rôles",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"roles\": [\"SERVEUR\"]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/user/users/{{user_id}}/roles/revoke/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "users",
+                    "{{user_id}}",
+                    "roles",
+                    "revoke",
+                    ""
+                  ]
+                },
+                "description": "## Révoquer des rôles\n\nRévoque un ou plusieurs rôles d'un utilisateur.\n\n**Permission requise:** `role.revoke`\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| roles | array[string] | Oui | Codes des rôles à révoquer |\n\n### Réponses\n\n**200 OK** — Rôles révoqués\n```json\n{\"status\": \"SUCCESS\", \"message\": \"Rôles révoqués\", \"data\": {\"revoked\": [\"SERVEUR\"]}}\n```\n\n**400 Bad Request** — Rôle non assigné\n```json\n{\"status\": \"ERROR\", \"message\": \"L'utilisateur n'a pas le rôle SERVEUR\", \"code\": \"ROLE_NOT_ASSIGNED\"}\n```"
+              },
+              "response": [
+                {
+                  "name": "200 OK — Rôles révoqués",
+                  "originalRequest": {
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"roles\": [\"SERVEUR\"]\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/user/users/{{user_id}}/roles/revoke/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "user",
+                        "users",
+                        "{{user_id}}",
+                        "roles",
+                        "revoke",
+                        ""
+                      ]
+                    },
+                    "description": "## Révoquer des rôles\n\nRévoque un ou plusieurs rôles d'un utilisateur.\n\n**Permission requise:** `role.revoke`\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| roles | array[string] | Oui | Codes des rôles à révoquer |\n\n### Réponses\n\n**200 OK** — Rôles révoqués\n```json\n{\"status\": \"SUCCESS\", \"message\": \"Rôles révoqués\", \"data\": {\"revoked\": [\"SERVEUR\"]}}\n```\n\n**400 Bad Request** — Rôle non assigné\n```json\n{\"status\": \"ERROR\", \"message\": \"L'utilisateur n'a pas le rôle SERVEUR\", \"code\": \"ROLE_NOT_ASSIGNED\"}\n```"
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Rôles révoqués\",\n    \"data\": {\"revoked\": [\"SERVEUR\"]}\n}"
+                }
+              ]
+            },
+            {
+              "name": "POST Accorder permissions individuelles",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"permissions\": [\"user.view_all\", \"user.create\"]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/user/users/{{user_id}}/permissions/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "users",
+                    "{{user_id}}",
+                    "permissions",
+                    ""
+                  ]
+                },
+                "description": "## Accorder des permissions individuelles\n\nAccorde des permissions custom à un utilisateur (en dehors de ses rôles).\n\n**Permission requise:** `permission.grant`\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| permissions | array[string] | Oui | Codes de permissions à accorder |\n\n### Réponses\n\n**200 OK** — Permissions accordées\n```json\n{\"status\": \"SUCCESS\", \"message\": \"Permissions accordées\", \"data\": {\"granted\": [\"user.view_all\", \"user.create\"]}}\n```\n\n**400 Bad Request** — Permission invalide\n```json\n{\"status\": \"ERROR\", \"message\": \"Permission invalide: unknown.perm\", \"code\": \"INVALID_PERMISSION\"}\n```"
+              },
+              "response": [
+                {
+                  "name": "200 OK — Permissions accordées",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"permissions\": [\"user.view_all\", \"user.create\"]\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/user/users/{{user_id}}/permissions/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "user",
+                        "users",
+                        "{{user_id}}",
+                        "permissions",
+                        ""
+                      ]
+                    },
+                    "description": "## Accorder des permissions individuelles\n\nAccorde des permissions custom à un utilisateur (en dehors de ses rôles).\n\n**Permission requise:** `permission.grant`\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| permissions | array[string] | Oui | Codes de permissions à accorder |\n\n### Réponses\n\n**200 OK** — Permissions accordées\n```json\n{\"status\": \"SUCCESS\", \"message\": \"Permissions accordées\", \"data\": {\"granted\": [\"user.view_all\", \"user.create\"]}}\n```\n\n**400 Bad Request** — Permission invalide\n```json\n{\"status\": \"ERROR\", \"message\": \"Permission invalide: unknown.perm\", \"code\": \"INVALID_PERMISSION\"}\n```"
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Permissions accordées\",\n    \"data\": {\"granted\": [\"user.view_all\", \"user.create\"]}\n}"
+                }
+              ]
+            },
+            {
+              "name": "DELETE Révoquer permissions individuelles",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"permissions\": [\"user.view_all\"]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/user/users/{{user_id}}/permissions/revoke/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "users",
+                    "{{user_id}}",
+                    "permissions",
+                    "revoke",
+                    ""
+                  ]
+                },
+                "description": "## Révoquer des permissions individuelles\n\nRévoque des permissions custom accordées individuellement.\n\n**Permission requise:** `permission.revoke`\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| permissions | array[string] | Oui | Codes de permissions à révoquer |\n\n### Réponses\n\n**200 OK** — Permissions révoquées\n```json\n{\"status\": \"SUCCESS\", \"message\": \"Permissions révoquées\", \"data\": {\"revoked\": [\"user.view_all\"]}}\n```"
+              },
+              "response": [
+                {
+                  "name": "200 OK — Permissions révoquées",
+                  "originalRequest": {
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"permissions\": [\"user.view_all\"]\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/user/users/{{user_id}}/permissions/revoke/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "user",
+                        "users",
+                        "{{user_id}}",
+                        "permissions",
+                        "revoke",
+                        ""
+                      ]
+                    },
+                    "description": "## Révoquer des permissions individuelles\n\nRévoque des permissions custom accordées individuellement.\n\n**Permission requise:** `permission.revoke`\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| permissions | array[string] | Oui | Codes de permissions à révoquer |\n\n### Réponses\n\n**200 OK** — Permissions révoquées\n```json\n{\"status\": \"SUCCESS\", \"message\": \"Permissions révoquées\", \"data\": {\"revoked\": [\"user.view_all\"]}}\n```"
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Permissions révoquées\",\n    \"data\": {\"revoked\": [\"user.view_all\"]}\n}"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "description": "Administration et gestion des utilisateurs — permission `user.*` requise (ADMIN/MANAGER)"
+    },
+    {
+      "name": "📊 Statistiques",
+      "item": [
+        {
+          "name": "GET Stats globales utilisateurs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/user/stats/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "user",
+                "stats",
+                ""
+              ]
+            },
+            "description": "## Statistiques globales utilisateurs\n\nRetourne les statistiques globales sur les utilisateurs du restaurant.\n\n**Permission requise:** `user.view_stats`\n\n### Réponses\n\n**200 OK** — Statistiques\n```json\n{\n    \"total_users\": 45,\n    \"active_users\": 40,\n    \"suspended_users\": 3,\n    \"deleted_users\": 2,\n    \"by_role\": {\n        \"SERVEUR\": 15,\n        \"CUISINIER\": 8,\n        \"LIVREUR\": 6,\n        \"CAISSIER_POS\": 4,\n        \"MANAGER\": 3,\n        \"ADMIN\": 2,\n        \"SUPER_ADMIN\": 1\n    },\n    \"new_this_month\": 5\n}\n```\n\n**403 Forbidden** — Permission insuffisante\n```json\n{\"status\": \"ERROR\", \"message\": \"Permission refusée.\", \"required\": \"user.view_stats\"}\n```"
+          },
+          "response": [
+            {
+              "name": "200 OK — Statistiques",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/user/stats/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "stats",
+                    ""
+                  ]
+                },
+                "description": "## Statistiques globales utilisateurs\n\nRetourne les statistiques globales sur les utilisateurs du restaurant.\n\n**Permission requise:** `user.view_stats`\n\n### Réponses\n\n**200 OK** — Statistiques\n```json\n{\n    \"total_users\": 45,\n    \"active_users\": 40,\n    \"suspended_users\": 3,\n    \"deleted_users\": 2,\n    \"by_role\": {\n        \"SERVEUR\": 15,\n        \"CUISINIER\": 8,\n        \"LIVREUR\": 6,\n        \"CAISSIER_POS\": 4,\n        \"MANAGER\": 3,\n        \"ADMIN\": 2,\n        \"SUPER_ADMIN\": 1\n    },\n    \"new_this_month\": 5\n}\n```\n\n**403 Forbidden** — Permission insuffisante\n```json\n{\"status\": \"ERROR\", \"message\": \"Permission refusée.\", \"required\": \"user.view_stats\"}\n```"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"total_users\": 45,\n    \"active_users\": 40,\n    \"suspended_users\": 3,\n    \"deleted_users\": 2,\n    \"by_role\": {\n        \"SERVEUR\": 15,\n        \"CUISINIER\": 8,\n        \"LIVREUR\": 6,\n        \"CAISSIER_POS\": 4,\n        \"MANAGER\": 3,\n        \"ADMIN\": 2,\n        \"SUPER_ADMIN\": 1\n    },\n    \"new_this_month\": 5\n}"
+            }
+          ]
+        }
+      ],
+      "description": "Statistiques globales des utilisateurs — permission `user.view_stats` requise"
+    },
+    {
+      "name": "🔐 Admin - RBAC",
+      "item": [
+        {
+          "name": "GET Liste des permissions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/user/permissions/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "user",
+                "permissions",
+                ""
+              ]
+            },
+            "description": "## Liste de toutes les permissions\n\nRetourne toutes les permissions disponibles dans le système RBAC.\n\n**Permission requise:** `permission.list`\n\n### Réponses\n\n**200 OK** — Liste des permissions\n```json\n{\n    \"permissions\": [\n        {\"code\": \"user.view_own\", \"name\": \"Voir son propre profil\", \"category\": \"user\"},\n        {\"code\": \"user.view_all\", \"name\": \"Voir tous les utilisateurs\", \"category\": \"user\"},\n        {\"code\": \"user.create\", \"name\": \"Créer un utilisateur\", \"category\": \"user\"},\n        {\"code\": \"user.update\", \"name\": \"Modifier un utilisateur\", \"category\": \"user\"},\n        {\"code\": \"user.delete\", \"name\": \"Supprimer un utilisateur\", \"category\": \"user\"},\n        {\"code\": \"order.create\", \"name\": \"Créer une commande\", \"category\": \"order\"},\n        {\"code\": \"role.assign\", \"name\": \"Assigner un rôle\", \"category\": \"role\"}\n    ]\n}\n```"
+          },
+          "response": [
+            {
+              "name": "200 OK — Permissions disponibles",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/user/permissions/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "permissions",
+                    ""
+                  ]
+                },
+                "description": "## Liste de toutes les permissions\n\nRetourne toutes les permissions disponibles dans le système RBAC.\n\n**Permission requise:** `permission.list`\n\n### Réponses\n\n**200 OK** — Liste des permissions\n```json\n{\n    \"permissions\": [\n        {\"code\": \"user.view_own\", \"name\": \"Voir son propre profil\", \"category\": \"user\"},\n        {\"code\": \"user.view_all\", \"name\": \"Voir tous les utilisateurs\", \"category\": \"user\"},\n        {\"code\": \"user.create\", \"name\": \"Créer un utilisateur\", \"category\": \"user\"},\n        {\"code\": \"user.update\", \"name\": \"Modifier un utilisateur\", \"category\": \"user\"},\n        {\"code\": \"user.delete\", \"name\": \"Supprimer un utilisateur\", \"category\": \"user\"},\n        {\"code\": \"order.create\", \"name\": \"Créer une commande\", \"category\": \"order\"},\n        {\"code\": \"role.assign\", \"name\": \"Assigner un rôle\", \"category\": \"role\"}\n    ]\n}\n```"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"permissions\": [\n        {\"code\": \"user.view_own\", \"name\": \"Voir son propre profil\", \"category\": \"user\"},\n        {\"code\": \"user.view_all\", \"name\": \"Voir tous les utilisateurs\", \"category\": \"user\"},\n        {\"code\": \"user.create\", \"name\": \"Créer un utilisateur\", \"category\": \"user\"},\n        {\"code\": \"order.create\", \"name\": \"Créer une commande\", \"category\": \"order\"}\n    ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "GET Liste des rôles assignables",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/user/roles/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "user",
+                "roles",
+                ""
+              ]
+            },
+            "description": "## Liste des rôles assignables\n\nRetourne tous les rôles disponibles dans le système.\n\n**Permission requise:** `role.list`\n\n### Réponses\n\n**200 OK** — Liste des rôles\n```json\n{\n    \"roles\": [\n        {\"code\": \"SUPER_ADMIN\", \"name\": \"Super Administrateur\", \"level\": 100},\n        {\"code\": \"ADMIN\", \"name\": \"Administrateur\", \"level\": 90},\n        {\"code\": \"MANAGER\", \"name\": \"Manager\", \"level\": 70},\n        {\"code\": \"CAISSIER_POS\", \"name\": \"Caissier POS\", \"level\": 50},\n        {\"code\": \"SERVEUR\", \"name\": \"Serveur\", \"level\": 20},\n        {\"code\": \"CUISINIER\", \"name\": \"Cuisinier\", \"level\": 20},\n        {\"code\": \"LIVREUR\", \"name\": \"Livreur\", \"level\": 20}\n    ]\n}\n```"
+          },
+          "response": [
+            {
+              "name": "200 OK — Rôles disponibles",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/user/roles/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "roles",
+                    ""
+                  ]
+                },
+                "description": "## Liste des rôles assignables\n\nRetourne tous les rôles disponibles dans le système.\n\n**Permission requise:** `role.list`\n\n### Réponses\n\n**200 OK** — Liste des rôles\n```json\n{\n    \"roles\": [\n        {\"code\": \"SUPER_ADMIN\", \"name\": \"Super Administrateur\", \"level\": 100},\n        {\"code\": \"ADMIN\", \"name\": \"Administrateur\", \"level\": 90},\n        {\"code\": \"MANAGER\", \"name\": \"Manager\", \"level\": 70},\n        {\"code\": \"CAISSIER_POS\", \"name\": \"Caissier POS\", \"level\": 50},\n        {\"code\": \"SERVEUR\", \"name\": \"Serveur\", \"level\": 20},\n        {\"code\": \"CUISINIER\", \"name\": \"Cuisinier\", \"level\": 20},\n        {\"code\": \"LIVREUR\", \"name\": \"Livreur\", \"level\": 20}\n    ]\n}\n```"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"roles\": [\n        {\"code\": \"SUPER_ADMIN\", \"name\": \"Super Administrateur\", \"level\": 100},\n        {\"code\": \"ADMIN\", \"name\": \"Administrateur\", \"level\": 90},\n        {\"code\": \"MANAGER\", \"name\": \"Manager\", \"level\": 70},\n        {\"code\": \"CAISSIER_POS\", \"name\": \"Caissier POS\", \"level\": 50},\n        {\"code\": \"SERVEUR\", \"name\": \"Serveur\", \"level\": 20},\n        {\"code\": \"CUISINIER\", \"name\": \"Cuisinier\", \"level\": 20},\n        {\"code\": \"LIVREUR\", \"name\": \"Livreur\", \"level\": 20}\n    ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "GET Catégories de permissions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/user/permissions/categories/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "user",
+                "permissions",
+                "categories",
+                ""
+              ]
+            },
+            "description": "## Catégories de permissions\n\nRetourne les permissions groupées par catégorie (utile pour affichage dans le frontend admin).\n\n**Permission requise:** `permission.list`\n\n### Réponses\n\n**200 OK** — Permissions par catégorie\n```json\n{\n    \"categories\": [\n        {\n            \"category\": \"user\",\n            \"label\": \"Gestion Utilisateurs\",\n            \"permissions\": [\n                {\"code\": \"user.view_own\", \"name\": \"Voir son propre profil\"},\n                {\"code\": \"user.view_all\", \"name\": \"Voir tous les utilisateurs\"},\n                {\"code\": \"user.create\", \"name\": \"Créer un utilisateur\"}\n            ]\n        },\n        {\n            \"category\": \"order\",\n            \"label\": \"Commandes\",\n            \"permissions\": [\n                {\"code\": \"order.create\", \"name\": \"Créer une commande\"},\n                {\"code\": \"order.update\", \"name\": \"Modifier une commande\"}\n            ]\n        }\n    ]\n}\n```"
+          },
+          "response": [
+            {
+              "name": "200 OK — Permissions par catégorie",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/user/permissions/categories/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "permissions",
+                    "categories",
+                    ""
+                  ]
+                },
+                "description": "## Catégories de permissions\n\nRetourne les permissions groupées par catégorie (utile pour affichage dans le frontend admin).\n\n**Permission requise:** `permission.list`\n\n### Réponses\n\n**200 OK** — Permissions par catégorie\n```json\n{\n    \"categories\": [\n        {\n            \"category\": \"user\",\n            \"label\": \"Gestion Utilisateurs\",\n            \"permissions\": [\n                {\"code\": \"user.view_own\", \"name\": \"Voir son propre profil\"},\n                {\"code\": \"user.view_all\", \"name\": \"Voir tous les utilisateurs\"},\n                {\"code\": \"user.create\", \"name\": \"Créer un utilisateur\"}\n            ]\n        },\n        {\n            \"category\": \"order\",\n            \"label\": \"Commandes\",\n            \"permissions\": [\n                {\"code\": \"order.create\", \"name\": \"Créer une commande\"},\n                {\"code\": \"order.update\", \"name\": \"Modifier une commande\"}\n            ]\n        }\n    ]\n}\n```"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"categories\": [\n        {\n            \"category\": \"user\",\n            \"label\": \"Gestion Utilisateurs\",\n            \"permissions\": [\n                {\"code\": \"user.view_own\", \"name\": \"Voir son propre profil\"},\n                {\"code\": \"user.view_all\", \"name\": \"Voir tous les utilisateurs\"}\n            ]\n        }\n    ]\n}"
+            }
+          ]
+        }
+      ],
+      "description": "Ressources RBAC — lister les rôles et permissions disponibles (ADMIN uniquement)"
+    },
+    {
+      "name": "🔧 Interne ⚠️",
+      "item": [
+        {
+          "name": "POST Profil pour login",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"auth_user_id\": \"{{auth_user_id}}\",\n    \"context\": \"ADMIN\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/user/user/profile-for-login/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "user",
+                "user",
+                "profile-for-login",
+                ""
+              ]
+            },
+            "description": "## ⚠️ INTERNE — Profil pour enrichissement du JWT\n\nAppelé par Auth Service au moment du login pour récupérer le profil métier et enrichir le JWT avec les rôles et permissions.\n\n**Flux:** Auth Service valide les credentials → appelle cet endpoint → reçoit rôles/permissions → génère le JWT enrichi\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| auth_user_id | string (UUID) | Oui | UUID Auth de l'utilisateur |\n| context | string | Non | Contexte de connexion (filtre les rôles) |\n\n### Réponses\n\n**200 OK** — Profil enrichi\n```json\n{\n    \"user_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"auth_user_id\": \"660e8400-e29b-41d4-a716-446655440001\",\n    \"first_name\": \"John\",\n    \"last_name\": \"Doe\",\n    \"roles\": [\"SERVEUR\"],\n    \"permissions\": [\"user.view_own\", \"order.create\", \"table.manage\"],\n    \"status_activation\": \"ACTIVE\"\n}\n```\n\n**404 Not Found** — Profil non trouvé\n```json\n{\"status\": \"ERROR\", \"message\": \"Profil utilisateur non trouvé\", \"code\": \"USER_NOT_FOUND\"}\n```"
+          },
+          "response": [
+            {
+              "name": "200 OK — Profil pour login",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"auth_user_id\": \"{{auth_user_id}}\",\n    \"context\": \"ADMIN\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/user/user/profile-for-login/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "user",
+                    "profile-for-login",
+                    ""
+                  ]
+                },
+                "description": "## ⚠️ INTERNE — Profil pour enrichissement du JWT\n\nAppelé par Auth Service au moment du login pour récupérer le profil métier et enrichir le JWT avec les rôles et permissions.\n\n**Flux:** Auth Service valide les credentials → appelle cet endpoint → reçoit rôles/permissions → génère le JWT enrichi\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| auth_user_id | string (UUID) | Oui | UUID Auth de l'utilisateur |\n| context | string | Non | Contexte de connexion (filtre les rôles) |\n\n### Réponses\n\n**200 OK** — Profil enrichi\n```json\n{\n    \"user_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"auth_user_id\": \"660e8400-e29b-41d4-a716-446655440001\",\n    \"first_name\": \"John\",\n    \"last_name\": \"Doe\",\n    \"roles\": [\"SERVEUR\"],\n    \"permissions\": [\"user.view_own\", \"order.create\", \"table.manage\"],\n    \"status_activation\": \"ACTIVE\"\n}\n```\n\n**404 Not Found** — Profil non trouvé\n```json\n{\"status\": \"ERROR\", \"message\": \"Profil utilisateur non trouvé\", \"code\": \"USER_NOT_FOUND\"}\n```"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"user_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"auth_user_id\": \"660e8400-e29b-41d4-a716-446655440001\",\n    \"first_name\": \"John\",\n    \"last_name\": \"Doe\",\n    \"roles\": [\"SERVEUR\"],\n    \"permissions\": [\"user.view_own\", \"order.create\", \"table.manage\"],\n    \"status_activation\": \"ACTIVE\"\n}"
+            },
+            {
+              "name": "404 Not Found — Profil non trouvé",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"auth_user_id\": \"{{auth_user_id}}\",\n    \"context\": \"ADMIN\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/user/user/profile-for-login/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "user",
+                    "profile-for-login",
+                    ""
+                  ]
+                },
+                "description": "## ⚠️ INTERNE — Profil pour enrichissement du JWT\n\nAppelé par Auth Service au moment du login pour récupérer le profil métier et enrichir le JWT avec les rôles et permissions.\n\n**Flux:** Auth Service valide les credentials → appelle cet endpoint → reçoit rôles/permissions → génère le JWT enrichi\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| auth_user_id | string (UUID) | Oui | UUID Auth de l'utilisateur |\n| context | string | Non | Contexte de connexion (filtre les rôles) |\n\n### Réponses\n\n**200 OK** — Profil enrichi\n```json\n{\n    \"user_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"auth_user_id\": \"660e8400-e29b-41d4-a716-446655440001\",\n    \"first_name\": \"John\",\n    \"last_name\": \"Doe\",\n    \"roles\": [\"SERVEUR\"],\n    \"permissions\": [\"user.view_own\", \"order.create\", \"table.manage\"],\n    \"status_activation\": \"ACTIVE\"\n}\n```\n\n**404 Not Found** — Profil non trouvé\n```json\n{\"status\": \"ERROR\", \"message\": \"Profil utilisateur non trouvé\", \"code\": \"USER_NOT_FOUND\"}\n```"
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"ERROR\",\n    \"message\": \"Profil utilisateur non trouvé\",\n    \"code\": \"USER_NOT_FOUND\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "GET Permissions par user-service ID",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/user/internal/user/{{user_id}}/permissions/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "user",
+                "internal",
+                "user",
+                "{{user_id}}",
+                "permissions",
+                ""
+              ]
+            },
+            "description": "## ⚠️ INTERNE — Permissions par ID User Service\n\nRécupère les permissions d'un utilisateur par son `user_id` (UUID User Service). Utilisé par les microservices pour vérification RBAC.\n\n**URL param:** `user_id` — UUID du profil User Service\n\n### Réponses\n\n**200 OK** — Permissions\n```json\n{\n    \"user_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"permissions\": [\n        \"user.view_own\",\n        \"order.create\",\n        \"table.manage\"\n    ],\n    \"roles\": [\"SERVEUR\"]\n}\n```\n\n**404 Not Found** — Utilisateur non trouvé\n```json\n{\"status\": \"ERROR\", \"message\": \"Utilisateur non trouvé\", \"code\": \"USER_NOT_FOUND\"}\n```"
+          },
+          "response": [
+            {
+              "name": "200 OK — Permissions",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/user/internal/user/{{user_id}}/permissions/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "internal",
+                    "user",
+                    "{{user_id}}",
+                    "permissions",
+                    ""
+                  ]
+                },
+                "description": "## ⚠️ INTERNE — Permissions par ID User Service\n\nRécupère les permissions d'un utilisateur par son `user_id` (UUID User Service). Utilisé par les microservices pour vérification RBAC.\n\n**URL param:** `user_id` — UUID du profil User Service\n\n### Réponses\n\n**200 OK** — Permissions\n```json\n{\n    \"user_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"permissions\": [\n        \"user.view_own\",\n        \"order.create\",\n        \"table.manage\"\n    ],\n    \"roles\": [\"SERVEUR\"]\n}\n```\n\n**404 Not Found** — Utilisateur non trouvé\n```json\n{\"status\": \"ERROR\", \"message\": \"Utilisateur non trouvé\", \"code\": \"USER_NOT_FOUND\"}\n```"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"user_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"permissions\": [\"user.view_own\", \"order.create\", \"table.manage\"],\n    \"roles\": [\"SERVEUR\"]\n}"
+            }
+          ]
+        },
+        {
+          "name": "GET Permissions par auth-service ID",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/user/internal/user/by-auth-id/{{auth_user_id}}/permissions/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "user",
+                "internal",
+                "user",
+                "by-auth-id",
+                "{{auth_user_id}}",
+                "permissions",
+                ""
+              ]
+            },
+            "description": "## ⚠️ INTERNE — Permissions par auth_user_id (UUID du JWT)\n\nRécupère les permissions d'un utilisateur par son `auth_user_id` (UUID du JWT). C'est l'endpoint le plus utilisé par les microservices car l'`auth_user_id` est directement disponible dans le JWT.\n\n**URL param:** `auth_user_id` — UUID Auth Service de l'utilisateur\n\n### Réponses\n\n**200 OK** — Permissions\n```json\n{\n    \"auth_user_id\": \"660e8400-e29b-41d4-a716-446655440001\",\n    \"user_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"permissions\": [\n        \"user.view_own\",\n        \"order.create\",\n        \"table.manage\",\n        \"payment.process\"\n    ],\n    \"roles\": [\"SERVEUR\"],\n    \"status_activation\": \"ACTIVE\"\n}\n```\n\n**404 Not Found** — Utilisateur non trouvé\n```json\n{\"status\": \"ERROR\", \"message\": \"Utilisateur non trouvé pour auth_user_id donné\", \"code\": \"USER_NOT_FOUND\"}\n```"
+          },
+          "response": [
+            {
+              "name": "200 OK — Permissions via JWT ID",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/user/internal/user/by-auth-id/{{auth_user_id}}/permissions/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "internal",
+                    "user",
+                    "by-auth-id",
+                    "{{auth_user_id}}",
+                    "permissions",
+                    ""
+                  ]
+                },
+                "description": "## ⚠️ INTERNE — Permissions par auth_user_id (UUID du JWT)\n\nRécupère les permissions d'un utilisateur par son `auth_user_id` (UUID du JWT). C'est l'endpoint le plus utilisé par les microservices car l'`auth_user_id` est directement disponible dans le JWT.\n\n**URL param:** `auth_user_id` — UUID Auth Service de l'utilisateur\n\n### Réponses\n\n**200 OK** — Permissions\n```json\n{\n    \"auth_user_id\": \"660e8400-e29b-41d4-a716-446655440001\",\n    \"user_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"permissions\": [\n        \"user.view_own\",\n        \"order.create\",\n        \"table.manage\",\n        \"payment.process\"\n    ],\n    \"roles\": [\"SERVEUR\"],\n    \"status_activation\": \"ACTIVE\"\n}\n```\n\n**404 Not Found** — Utilisateur non trouvé\n```json\n{\"status\": \"ERROR\", \"message\": \"Utilisateur non trouvé pour auth_user_id donné\", \"code\": \"USER_NOT_FOUND\"}\n```"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"auth_user_id\": \"660e8400-e29b-41d4-a716-446655440001\",\n    \"user_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"permissions\": [\"user.view_own\", \"order.create\", \"table.manage\"],\n    \"roles\": [\"SERVEUR\"],\n    \"status_activation\": \"ACTIVE\"\n}"
+            },
+            {
+              "name": "404 Not Found — Utilisateur non trouvé",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/user/internal/user/by-auth-id/{{auth_user_id}}/permissions/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "internal",
+                    "user",
+                    "by-auth-id",
+                    "{{auth_user_id}}",
+                    "permissions",
+                    ""
+                  ]
+                },
+                "description": "## ⚠️ INTERNE — Permissions par auth_user_id (UUID du JWT)\n\nRécupère les permissions d'un utilisateur par son `auth_user_id` (UUID du JWT). C'est l'endpoint le plus utilisé par les microservices car l'`auth_user_id` est directement disponible dans le JWT.\n\n**URL param:** `auth_user_id` — UUID Auth Service de l'utilisateur\n\n### Réponses\n\n**200 OK** — Permissions\n```json\n{\n    \"auth_user_id\": \"660e8400-e29b-41d4-a716-446655440001\",\n    \"user_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"permissions\": [\n        \"user.view_own\",\n        \"order.create\",\n        \"table.manage\",\n        \"payment.process\"\n    ],\n    \"roles\": [\"SERVEUR\"],\n    \"status_activation\": \"ACTIVE\"\n}\n```\n\n**404 Not Found** — Utilisateur non trouvé\n```json\n{\"status\": \"ERROR\", \"message\": \"Utilisateur non trouvé pour auth_user_id donné\", \"code\": \"USER_NOT_FOUND\"}\n```"
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"ERROR\",\n    \"message\": \"Utilisateur non trouvé pour auth_user_id donné\",\n    \"code\": \"USER_NOT_FOUND\"\n}"
+            }
+          ]
+        }
+      ],
+      "description": "⚠️ **ENDPOINTS INTERNES** — Non accessibles depuis le frontend en production.\n\nCes endpoints sont utilisés par d'autres microservices via le réseau Docker interne :\n\n| Endpoint | Appelé par | Usage |\n|----------|-----------|-------|\n| `profile-for-login` | Auth Service | Enrichir le JWT au login |\n| `internal/user/{id}/permissions/` | Tous services | Vérification RBAC |\n| `internal/user/by-auth-id/{id}/permissions/` | Tous services | Vérification RBAC via JWT |\n\n⚠️ **Avertissement:** Ces endpoints ne doivent jamais être exposés publiquement."
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{access_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://api.hello-restauration.test-vps-online.xyz/api/v1",
+      "type": "string",
+      "description": "URL de base partagée entre tous les services (inclut /api/v1)"
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refresh_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "auth_user_id",
+      "value": "",
+      "type": "string",
+      "description": "UUID Auth Service de l'utilisateur (depuis JWT)"
+    },
+    {
+      "key": "user_id",
+      "value": "",
+      "type": "string",
+      "description": "UUID User Service de l'utilisateur (depuis la réponse GET /users/)"
+    }
+  ]
+}

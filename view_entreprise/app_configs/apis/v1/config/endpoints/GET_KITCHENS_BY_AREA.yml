@@ -1,0 +1,35 @@
+# ------------------------------------------------------------------
+# GET_KITCHENS_BY_AREA - Cuisines groupées par zone
+# ------------------------------------------------------------------
+$path: /config/kitchens/by-area/
+$method: GET
+$description: "Récupérer les cuisines groupées par zone KITCHEN active"
+$auth: true
+$skip: false
+$params:
+  $query: {}
+$response:
+  $default:
+    $schema:
+      status: { $type: string }
+      message: { $type: string }
+      data:
+        $type: object
+        $schema:
+          zones:
+            $type: array
+            $items:
+              $type: object
+              $schema:
+                id: { $type: string }
+                name: { $type: string }
+                kitchens:
+                  $type: array
+                  $items:
+                    $type: object
+                    $schema:
+                      id: { $type: string }
+                      name: { $type: string }
+                      slug: { $type: string }
+                      is_active: { $type: boolean }
+                total_kitchens: { $type: number }

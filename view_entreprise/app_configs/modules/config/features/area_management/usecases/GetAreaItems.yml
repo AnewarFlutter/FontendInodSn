@@ -1,0 +1,36 @@
+# --------------------------------------------------------------
+# GetAreaItems - GET
+# --------------------------------------------------------------
+$name: getAreaItems
+$description: "Récupère les items associés à une zone"
+$skip: false
+$async: true
+
+$params:
+  - $name: areaId
+    $type: string
+    $optional: false
+  - $name: is_active
+    $type: boolean
+    $optional: true
+
+$returnDescription: "Les items de la zone"
+$returnType:
+  $type: object
+  $nullable: true
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.GET_AREA_ITEMS
+  $mapping:
+    $path:
+      area_id: areaId
+    $query:
+      is_active: is_active
+  $responseMapping:
+    $returnValue: ""

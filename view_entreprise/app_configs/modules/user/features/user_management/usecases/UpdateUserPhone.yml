@@ -1,0 +1,34 @@
+# --------------------------------------------------------------
+# updateUserPhone - PATCH
+# --------------------------------------------------------------
+$name: updateUserPhone
+$description: "Modifie le téléphone d'un utilisateur (synchronise avec Auth Service). Permission: user.update"
+$skip: true
+$async: true
+
+$params:
+  - $name: user_id
+    $type: string
+    $optional: false
+  - $name: new_phone
+    $type: string
+    $optional: false
+
+$returnDescription: "Confirmation de la modification du téléphone"
+$returnType:
+  $type: string
+  $nullable: true
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: USER.UPDATE_USER_PHONE
+  $mapping:
+    $path:
+      user_id: user_id
+    $body:
+      new_phone: new_phone
+  $responseMapping:
+    $returnValue: message

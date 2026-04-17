@@ -1,0 +1,41 @@
+# --------------------------------------------------------------
+# GetDynamicConfigByKey - GET
+# --------------------------------------------------------------
+$name: getDynamicConfigByKey
+$description: "Récupère une configuration dynamique par sa clé"
+$skip: false
+$async: true
+
+$params:
+  - $name: configKey
+    $type: string
+    $optional: false
+
+$returnDescription: "La configuration dynamique correspondant à la clé"
+$returnType:
+  $type: DynamicConfigBasic
+  $nullable: true
+  $related:
+    - $name: DynamicConfigBasic
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.GET_DYNAMIC_CONFIG_BY_KEY
+  $mapping:
+    $path:
+      config_key: configKey
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: DynamicConfigBasic
+    $from: "--module config --kind custom --step module"
+    $step: module

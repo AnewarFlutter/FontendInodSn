@@ -1,0 +1,41 @@
+# --------------------------------------------------------------
+# GetOptionDetail - GET
+# --------------------------------------------------------------
+$name: getOptionDetail
+$description: "Récupère le détail d'une option par son identifiant"
+$skip: false
+$async: true
+
+$params:
+  - $name: optionId
+    $type: string
+    $optional: false
+
+$returnDescription: "Le détail de l'option"
+$returnType:
+  $type: OptionBasic
+  $nullable: true
+  $related:
+    - $name: OptionBasic
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.GET_OPTION_DETAIL
+  $mapping:
+    $path:
+      option_id: optionId
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: OptionBasic
+    $from: "--module config --kind custom --step module"
+    $step: module

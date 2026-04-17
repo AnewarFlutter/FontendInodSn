@@ -1,0 +1,62 @@
+# --------------------------------------------------------------
+# UpdateSetMenu - PUT
+# --------------------------------------------------------------
+$name: updateSetMenu
+$description: "Met à jour complètement un menu composé"
+$skip: false
+$async: true
+
+$params:
+  - $name: setMenuId
+    $type: string
+    $optional: false
+  - $name: name
+    $type: string
+    $optional: false
+  - $name: price
+    $type: number
+    $optional: false
+  - $name: is_active
+    $type: boolean
+    $optional: false
+  - $name: description
+    $type: string
+    $optional: true
+  - $name: display_order
+    $type: number
+    $optional: true
+
+$returnDescription: "Le menu composé mis à jour"
+$returnType:
+  $type: SetMenuBasic
+  $nullable: true
+  $related:
+    - $name: SetMenuBasic
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.UPDATE_SET_MENU
+  $mapping:
+    $path:
+      set_menu_id: setMenuId
+    $body:
+      name: name
+      description: description
+      price: price
+      display_order: display_order
+      is_active: is_active
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: SetMenuBasic
+    $from: "--module config --kind custom --step module"
+    $step: module

@@ -1,0 +1,20 @@
+# ------------------------------------------------------------------
+# GET_ITEMS_STATS - Statistiques des items
+# ------------------------------------------------------------------
+$path: /config/items/stats/
+$method: GET
+$description: "Récupérer les statistiques des items"
+$auth: true
+$skip: false
+$params:
+  $query: {}
+$response:
+  $default:
+    $schema:
+      total: { $type: number }
+      active: { $type: number }
+      inactive: { $type: number }
+  $byStatus:
+    "401":
+      $schema:
+        detail: { $type: string }

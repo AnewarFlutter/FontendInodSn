@@ -1,0 +1,20 @@
+# ------------------------------------------------------------------
+# DEACTIVATE_AREA - Désactiver une zone
+# ------------------------------------------------------------------
+$path: /config/areas/{area_id}/deactivate/
+$method: POST
+$description: "Désactiver une zone"
+$auth: true
+$skip: false
+$params:
+  $path:
+    area_id: { $type: number, $optional: false }
+  $body: {}
+$response:
+  $default:
+    $schema:
+      message: { $type: string }
+  $byStatus:
+    "404":
+      $schema:
+        detail: { $type: string }

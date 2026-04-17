@@ -1,0 +1,20 @@
+# ------------------------------------------------------------------
+# DELETE_ITEM_TYPE - Supprimer un type d'item
+# ------------------------------------------------------------------
+$path: /config/item-types/{item_type_id}/
+$method: DELETE
+$description: "Supprimer un type d'item"
+$auth: true
+$skip: false
+$params:
+  $path:
+    item_type_id: { $type: number, $optional: false }
+$response:
+  $default:
+    $description: "204 No Content"
+    $schema:
+      message: { $type: string }
+  $byStatus:
+    "404":
+      $schema:
+        detail: { $type: string }

@@ -1,0 +1,35 @@
+# ACTIVATE_USER_LIVREUR_PROFILE
+$path: /user/users/{user_id}/profile/livreur/activate/
+$method: POST
+$description: "Activer le profil livreur — tous les champs sont obligatoires. Permission: user.update"
+$auth: true
+$skip: true
+$params:
+  $path:
+    user_id: { $type: string, $optional: false }
+  $body:
+    type_vehicule: { $type: string, $optional: false, $description: "MOTO, VELO, VOITURE, SCOOTER" }
+    numero_permis: { $type: string, $optional: false }
+    photo_permis: { $type: string, $optional: false }
+    date_emission_permis: { $type: string, $optional: false, $description: "YYYY-MM-DD" }
+    date_expiration_permis: { $type: string, $optional: false, $description: "YYYY-MM-DD" }
+    immatriculation: { $type: string, $optional: false }
+$response:
+  $default:
+    $schema:
+      message: { $type: string }
+      data: { $type: object }
+  $byStatus:
+    "400":
+      $description: "Champs obligatoires manquants"
+      $schema:
+        error: { $type: string }
+        code: { $type: string, $description: "ex: MISSING_REQUIRED_FIELDS" }
+        details:
+          $type: object
+          $schema:
+            missing_fields: { $type: array, $items: { $type: string } }
+    "404":
+      $schema:
+        error: { $type: string }
+        code: { $type: string }

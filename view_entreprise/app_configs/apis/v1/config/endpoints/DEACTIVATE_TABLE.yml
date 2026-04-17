@@ -1,0 +1,20 @@
+# ------------------------------------------------------------------
+# DEACTIVATE_TABLE - Désactiver une table
+# ------------------------------------------------------------------
+$path: /config/tables/{table_id}/deactivate/
+$method: POST
+$description: "Désactiver une table"
+$auth: true
+$skip: false
+$params:
+  $path:
+    table_id: { $type: number, $optional: false }
+  $body: {}
+$response:
+  $default:
+    $schema:
+      message: { $type: string }
+  $byStatus:
+    "404":
+      $schema:
+        detail: { $type: string }

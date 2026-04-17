@@ -1,0 +1,27 @@
+# ------------------------------------------------------------------
+# REFRESH_TOKEN - Rafraîchissement du token d'accès
+# ------------------------------------------------------------------
+
+$path: /auth/refresh/
+$method: POST
+$description: "Obtenir un nouveau access_token via le refresh_token. Rotation des tokens : l'ancien refresh_token est révoqué et un nouveau est émis."
+$auth: false
+$skip: true
+$params:
+  $body:
+    refresh_token: { $type: string, $optional: false }
+$response:
+  $default:
+    $schema:
+      status: { $type: string, $description: "ex: SUCCESS" }
+      access_token: { $type: string }
+      refresh_token: { $type: string }
+      token_type: { $type: string }
+      expires_in: { $type: number }
+  $byStatus:
+    "400":
+      $description: "Refresh token expiré, révoqué ou invalide"
+      $schema:
+        status: { $type: string, $description: "ex: ERROR" }
+        message: { $type: string, $description: "ex: Le refresh token a expiré ou a été révoqué" }
+        code: { $type: string, $description: "ex: TOKEN_EXPIRED | INVALID_TOKEN" }

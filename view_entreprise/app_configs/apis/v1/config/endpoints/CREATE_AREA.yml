@@ -1,0 +1,27 @@
+# ------------------------------------------------------------------
+# CREATE_AREA - Créer une zone
+# ------------------------------------------------------------------
+$path: /config/areas/
+$method: POST
+$description: "Créer une nouvelle zone (salle ou cuisine)"
+$auth: true
+$skip: false
+$params:
+  $body:
+    name: { $type: string, $optional: false }
+    area_type: { $type: string, $optional: false, $description: "Type de zone : TABLE, KITCHEN" }
+    description: { $type: string, $optional: true, $nullable: true }
+    display_order: { $type: number, $optional: true, $nullable: true }
+$response:
+  $default:
+    $description: "201 Created"
+    $schema:
+      id: { $type: number }
+      name: { $type: string }
+      area_type: { $type: string }
+      is_active: { $type: boolean }
+  $byStatus:
+    "400":
+      $schema:
+        error: { $type: string }
+        code: { $type: string }

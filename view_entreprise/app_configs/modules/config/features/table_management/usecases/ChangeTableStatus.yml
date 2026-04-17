@@ -1,0 +1,50 @@
+# --------------------------------------------------------------
+# ChangeTableStatus - POST
+# --------------------------------------------------------------
+$name: changeTableStatus
+$description: "Change le statut d'une table"
+$skip: false
+$async: true
+
+$params:
+  - $name: tableId
+    $type: string
+    $optional: false
+  - $name: payload
+    $type: ChangeTableStatusPayload
+    $optional: false
+    $related: "--module config --feature table_management --kind custom --step feature"
+
+$returnDescription: "La table avec le statut mis à jour"
+$returnType:
+  $type: TableBasic
+  $nullable: true
+  $related:
+    - $name: TableBasic
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: false
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.CHANGE_TABLE_STATUS
+  $mapping:
+    $path:
+      table_id: tableId
+    $body:
+      payload: payload
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: ChangeTableStatusPayload
+    $from: "--module config --feature table_management --kind custom --step feature"
+    $step: feature
+  - $name: TableBasic
+    $from: "--module config --kind custom --step module"
+    $step: module

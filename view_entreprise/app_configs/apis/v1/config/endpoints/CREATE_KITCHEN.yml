@@ -1,0 +1,31 @@
+# ------------------------------------------------------------------
+# CREATE_KITCHEN - Créer une cuisine
+# ------------------------------------------------------------------
+$path: /config/kitchens/
+$method: POST
+$description: "Créer une nouvelle cuisine"
+$auth: true
+$skip: false
+$params:
+  $body:
+    name: { $type: string, $optional: false, $description: "Nom de la cuisine (requis)" }
+    description: { $type: string, $optional: true }
+    icon: { $type: string, $optional: true }
+    area: { $type: string, $optional: true, $nullable: true }
+    responsable_id: { $type: string, $optional: true, $nullable: true }
+$response:
+  $default:
+    $schema:
+      id: { $type: string }
+      name: { $type: string }
+      slug: { $type: string }
+      description: { $type: string, $nullable: true }
+      icon: { $type: string, $nullable: true }
+      area: { $type: string, $nullable: true }
+      area_name: { $type: string, $nullable: true }
+      responsable_id: { $type: string, $nullable: true }
+      is_active: { $type: boolean }
+  $byStatus:
+    "400":
+      $schema:
+        detail: { $type: string }

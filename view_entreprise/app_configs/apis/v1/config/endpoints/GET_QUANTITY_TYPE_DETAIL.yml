@@ -1,0 +1,22 @@
+# ------------------------------------------------------------------
+# GET_QUANTITY_TYPE_DETAIL - Détail d'un type de quantité
+# ------------------------------------------------------------------
+$path: /config/quantity-types/{quantity_type_id}/
+$method: GET
+$description: "Récupérer le détail d'un type de quantité"
+$auth: true
+$skip: false
+$params:
+  $path:
+    quantity_type_id: { $type: number, $optional: false }
+$response:
+  $default:
+    $schema:
+      id: { $type: number }
+      name: { $type: string }
+      abbreviation: { $type: string }
+      is_active: { $type: boolean }
+  $byStatus:
+    "404":
+      $schema:
+        detail: { $type: string }

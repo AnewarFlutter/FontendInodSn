@@ -1,0 +1,32 @@
+# --------------------------------------------------------------
+# uploadMyAvatar - POST
+# --------------------------------------------------------------
+$name: uploadMyAvatar
+$description: "Upload de la photo de profil de l'administrateur connecté (multipart/form-data). Le File est passé directement à travers la Server Action — Next.js sérialise les File nativement."
+$skip: true
+$async: true
+
+$params:
+  - $name: photo
+    $type: File
+    $optional: false
+    $description: "Fichier image sélectionné par l'utilisateur (JPEG, PNG, WebP — max 5 Mo)"
+
+$returnDescription: "URL absolue de l'avatar uploadé (origin API + chemin relatif retourné par l'API)"
+$returnType:
+  $type: string
+  $nullable: true
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: USER.UPLOAD_MY_AVATAR
+  $isMultipart: true
+  $mapping:
+    $body:
+      avatar: photo
+  $responseMapping:
+    $returnValue: photo
+    $note: "L'API retourne une URL relative (/media/avatars/...). Reconstruire l'URL absolue en retirant /api/v1 du baseUrl."

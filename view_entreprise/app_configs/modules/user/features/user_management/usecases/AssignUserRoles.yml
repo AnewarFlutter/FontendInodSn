@@ -1,0 +1,41 @@
+# --------------------------------------------------------------
+# assignUserRoles - POST
+# --------------------------------------------------------------
+$name: assignUserRoles
+$description: "Assigne des rôles à un utilisateur. Permission: role.assign"
+$skip: true
+$async: true
+
+$params:
+  - $name: user_id
+    $type: string
+    $optional: false
+  - $name: roles
+    $type: UserRoleCodeEnum
+    $list: true
+    $related: "--module user --kind enum --step module"
+    $optional: false
+
+$returnDescription: "Confirmation de l'assignation des rôles"
+$returnType:
+  $type: string
+  $nullable: true
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: USER.ASSIGN_USER_ROLES
+  $mapping:
+    $path:
+      user_id: user_id
+    $body:
+      roles: roles
+  $responseMapping:
+    $returnValue: message
+
+$imports:
+  - $name: UserRoleCodeEnum
+    $from: "--module user --kind enum --step module"
+    $step: module

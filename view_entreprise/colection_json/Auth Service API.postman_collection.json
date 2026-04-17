@@ -1,0 +1,2671 @@
+{
+  "info": {
+    "_postman_id": "f17ed1b6-fe1b-47c6-afcb-7715eaa0bc3d",
+    "name": "Auth Service API",
+    "description": "Collection Auth Service — My Restauration App\n\n**Base URL:** `https://api.hello-restauration.test-vps-online.xyz/api/v1`\n**Paths via gateway:** `/auth/{endpoint}`\n\n## Authentification\nLa plupart des endpoints nécessitent un token JWT Bearer obtenu via Login.\nAprès login, les tokens sont automatiquement sauvegardés dans les variables de collection.\n\n## Variables de collection\n| Variable | Description |\n|----------|-------------|\n| `base_url` | URL de base (inclut /api/v1) |\n| `access_token` | JWT access token (10 min) — auto-sauvegardé |\n| `refresh_token` | JWT refresh token (30 jours) — auto-sauvegardé |\n| `auth_user_id` | UUID de l'utilisateur dans Auth Service |\n\n## Contextes disponibles\n| Contexte | Rôle correspondant |\n|----------|--------------------|\n| `ADMIN` | Super Admin / Admin |\n| `CAISSE` | Caissier POS |\n| `CUISINE` | Cuisinier |\n| `SERVICE` | Serveur |\n| `LIVRAISON` | Livreur |",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "38559843",
+    "_collection_link": "https://go.postman.co/collection/53115297-f17ed1b6-fe1b-47c6-afcb-7715eaa0bc3d?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "💚 Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/health/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "health",
+                ""
+              ]
+            },
+            "description": "## Health Check\n\nVérification que le service Auth est opérationnel.\n\n### Réponses\n\n**200 OK** — Service opérationnel\n```json\n{\n    \"status\": \"healthy\",\n    \"service\": \"auth-service\"\n}\n```\n\n**503 Service Unavailable** — Service indisponible\n```json\n{\n    \"status\": \"unhealthy\",\n    \"error\": \"Database connection failed\"\n}\n```"
+          },
+          "response": [
+            {
+              "name": "200 OK — Service opérationnel",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/auth/health/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "health",
+                    ""
+                  ]
+                },
+                "description": "## Health Check\n\nVérification que le service Auth est opérationnel.\n\n### Réponses\n\n**200 OK** — Service opérationnel\n```json\n{\n    \"status\": \"healthy\",\n    \"service\": \"auth-service\"\n}\n```\n\n**503 Service Unavailable** — Service indisponible\n```json\n{\n    \"status\": \"unhealthy\",\n    \"error\": \"Database connection failed\"\n}\n```"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"healthy\",\n    \"service\": \"auth-service\"\n}"
+            }
+          ]
+        }
+      ],
+      "description": "Vérification de l'état du service"
+    },
+    {
+      "name": "🔐 Authentication",
+      "item": [
+        {
+          "name": "Login (Email)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Parse JSON safely",
+                  "let r = {};",
+                  "try {",
+                  "  r = pm.response.json();",
+                  "} catch (e) {",
+                  "  r = {};",
+                  "}",
+                  "",
+                  "// Extract tokens from the actual response shape",
+                  "const accessToken  = r?.token?.access_token;",
+                  "const refreshToken = r?.token?.refresh_token;",
+                  "",
+                  "// Keep existing behavior: save auth_user_id if present",
+                  "const authUserId = r?.user?.data?.auth_user_id || r?.user?.data?.id;",
+                  "",
+                  "// Store variables only if they exist (prevents undefined access errors)",
+                  "if (accessToken)  pm.environment.set(\"access_token\", accessToken);",
+                  "if (refreshToken) pm.environment.set(\"refresh_token\", refreshToken);",
+                  "if (authUserId)   pm.environment.set(\"auth_user_id\", authUserId);",
+                  "",
+                  "// Basic tests",
+                  "pm.test(\"Login response is SUCCESS\", function () {",
+                  "  pm.expect(r).to.be.an(\"object\");",
+                  "  pm.expect(r.status).to.eql(\"SUCCESS\");",
+                  "});",
+                  "",
+                  "pm.test(\"Access & refresh tokens are present\", function () {",
+                  "  pm.expect(accessToken, \"token.access_token\").to.be.a(\"string\").and.not.be.empty;",
+                  "  pm.expect(refreshToken, \"token.refresh_token\").to.be.a(\"string\").and.not.be.empty;",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"identifier_type\": \"email\",\n    \"identifier\": \"admin@admin.com\",\n    \"password\": \"passer123\",\n    \"context\": \"ADMIN\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "login",
+                ""
+              ]
+            },
+            "description": "## Connexion utilisateur (Email)\n\nAuthentifie un utilisateur par email et retourne les tokens JWT.\n\n**Prérequis:**\n- Email vérifié (`email_verified = true`)\n- Compte approuvé par admin\n- Compte actif (`is_active = true`)\n\n**Sécurité:** Max 5 tentatives échouées → compte verrouillé 15 min\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| identifier_type | string | Oui | `email` ou `phone` |\n| identifier | string | Oui | Adresse email |\n| password | string | Oui | Mot de passe |\n| context | string | Non | `ADMIN`, `CAISSE`, `CUISINE`, `SERVICE`, `LIVRAISON` (défaut: `SERVICE`) |\n\n### Réponses\n\n**200 OK** — Connexion réussie\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Connexion réussie\",\n    \"token\": {\n        \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n        \"refresh_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n        \"token_type\": \"Bearer\",\n        \"expires_in\": 600\n    },\n    \"user\": {\n        \"auth_user_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n        \"email\": \"admin@restau.com\",\n        \"is_active\": true,\n        \"current_context\": \"ADMIN\"\n    }\n}\n```\n\n**400 Bad Request** — Identifiants invalides\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Mot de passe ou email incorrect\",\n    \"code\": \"INVALID_CREDENTIALS\"\n}\n```\n\n**400 Bad Request** — Compte verrouillé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Compte temporairement verrouillé. Réessayez dans 15 minutes.\",\n    \"code\": \"ACCOUNT_LOCKED\"\n}\n```\n\n**403 Forbidden** — Compte inactif ou non approuvé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Votre compte n'est pas encore actif.\",\n    \"code\": \"ACCOUNT_INACTIVE\"\n}\n```\n\n**403 Forbidden** — Contexte non autorisé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Vous n'avez pas le rôle requis pour ce contexte.\",\n    \"code\": \"CONTEXT_NOT_ALLOWED\"\n}\n```"
+          },
+          "response": [
+            {
+              "name": "200 OK — Connexion réussie",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"identifier_type\": \"email\",\n    \"identifier\": \"admin@admin.com\",\n    \"password\": \"passer123\",\n    \"context\": \"ADMIN\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/auth/login/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "login",
+                    ""
+                  ]
+                },
+                "description": "## Connexion utilisateur (Email)\n\nAuthentifie un utilisateur par email et retourne les tokens JWT.\n\n**Prérequis:**\n- Email vérifié (`email_verified = true`)\n- Compte approuvé par admin\n- Compte actif (`is_active = true`)\n\n**Sécurité:** Max 5 tentatives échouées → compte verrouillé 15 min\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| identifier_type | string | Oui | `email` ou `phone` |\n| identifier | string | Oui | Adresse email |\n| password | string | Oui | Mot de passe |\n| context | string | Non | `ADMIN`, `CAISSE`, `CUISINE`, `SERVICE`, `LIVRAISON` (défaut: `SERVICE`) |\n\n### Réponses\n\n**200 OK** — Connexion réussie\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Connexion réussie\",\n    \"token\": {\n        \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n        \"refresh_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n        \"token_type\": \"Bearer\",\n        \"expires_in\": 600\n    },\n    \"user\": {\n        \"auth_user_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n        \"email\": \"admin@restau.com\",\n        \"is_active\": true,\n        \"current_context\": \"ADMIN\"\n    }\n}\n```\n\n**400 Bad Request** — Identifiants invalides\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Mot de passe ou email incorrect\",\n    \"code\": \"INVALID_CREDENTIALS\"\n}\n```\n\n**400 Bad Request** — Compte verrouillé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Compte temporairement verrouillé. Réessayez dans 15 minutes.\",\n    \"code\": \"ACCOUNT_LOCKED\"\n}\n```\n\n**403 Forbidden** — Compte inactif ou non approuvé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Votre compte n'est pas encore actif.\",\n    \"code\": \"ACCOUNT_INACTIVE\"\n}\n```\n\n**403 Forbidden** — Contexte non autorisé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Vous n'avez pas le rôle requis pour ce contexte.\",\n    \"code\": \"CONTEXT_NOT_ALLOWED\"\n}\n```"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Connexion réussie\",\n    \"token\": {\n        \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNTUwZTg0MDAtZTI5Yi00MWQ0LWE3MTYtNDQ2NjU1NDQwMDAwIiwicm9sZSI6IkFETUlOIn0.abc123\",\n        \"refresh_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNTUwZTg0MDAtZTI5Yi00MWQ0LWE3MTYtNDQ2NjU1NDQwMDAwIn0.xyz456\",\n        \"token_type\": \"Bearer\",\n        \"expires_in\": 600\n    },\n    \"user\": {\n        \"auth_user_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n        \"email\": \"admin@restau.com\",\n        \"is_active\": true,\n        \"current_context\": \"ADMIN\"\n    }\n}"
+            },
+            {
+              "name": "400 Bad Request — Identifiants invalides",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"identifier_type\": \"email\",\n    \"identifier\": \"admin@admin.com\",\n    \"password\": \"passer123\",\n    \"context\": \"ADMIN\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/auth/login/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "login",
+                    ""
+                  ]
+                },
+                "description": "## Connexion utilisateur (Email)\n\nAuthentifie un utilisateur par email et retourne les tokens JWT.\n\n**Prérequis:**\n- Email vérifié (`email_verified = true`)\n- Compte approuvé par admin\n- Compte actif (`is_active = true`)\n\n**Sécurité:** Max 5 tentatives échouées → compte verrouillé 15 min\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| identifier_type | string | Oui | `email` ou `phone` |\n| identifier | string | Oui | Adresse email |\n| password | string | Oui | Mot de passe |\n| context | string | Non | `ADMIN`, `CAISSE`, `CUISINE`, `SERVICE`, `LIVRAISON` (défaut: `SERVICE`) |\n\n### Réponses\n\n**200 OK** — Connexion réussie\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Connexion réussie\",\n    \"token\": {\n        \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n        \"refresh_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n        \"token_type\": \"Bearer\",\n        \"expires_in\": 600\n    },\n    \"user\": {\n        \"auth_user_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n        \"email\": \"admin@restau.com\",\n        \"is_active\": true,\n        \"current_context\": \"ADMIN\"\n    }\n}\n```\n\n**400 Bad Request** — Identifiants invalides\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Mot de passe ou email incorrect\",\n    \"code\": \"INVALID_CREDENTIALS\"\n}\n```\n\n**400 Bad Request** — Compte verrouillé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Compte temporairement verrouillé. Réessayez dans 15 minutes.\",\n    \"code\": \"ACCOUNT_LOCKED\"\n}\n```\n\n**403 Forbidden** — Compte inactif ou non approuvé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Votre compte n'est pas encore actif.\",\n    \"code\": \"ACCOUNT_INACTIVE\"\n}\n```\n\n**403 Forbidden** — Contexte non autorisé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Vous n'avez pas le rôle requis pour ce contexte.\",\n    \"code\": \"CONTEXT_NOT_ALLOWED\"\n}\n```"
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"ERROR\",\n    \"message\": \"Mot de passe ou email incorrect\",\n    \"code\": \"INVALID_CREDENTIALS\"\n}"
+            },
+            {
+              "name": "400 Bad Request — Compte verrouillé",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"identifier_type\": \"email\",\n    \"identifier\": \"admin@admin.com\",\n    \"password\": \"passer123\",\n    \"context\": \"ADMIN\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/auth/login/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "login",
+                    ""
+                  ]
+                },
+                "description": "## Connexion utilisateur (Email)\n\nAuthentifie un utilisateur par email et retourne les tokens JWT.\n\n**Prérequis:**\n- Email vérifié (`email_verified = true`)\n- Compte approuvé par admin\n- Compte actif (`is_active = true`)\n\n**Sécurité:** Max 5 tentatives échouées → compte verrouillé 15 min\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| identifier_type | string | Oui | `email` ou `phone` |\n| identifier | string | Oui | Adresse email |\n| password | string | Oui | Mot de passe |\n| context | string | Non | `ADMIN`, `CAISSE`, `CUISINE`, `SERVICE`, `LIVRAISON` (défaut: `SERVICE`) |\n\n### Réponses\n\n**200 OK** — Connexion réussie\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Connexion réussie\",\n    \"token\": {\n        \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n        \"refresh_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n        \"token_type\": \"Bearer\",\n        \"expires_in\": 600\n    },\n    \"user\": {\n        \"auth_user_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n        \"email\": \"admin@restau.com\",\n        \"is_active\": true,\n        \"current_context\": \"ADMIN\"\n    }\n}\n```\n\n**400 Bad Request** — Identifiants invalides\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Mot de passe ou email incorrect\",\n    \"code\": \"INVALID_CREDENTIALS\"\n}\n```\n\n**400 Bad Request** — Compte verrouillé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Compte temporairement verrouillé. Réessayez dans 15 minutes.\",\n    \"code\": \"ACCOUNT_LOCKED\"\n}\n```\n\n**403 Forbidden** — Compte inactif ou non approuvé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Votre compte n'est pas encore actif.\",\n    \"code\": \"ACCOUNT_INACTIVE\"\n}\n```\n\n**403 Forbidden** — Contexte non autorisé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Vous n'avez pas le rôle requis pour ce contexte.\",\n    \"code\": \"CONTEXT_NOT_ALLOWED\"\n}\n```"
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"ERROR\",\n    \"message\": \"Compte temporairement verrouillé. Réessayez dans 15 minutes.\",\n    \"code\": \"ACCOUNT_LOCKED\"\n}"
+            },
+            {
+              "name": "403 Forbidden — Contexte non autorisé",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"identifier_type\": \"email\",\n    \"identifier\": \"admin@admin.com\",\n    \"password\": \"passer123\",\n    \"context\": \"ADMIN\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/auth/login/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "login",
+                    ""
+                  ]
+                },
+                "description": "## Connexion utilisateur (Email)\n\nAuthentifie un utilisateur par email et retourne les tokens JWT.\n\n**Prérequis:**\n- Email vérifié (`email_verified = true`)\n- Compte approuvé par admin\n- Compte actif (`is_active = true`)\n\n**Sécurité:** Max 5 tentatives échouées → compte verrouillé 15 min\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| identifier_type | string | Oui | `email` ou `phone` |\n| identifier | string | Oui | Adresse email |\n| password | string | Oui | Mot de passe |\n| context | string | Non | `ADMIN`, `CAISSE`, `CUISINE`, `SERVICE`, `LIVRAISON` (défaut: `SERVICE`) |\n\n### Réponses\n\n**200 OK** — Connexion réussie\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Connexion réussie\",\n    \"token\": {\n        \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n        \"refresh_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n        \"token_type\": \"Bearer\",\n        \"expires_in\": 600\n    },\n    \"user\": {\n        \"auth_user_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n        \"email\": \"admin@restau.com\",\n        \"is_active\": true,\n        \"current_context\": \"ADMIN\"\n    }\n}\n```\n\n**400 Bad Request** — Identifiants invalides\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Mot de passe ou email incorrect\",\n    \"code\": \"INVALID_CREDENTIALS\"\n}\n```\n\n**400 Bad Request** — Compte verrouillé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Compte temporairement verrouillé. Réessayez dans 15 minutes.\",\n    \"code\": \"ACCOUNT_LOCKED\"\n}\n```\n\n**403 Forbidden** — Compte inactif ou non approuvé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Votre compte n'est pas encore actif.\",\n    \"code\": \"ACCOUNT_INACTIVE\"\n}\n```\n\n**403 Forbidden** — Contexte non autorisé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Vous n'avez pas le rôle requis pour ce contexte.\",\n    \"code\": \"CONTEXT_NOT_ALLOWED\"\n}\n```"
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"ERROR\",\n    \"message\": \"Vous n'avez pas le rôle requis pour ce contexte.\",\n    \"code\": \"CONTEXT_NOT_ALLOWED\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Login (Phone)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.token) {",
+                  "        pm.collectionVariables.set('access_token', jsonData.token.access_token);",
+                  "        pm.collectionVariables.set('refresh_token', jsonData.token.refresh_token);",
+                  "        console.log('Tokens sauvegardés');",
+                  "    }",
+                  "    if (jsonData.user && jsonData.user.auth_user_id) {",
+                  "        pm.collectionVariables.set('auth_user_id', jsonData.user.auth_user_id);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"identifier_type\": \"phone\",\n    \"identifier\": \"+221771234567\",\n    \"password\": \"SecurePassword123!\",\n    \"context\": \"SERVICE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "login",
+                ""
+              ]
+            },
+            "description": "## Connexion utilisateur (Téléphone)\n\nAuthentifie un utilisateur par numéro de téléphone et retourne les tokens JWT.\n\n**Formats téléphone acceptés:**\n- `+33612345678` (international France)\n- `+221771234567` (Sénégal)\n- `0612345678` (local France)\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| identifier_type | string | Oui | `phone` |\n| identifier | string | Oui | Numéro de téléphone |\n| password | string | Oui | Mot de passe |\n| context | string | Non | `ADMIN`, `CAISSE`, `CUISINE`, `SERVICE`, `LIVRAISON` |\n\n### Réponses\n\n**200 OK** — Connexion réussie (même format que Login Email)\n\n**400 Bad Request** — Erreurs possibles\n```json\n// Identifiants invalides\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Mot de passe ou numéro de téléphone incorrect\",\n    \"code\": \"INVALID_CREDENTIALS\"\n}\n\n// Numéro non trouvé\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Aucun compte associé à ce numéro de téléphone\",\n    \"code\": \"USER_NOT_FOUND\"\n}\n```\n\n**403 Forbidden** — Contexte non autorisé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Vous n'avez pas le rôle requis pour ce contexte.\",\n    \"code\": \"CONTEXT_NOT_ALLOWED\"\n}\n```"
+          },
+          "response": [
+            {
+              "name": "200 OK — Connexion réussie",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"identifier_type\": \"phone\",\n    \"identifier\": \"+221771234567\",\n    \"password\": \"SecurePassword123!\",\n    \"context\": \"SERVICE\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/auth/login/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "login",
+                    ""
+                  ]
+                },
+                "description": "## Connexion utilisateur (Téléphone)\n\nAuthentifie un utilisateur par numéro de téléphone et retourne les tokens JWT.\n\n**Formats téléphone acceptés:**\n- `+33612345678` (international France)\n- `+221771234567` (Sénégal)\n- `0612345678` (local France)\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| identifier_type | string | Oui | `phone` |\n| identifier | string | Oui | Numéro de téléphone |\n| password | string | Oui | Mot de passe |\n| context | string | Non | `ADMIN`, `CAISSE`, `CUISINE`, `SERVICE`, `LIVRAISON` |\n\n### Réponses\n\n**200 OK** — Connexion réussie (même format que Login Email)\n\n**400 Bad Request** — Erreurs possibles\n```json\n// Identifiants invalides\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Mot de passe ou numéro de téléphone incorrect\",\n    \"code\": \"INVALID_CREDENTIALS\"\n}\n\n// Numéro non trouvé\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Aucun compte associé à ce numéro de téléphone\",\n    \"code\": \"USER_NOT_FOUND\"\n}\n```\n\n**403 Forbidden** — Contexte non autorisé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Vous n'avez pas le rôle requis pour ce contexte.\",\n    \"code\": \"CONTEXT_NOT_ALLOWED\"\n}\n```"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Connexion réussie\",\n    \"token\": {\n        \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n        \"refresh_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n        \"token_type\": \"Bearer\",\n        \"expires_in\": 600\n    },\n    \"user\": {\n        \"auth_user_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n        \"email\": \"serveur@restau.com\",\n        \"is_active\": true,\n        \"current_context\": \"SERVICE\"\n    }\n}"
+            },
+            {
+              "name": "400 Bad Request — Identifiants invalides",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"identifier_type\": \"phone\",\n    \"identifier\": \"+221771234567\",\n    \"password\": \"SecurePassword123!\",\n    \"context\": \"SERVICE\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/auth/login/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "login",
+                    ""
+                  ]
+                },
+                "description": "## Connexion utilisateur (Téléphone)\n\nAuthentifie un utilisateur par numéro de téléphone et retourne les tokens JWT.\n\n**Formats téléphone acceptés:**\n- `+33612345678` (international France)\n- `+221771234567` (Sénégal)\n- `0612345678` (local France)\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| identifier_type | string | Oui | `phone` |\n| identifier | string | Oui | Numéro de téléphone |\n| password | string | Oui | Mot de passe |\n| context | string | Non | `ADMIN`, `CAISSE`, `CUISINE`, `SERVICE`, `LIVRAISON` |\n\n### Réponses\n\n**200 OK** — Connexion réussie (même format que Login Email)\n\n**400 Bad Request** — Erreurs possibles\n```json\n// Identifiants invalides\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Mot de passe ou numéro de téléphone incorrect\",\n    \"code\": \"INVALID_CREDENTIALS\"\n}\n\n// Numéro non trouvé\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Aucun compte associé à ce numéro de téléphone\",\n    \"code\": \"USER_NOT_FOUND\"\n}\n```\n\n**403 Forbidden** — Contexte non autorisé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Vous n'avez pas le rôle requis pour ce contexte.\",\n    \"code\": \"CONTEXT_NOT_ALLOWED\"\n}\n```"
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"ERROR\",\n    \"message\": \"Mot de passe ou numéro de téléphone incorrect\",\n    \"code\": \"INVALID_CREDENTIALS\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Switch Context (Changer rôle)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.token) {",
+                  "        pm.collectionVariables.set('access_token', jsonData.token.access_token);",
+                  "        pm.collectionVariables.set('refresh_token', jsonData.token.refresh_token);",
+                  "        console.log('Tokens mis à jour après switch context');",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"context\": \"ADMIN\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/switch-context/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "switch-context",
+                ""
+              ]
+            },
+            "description": "## Changer de contexte (rôle actif)\n\nPermet à un utilisateur multi-rôles de changer de contexte sans se reconnecter. Retourne de nouveaux tokens JWT avec le rôle mis à jour.\n\n**Cas d'usage:** Un Admin qui veut passer en mode SERVICE pour tester.\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| context | string | Oui | `ADMIN`, `CAISSE`, `CUISINE`, `SERVICE`, `LIVRAISON` |\n\n### Réponses\n\n**200 OK** — Contexte changé avec succès\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Contexte changé vers ADMIN\",\n    \"token\": {\n        \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n        \"refresh_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n        \"token_type\": \"Bearer\",\n        \"expires_in\": 600\n    },\n    \"current_context\": \"ADMIN\"\n}\n```\n\n**400 Bad Request** — Contexte non autorisé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Vous n'avez pas le rôle requis pour le contexte ADMIN\",\n    \"code\": \"CONTEXT_NOT_ALLOWED\"\n}\n```\n\n**401 Unauthorized** — Token manquant ou invalide\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Authentication credentials were not provided.\",\n    \"code\": \"UNAUTHORIZED\"\n}\n```"
+          },
+          "response": [
+            {
+              "name": "200 OK — Contexte changé",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"context\": \"ADMIN\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/auth/switch-context/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "switch-context",
+                    ""
+                  ]
+                },
+                "description": "## Changer de contexte (rôle actif)\n\nPermet à un utilisateur multi-rôles de changer de contexte sans se reconnecter. Retourne de nouveaux tokens JWT avec le rôle mis à jour.\n\n**Cas d'usage:** Un Admin qui veut passer en mode SERVICE pour tester.\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| context | string | Oui | `ADMIN`, `CAISSE`, `CUISINE`, `SERVICE`, `LIVRAISON` |\n\n### Réponses\n\n**200 OK** — Contexte changé avec succès\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Contexte changé vers ADMIN\",\n    \"token\": {\n        \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n        \"refresh_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n        \"token_type\": \"Bearer\",\n        \"expires_in\": 600\n    },\n    \"current_context\": \"ADMIN\"\n}\n```\n\n**400 Bad Request** — Contexte non autorisé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Vous n'avez pas le rôle requis pour le contexte ADMIN\",\n    \"code\": \"CONTEXT_NOT_ALLOWED\"\n}\n```\n\n**401 Unauthorized** — Token manquant ou invalide\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Authentication credentials were not provided.\",\n    \"code\": \"UNAUTHORIZED\"\n}\n```"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Contexte changé vers ADMIN\",\n    \"token\": {\n        \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n        \"refresh_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n        \"token_type\": \"Bearer\",\n        \"expires_in\": 600\n    },\n    \"current_context\": \"ADMIN\"\n}"
+            },
+            {
+              "name": "400 Bad Request — Contexte non autorisé",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"context\": \"ADMIN\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/auth/switch-context/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "switch-context",
+                    ""
+                  ]
+                },
+                "description": "## Changer de contexte (rôle actif)\n\nPermet à un utilisateur multi-rôles de changer de contexte sans se reconnecter. Retourne de nouveaux tokens JWT avec le rôle mis à jour.\n\n**Cas d'usage:** Un Admin qui veut passer en mode SERVICE pour tester.\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| context | string | Oui | `ADMIN`, `CAISSE`, `CUISINE`, `SERVICE`, `LIVRAISON` |\n\n### Réponses\n\n**200 OK** — Contexte changé avec succès\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Contexte changé vers ADMIN\",\n    \"token\": {\n        \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n        \"refresh_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n        \"token_type\": \"Bearer\",\n        \"expires_in\": 600\n    },\n    \"current_context\": \"ADMIN\"\n}\n```\n\n**400 Bad Request** — Contexte non autorisé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Vous n'avez pas le rôle requis pour le contexte ADMIN\",\n    \"code\": \"CONTEXT_NOT_ALLOWED\"\n}\n```\n\n**401 Unauthorized** — Token manquant ou invalide\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Authentication credentials were not provided.\",\n    \"code\": \"UNAUTHORIZED\"\n}\n```"
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"ERROR\",\n    \"message\": \"Vous n'avez pas le rôle requis pour le contexte ADMIN\",\n    \"code\": \"CONTEXT_NOT_ALLOWED\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"refresh_token\": \"{{refresh_token}}\",\n    \"logout_all\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/logout/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "logout",
+                ""
+              ]
+            },
+            "description": "## Déconnexion\n\nDéconnecte l'utilisateur et révoque les tokens. Mettre `logout_all: true` pour révoquer toutes les sessions actives (multi-device).\n\n**Note:** Les tokens révoqués sont mis en blacklist Redis.\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| refresh_token | string | Oui | Le refresh token à révoquer |\n| logout_all | boolean | Non | `true` pour révoquer toutes les sessions (défaut: `false`) |\n\n### Réponses\n\n**200 OK** — Déconnexion réussie\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Déconnexion réussie\"\n}\n```\n\n**200 OK** — Toutes sessions révoquées\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Toutes les sessions ont été révoquées\",\n    \"sessions_revoked\": 3\n}\n```\n\n**400 Bad Request** — Token invalide ou déjà révoqué\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Token invalide ou déjà révoqué\",\n    \"code\": \"INVALID_TOKEN\"\n}\n```\n\n**401 Unauthorized** — Non authentifié\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Authentication credentials were not provided.\",\n    \"code\": \"UNAUTHORIZED\"\n}\n```"
+          },
+          "response": [
+            {
+              "name": "200 OK — Déconnexion réussie",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"refresh_token\": \"{{refresh_token}}\",\n    \"logout_all\": false\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/auth/logout/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "logout",
+                    ""
+                  ]
+                },
+                "description": "## Déconnexion\n\nDéconnecte l'utilisateur et révoque les tokens. Mettre `logout_all: true` pour révoquer toutes les sessions actives (multi-device).\n\n**Note:** Les tokens révoqués sont mis en blacklist Redis.\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| refresh_token | string | Oui | Le refresh token à révoquer |\n| logout_all | boolean | Non | `true` pour révoquer toutes les sessions (défaut: `false`) |\n\n### Réponses\n\n**200 OK** — Déconnexion réussie\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Déconnexion réussie\"\n}\n```\n\n**200 OK** — Toutes sessions révoquées\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Toutes les sessions ont été révoquées\",\n    \"sessions_revoked\": 3\n}\n```\n\n**400 Bad Request** — Token invalide ou déjà révoqué\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Token invalide ou déjà révoqué\",\n    \"code\": \"INVALID_TOKEN\"\n}\n```\n\n**401 Unauthorized** — Non authentifié\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Authentication credentials were not provided.\",\n    \"code\": \"UNAUTHORIZED\"\n}\n```"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Déconnexion réussie\"\n}"
+            },
+            {
+              "name": "400 Bad Request — Token invalide",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"refresh_token\": \"{{refresh_token}}\",\n    \"logout_all\": false\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/auth/logout/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "logout",
+                    ""
+                  ]
+                },
+                "description": "## Déconnexion\n\nDéconnecte l'utilisateur et révoque les tokens. Mettre `logout_all: true` pour révoquer toutes les sessions actives (multi-device).\n\n**Note:** Les tokens révoqués sont mis en blacklist Redis.\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| refresh_token | string | Oui | Le refresh token à révoquer |\n| logout_all | boolean | Non | `true` pour révoquer toutes les sessions (défaut: `false`) |\n\n### Réponses\n\n**200 OK** — Déconnexion réussie\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Déconnexion réussie\"\n}\n```\n\n**200 OK** — Toutes sessions révoquées\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Toutes les sessions ont été révoquées\",\n    \"sessions_revoked\": 3\n}\n```\n\n**400 Bad Request** — Token invalide ou déjà révoqué\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Token invalide ou déjà révoqué\",\n    \"code\": \"INVALID_TOKEN\"\n}\n```\n\n**401 Unauthorized** — Non authentifié\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Authentication credentials were not provided.\",\n    \"code\": \"UNAUTHORIZED\"\n}\n```"
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"ERROR\",\n    \"message\": \"Token invalide ou déjà révoqué\",\n    \"code\": \"INVALID_TOKEN\"\n}"
+            }
+          ]
+        }
+      ],
+      "description": "Connexion, déconnexion et changement de contexte (rôle actif)"
+    },
+    {
+      "name": "🔄 Token Management",
+      "item": [
+        {
+          "name": "Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.access_token) {",
+                  "        pm.collectionVariables.set('access_token', jsonData.access_token);",
+                  "        console.log('Access token renouvelé');",
+                  "    }",
+                  "    if (jsonData.refresh_token) {",
+                  "        pm.collectionVariables.set('refresh_token', jsonData.refresh_token);",
+                  "        console.log('Refresh token renouvelé');",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"refresh_token\": \"{{refresh_token}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/refresh/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "refresh",
+                ""
+              ]
+            },
+            "description": "## Renouvellement de token\n\nObtenir un nouvel `access_token` à partir du `refresh_token`. Utilise la **rotation des tokens** — l'ancien refresh est révoqué et un nouveau est émis.\n\n**Quand l'utiliser ?** Quand l'access token expire (toutes les 10 minutes).\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| refresh_token | string | Oui | Le refresh token valide (30 jours) |\n\n### Réponses\n\n**200 OK** — Tokens renouvelés\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n    \"refresh_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n    \"token_type\": \"Bearer\",\n    \"expires_in\": 600\n}\n```\n\n**400 Bad Request** — Token expiré ou révoqué\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Le refresh token a expiré ou a été révoqué\",\n    \"code\": \"TOKEN_EXPIRED\"\n}\n```\n\n**400 Bad Request** — Token invalide\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Token invalide\",\n    \"code\": \"INVALID_TOKEN\"\n}\n```"
+          },
+          "response": [
+            {
+              "name": "200 OK — Tokens renouvelés",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"refresh_token\": \"{{refresh_token}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/auth/refresh/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "refresh",
+                    ""
+                  ]
+                },
+                "description": "## Renouvellement de token\n\nObtenir un nouvel `access_token` à partir du `refresh_token`. Utilise la **rotation des tokens** — l'ancien refresh est révoqué et un nouveau est émis.\n\n**Quand l'utiliser ?** Quand l'access token expire (toutes les 10 minutes).\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| refresh_token | string | Oui | Le refresh token valide (30 jours) |\n\n### Réponses\n\n**200 OK** — Tokens renouvelés\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n    \"refresh_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n    \"token_type\": \"Bearer\",\n    \"expires_in\": 600\n}\n```\n\n**400 Bad Request** — Token expiré ou révoqué\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Le refresh token a expiré ou a été révoqué\",\n    \"code\": \"TOKEN_EXPIRED\"\n}\n```\n\n**400 Bad Request** — Token invalide\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Token invalide\",\n    \"code\": \"INVALID_TOKEN\"\n}\n```"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"SUCCESS\",\n    \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.nouveau...\",\n    \"refresh_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.nouveau...\",\n    \"token_type\": \"Bearer\",\n    \"expires_in\": 600\n}"
+            },
+            {
+              "name": "400 Bad Request — Token expiré",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"refresh_token\": \"{{refresh_token}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/auth/refresh/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "refresh",
+                    ""
+                  ]
+                },
+                "description": "## Renouvellement de token\n\nObtenir un nouvel `access_token` à partir du `refresh_token`. Utilise la **rotation des tokens** — l'ancien refresh est révoqué et un nouveau est émis.\n\n**Quand l'utiliser ?** Quand l'access token expire (toutes les 10 minutes).\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| refresh_token | string | Oui | Le refresh token valide (30 jours) |\n\n### Réponses\n\n**200 OK** — Tokens renouvelés\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n    \"refresh_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n    \"token_type\": \"Bearer\",\n    \"expires_in\": 600\n}\n```\n\n**400 Bad Request** — Token expiré ou révoqué\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Le refresh token a expiré ou a été révoqué\",\n    \"code\": \"TOKEN_EXPIRED\"\n}\n```\n\n**400 Bad Request** — Token invalide\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Token invalide\",\n    \"code\": \"INVALID_TOKEN\"\n}\n```"
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"ERROR\",\n    \"message\": \"Le refresh token a expiré ou a été révoqué\",\n    \"code\": \"TOKEN_EXPIRED\"\n}"
+            }
+          ]
+        }
+      ],
+      "description": "Renouvellement des tokens JWT"
+    },
+    {
+      "name": "🔑 Password Management",
+      "item": [
+        {
+          "name": "Forgot Password",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"user@example.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/forgot-password/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "forgot-password",
+                ""
+              ]
+            },
+            "description": "## Mot de passe oublié\n\nDemande l'envoi d'un email de réinitialisation de mot de passe.\n\n**Sécurité:** Retourne toujours `200` pour éviter l'**énumération des comptes** (même si l'email n'existe pas).\n\n**Validité du lien:** Le token de réinitialisation expire après 1 heure.\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| email | string | Oui | Email du compte |\n\n### Réponses\n\n**200 OK** — Email envoyé (ou simulé)\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Si cet email existe, un lien de réinitialisation a été envoyé.\"\n}\n```\n\n**400 Bad Request** — Email invalide\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Format d'email invalide\",\n    \"code\": \"VALIDATION_ERROR\"\n}\n```\n\n**429 Too Many Requests** — Trop de demandes\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Trop de demandes. Réessayez dans 1 heure.\",\n    \"code\": \"RATE_LIMITED\"\n}\n```"
+          },
+          "response": [
+            {
+              "name": "200 OK — Email envoyé",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"email\": \"user@example.com\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/auth/forgot-password/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "forgot-password",
+                    ""
+                  ]
+                },
+                "description": "## Mot de passe oublié\n\nDemande l'envoi d'un email de réinitialisation de mot de passe.\n\n**Sécurité:** Retourne toujours `200` pour éviter l'**énumération des comptes** (même si l'email n'existe pas).\n\n**Validité du lien:** Le token de réinitialisation expire après 1 heure.\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| email | string | Oui | Email du compte |\n\n### Réponses\n\n**200 OK** — Email envoyé (ou simulé)\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Si cet email existe, un lien de réinitialisation a été envoyé.\"\n}\n```\n\n**400 Bad Request** — Email invalide\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Format d'email invalide\",\n    \"code\": \"VALIDATION_ERROR\"\n}\n```\n\n**429 Too Many Requests** — Trop de demandes\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Trop de demandes. Réessayez dans 1 heure.\",\n    \"code\": \"RATE_LIMITED\"\n}\n```"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Si cet email existe, un lien de réinitialisation a été envoyé.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"token\": \"reset-token-from-email\",\n    \"new_password\": \"NewSecurePass123!\",\n    \"confirm_password\": \"NewSecurePass123!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/reset-password/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "reset-password",
+                ""
+              ]
+            },
+            "description": "## Réinitialisation du mot de passe\n\nRéinitialise le mot de passe avec le token reçu par email.\n\n**Règles du mot de passe:**\n- Minimum 8 caractères\n- Au moins 1 majuscule\n- Au moins 1 chiffre\n- Au moins 1 caractère spécial\n\n**Note:** Après réinitialisation, toutes les sessions actives sont révoquées.\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| token | string | Oui | Token reçu par email (dans le lien) |\n| new_password | string | Oui | Nouveau mot de passe |\n| confirm_password | string | Oui | Confirmation (doit correspondre) |\n\n### Réponses\n\n**200 OK** — Mot de passe réinitialisé\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Mot de passe réinitialisé avec succès. Veuillez vous reconnecter.\"\n}\n```\n\n**400 Bad Request** — Token invalide ou expiré\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Le lien de réinitialisation est invalide ou a expiré\",\n    \"code\": \"INVALID_RESET_TOKEN\"\n}\n```\n\n**400 Bad Request** — Mots de passe différents\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Les mots de passe ne correspondent pas\",\n    \"code\": \"PASSWORD_MISMATCH\"\n}\n```\n\n**400 Bad Request** — Mot de passe trop faible\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Le mot de passe doit contenir au moins 8 caractères, 1 majuscule, 1 chiffre et 1 caractère spécial\",\n    \"code\": \"WEAK_PASSWORD\"\n}\n```"
+          },
+          "response": [
+            {
+              "name": "200 OK — Mot de passe réinitialisé",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"token\": \"reset-token-from-email\",\n    \"new_password\": \"NewSecurePass123!\",\n    \"confirm_password\": \"NewSecurePass123!\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/auth/reset-password/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "reset-password",
+                    ""
+                  ]
+                },
+                "description": "## Réinitialisation du mot de passe\n\nRéinitialise le mot de passe avec le token reçu par email.\n\n**Règles du mot de passe:**\n- Minimum 8 caractères\n- Au moins 1 majuscule\n- Au moins 1 chiffre\n- Au moins 1 caractère spécial\n\n**Note:** Après réinitialisation, toutes les sessions actives sont révoquées.\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| token | string | Oui | Token reçu par email (dans le lien) |\n| new_password | string | Oui | Nouveau mot de passe |\n| confirm_password | string | Oui | Confirmation (doit correspondre) |\n\n### Réponses\n\n**200 OK** — Mot de passe réinitialisé\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Mot de passe réinitialisé avec succès. Veuillez vous reconnecter.\"\n}\n```\n\n**400 Bad Request** — Token invalide ou expiré\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Le lien de réinitialisation est invalide ou a expiré\",\n    \"code\": \"INVALID_RESET_TOKEN\"\n}\n```\n\n**400 Bad Request** — Mots de passe différents\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Les mots de passe ne correspondent pas\",\n    \"code\": \"PASSWORD_MISMATCH\"\n}\n```\n\n**400 Bad Request** — Mot de passe trop faible\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Le mot de passe doit contenir au moins 8 caractères, 1 majuscule, 1 chiffre et 1 caractère spécial\",\n    \"code\": \"WEAK_PASSWORD\"\n}\n```"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Mot de passe réinitialisé avec succès. Veuillez vous reconnecter.\"\n}"
+            },
+            {
+              "name": "400 Bad Request — Token invalide",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"token\": \"reset-token-from-email\",\n    \"new_password\": \"NewSecurePass123!\",\n    \"confirm_password\": \"NewSecurePass123!\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/auth/reset-password/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "reset-password",
+                    ""
+                  ]
+                },
+                "description": "## Réinitialisation du mot de passe\n\nRéinitialise le mot de passe avec le token reçu par email.\n\n**Règles du mot de passe:**\n- Minimum 8 caractères\n- Au moins 1 majuscule\n- Au moins 1 chiffre\n- Au moins 1 caractère spécial\n\n**Note:** Après réinitialisation, toutes les sessions actives sont révoquées.\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| token | string | Oui | Token reçu par email (dans le lien) |\n| new_password | string | Oui | Nouveau mot de passe |\n| confirm_password | string | Oui | Confirmation (doit correspondre) |\n\n### Réponses\n\n**200 OK** — Mot de passe réinitialisé\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Mot de passe réinitialisé avec succès. Veuillez vous reconnecter.\"\n}\n```\n\n**400 Bad Request** — Token invalide ou expiré\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Le lien de réinitialisation est invalide ou a expiré\",\n    \"code\": \"INVALID_RESET_TOKEN\"\n}\n```\n\n**400 Bad Request** — Mots de passe différents\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Les mots de passe ne correspondent pas\",\n    \"code\": \"PASSWORD_MISMATCH\"\n}\n```\n\n**400 Bad Request** — Mot de passe trop faible\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Le mot de passe doit contenir au moins 8 caractères, 1 majuscule, 1 chiffre et 1 caractère spécial\",\n    \"code\": \"WEAK_PASSWORD\"\n}\n```"
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"ERROR\",\n    \"message\": \"Le lien de réinitialisation est invalide ou a expiré\",\n    \"code\": \"INVALID_RESET_TOKEN\"\n}"
+            },
+            {
+              "name": "400 Bad Request — Mot de passe faible",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"token\": \"reset-token-from-email\",\n    \"new_password\": \"NewSecurePass123!\",\n    \"confirm_password\": \"NewSecurePass123!\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/auth/reset-password/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "reset-password",
+                    ""
+                  ]
+                },
+                "description": "## Réinitialisation du mot de passe\n\nRéinitialise le mot de passe avec le token reçu par email.\n\n**Règles du mot de passe:**\n- Minimum 8 caractères\n- Au moins 1 majuscule\n- Au moins 1 chiffre\n- Au moins 1 caractère spécial\n\n**Note:** Après réinitialisation, toutes les sessions actives sont révoquées.\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| token | string | Oui | Token reçu par email (dans le lien) |\n| new_password | string | Oui | Nouveau mot de passe |\n| confirm_password | string | Oui | Confirmation (doit correspondre) |\n\n### Réponses\n\n**200 OK** — Mot de passe réinitialisé\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Mot de passe réinitialisé avec succès. Veuillez vous reconnecter.\"\n}\n```\n\n**400 Bad Request** — Token invalide ou expiré\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Le lien de réinitialisation est invalide ou a expiré\",\n    \"code\": \"INVALID_RESET_TOKEN\"\n}\n```\n\n**400 Bad Request** — Mots de passe différents\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Les mots de passe ne correspondent pas\",\n    \"code\": \"PASSWORD_MISMATCH\"\n}\n```\n\n**400 Bad Request** — Mot de passe trop faible\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Le mot de passe doit contenir au moins 8 caractères, 1 majuscule, 1 chiffre et 1 caractère spécial\",\n    \"code\": \"WEAK_PASSWORD\"\n}\n```"
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"ERROR\",\n    \"message\": \"Le mot de passe doit contenir au moins 8 caractères, 1 majuscule, 1 chiffre et 1 caractère spécial\",\n    \"code\": \"WEAK_PASSWORD\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"current_password\": \"OldPassword123!\",\n    \"new_password\": \"NewPassword456!\",\n    \"confirm_password\": \"NewPassword456!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/change-password/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "change-password",
+                ""
+              ]
+            },
+            "description": "## Changement de mot de passe\n\nChanger son mot de passe en étant authentifié. **Révoque toutes les sessions existantes** après le changement — l'utilisateur devra se reconnecter.\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| current_password | string | Oui | Mot de passe actuel |\n| new_password | string | Oui | Nouveau mot de passe (min 8 car., 1 maj., 1 chiffre, 1 spécial) |\n| confirm_password | string | Oui | Confirmation du nouveau mot de passe |\n\n### Réponses\n\n**200 OK** — Mot de passe changé\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Mot de passe modifié avec succès. Veuillez vous reconnecter.\"\n}\n```\n\n**400 Bad Request** — Mot de passe actuel incorrect\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Le mot de passe actuel est incorrect\",\n    \"code\": \"WRONG_CURRENT_PASSWORD\"\n}\n```\n\n**400 Bad Request** — Mots de passe différents\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Les mots de passe ne correspondent pas\",\n    \"code\": \"PASSWORD_MISMATCH\"\n}\n```\n\n**400 Bad Request** — Même mot de passe\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Le nouveau mot de passe doit être différent de l'ancien\",\n    \"code\": \"SAME_PASSWORD\"\n}\n```\n\n**401 Unauthorized** — Non authentifié\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Authentication credentials were not provided.\",\n    \"code\": \"UNAUTHORIZED\"\n}\n```"
+          },
+          "response": [
+            {
+              "name": "200 OK — Mot de passe changé",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"current_password\": \"OldPassword123!\",\n    \"new_password\": \"NewPassword456!\",\n    \"confirm_password\": \"NewPassword456!\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/auth/change-password/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "change-password",
+                    ""
+                  ]
+                },
+                "description": "## Changement de mot de passe\n\nChanger son mot de passe en étant authentifié. **Révoque toutes les sessions existantes** après le changement — l'utilisateur devra se reconnecter.\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| current_password | string | Oui | Mot de passe actuel |\n| new_password | string | Oui | Nouveau mot de passe (min 8 car., 1 maj., 1 chiffre, 1 spécial) |\n| confirm_password | string | Oui | Confirmation du nouveau mot de passe |\n\n### Réponses\n\n**200 OK** — Mot de passe changé\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Mot de passe modifié avec succès. Veuillez vous reconnecter.\"\n}\n```\n\n**400 Bad Request** — Mot de passe actuel incorrect\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Le mot de passe actuel est incorrect\",\n    \"code\": \"WRONG_CURRENT_PASSWORD\"\n}\n```\n\n**400 Bad Request** — Mots de passe différents\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Les mots de passe ne correspondent pas\",\n    \"code\": \"PASSWORD_MISMATCH\"\n}\n```\n\n**400 Bad Request** — Même mot de passe\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Le nouveau mot de passe doit être différent de l'ancien\",\n    \"code\": \"SAME_PASSWORD\"\n}\n```\n\n**401 Unauthorized** — Non authentifié\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Authentication credentials were not provided.\",\n    \"code\": \"UNAUTHORIZED\"\n}\n```"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Mot de passe modifié avec succès. Veuillez vous reconnecter.\"\n}"
+            },
+            {
+              "name": "400 Bad Request — Mot de passe incorrect",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"current_password\": \"OldPassword123!\",\n    \"new_password\": \"NewPassword456!\",\n    \"confirm_password\": \"NewPassword456!\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/auth/change-password/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "change-password",
+                    ""
+                  ]
+                },
+                "description": "## Changement de mot de passe\n\nChanger son mot de passe en étant authentifié. **Révoque toutes les sessions existantes** après le changement — l'utilisateur devra se reconnecter.\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| current_password | string | Oui | Mot de passe actuel |\n| new_password | string | Oui | Nouveau mot de passe (min 8 car., 1 maj., 1 chiffre, 1 spécial) |\n| confirm_password | string | Oui | Confirmation du nouveau mot de passe |\n\n### Réponses\n\n**200 OK** — Mot de passe changé\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Mot de passe modifié avec succès. Veuillez vous reconnecter.\"\n}\n```\n\n**400 Bad Request** — Mot de passe actuel incorrect\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Le mot de passe actuel est incorrect\",\n    \"code\": \"WRONG_CURRENT_PASSWORD\"\n}\n```\n\n**400 Bad Request** — Mots de passe différents\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Les mots de passe ne correspondent pas\",\n    \"code\": \"PASSWORD_MISMATCH\"\n}\n```\n\n**400 Bad Request** — Même mot de passe\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Le nouveau mot de passe doit être différent de l'ancien\",\n    \"code\": \"SAME_PASSWORD\"\n}\n```\n\n**401 Unauthorized** — Non authentifié\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Authentication credentials were not provided.\",\n    \"code\": \"UNAUTHORIZED\"\n}\n```"
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"ERROR\",\n    \"message\": \"Le mot de passe actuel est incorrect\",\n    \"code\": \"WRONG_CURRENT_PASSWORD\"\n}"
+            }
+          ]
+        }
+      ],
+      "description": "Gestion des mots de passe (oubli, réinitialisation, changement)"
+    },
+    {
+      "name": "👤 User Profile",
+      "item": [
+        {
+          "name": "GET Current User (Me)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/me/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "me",
+                ""
+              ]
+            },
+            "description": "## Mon profil Auth\n\nRécupère les informations Auth de l'utilisateur authentifié (email, téléphone, statut du compte, etc.).\n\n**Note:** Cet endpoint retourne uniquement les données du Auth Service. Pour le profil métier complet (rôles, permissions, etc.), utiliser `GET /api/v1/user/me/` du User Service.\n\n### Réponses\n\n**200 OK** — Profil récupéré\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"data\": {\n        \"auth_user_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n        \"email\": \"admin@restau.com\",\n        \"phone\": \"+33612345678\",\n        \"email_verified\": true,\n        \"is_active\": true,\n        \"admin_approved\": true,\n        \"created_at\": \"2025-01-01T10:00:00Z\",\n        \"last_login\": \"2026-03-11T08:00:00Z\",\n        \"current_context\": \"ADMIN\"\n    }\n}\n```\n\n**401 Unauthorized** — Token manquant ou invalide\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Authentication credentials were not provided.\",\n    \"code\": \"UNAUTHORIZED\"\n}\n```\n\n**401 Unauthorized** — Token expiré\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Token has expired\",\n    \"code\": \"TOKEN_EXPIRED\"\n}\n```"
+          },
+          "response": [
+            {
+              "name": "200 OK — Profil Auth",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/auth/me/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "me",
+                    ""
+                  ]
+                },
+                "description": "## Mon profil Auth\n\nRécupère les informations Auth de l'utilisateur authentifié (email, téléphone, statut du compte, etc.).\n\n**Note:** Cet endpoint retourne uniquement les données du Auth Service. Pour le profil métier complet (rôles, permissions, etc.), utiliser `GET /api/v1/user/me/` du User Service.\n\n### Réponses\n\n**200 OK** — Profil récupéré\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"data\": {\n        \"auth_user_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n        \"email\": \"admin@restau.com\",\n        \"phone\": \"+33612345678\",\n        \"email_verified\": true,\n        \"is_active\": true,\n        \"admin_approved\": true,\n        \"created_at\": \"2025-01-01T10:00:00Z\",\n        \"last_login\": \"2026-03-11T08:00:00Z\",\n        \"current_context\": \"ADMIN\"\n    }\n}\n```\n\n**401 Unauthorized** — Token manquant ou invalide\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Authentication credentials were not provided.\",\n    \"code\": \"UNAUTHORIZED\"\n}\n```\n\n**401 Unauthorized** — Token expiré\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Token has expired\",\n    \"code\": \"TOKEN_EXPIRED\"\n}\n```"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"SUCCESS\",\n    \"data\": {\n        \"auth_user_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n        \"email\": \"admin@restau.com\",\n        \"phone\": \"+33612345678\",\n        \"email_verified\": true,\n        \"is_active\": true,\n        \"admin_approved\": true,\n        \"created_at\": \"2025-01-01T10:00:00Z\",\n        \"last_login\": \"2026-03-11T08:00:00Z\",\n        \"current_context\": \"ADMIN\"\n    }\n}"
+            },
+            {
+              "name": "401 Unauthorized — Token expiré",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/auth/me/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "me",
+                    ""
+                  ]
+                },
+                "description": "## Mon profil Auth\n\nRécupère les informations Auth de l'utilisateur authentifié (email, téléphone, statut du compte, etc.).\n\n**Note:** Cet endpoint retourne uniquement les données du Auth Service. Pour le profil métier complet (rôles, permissions, etc.), utiliser `GET /api/v1/user/me/` du User Service.\n\n### Réponses\n\n**200 OK** — Profil récupéré\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"data\": {\n        \"auth_user_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n        \"email\": \"admin@restau.com\",\n        \"phone\": \"+33612345678\",\n        \"email_verified\": true,\n        \"is_active\": true,\n        \"admin_approved\": true,\n        \"created_at\": \"2025-01-01T10:00:00Z\",\n        \"last_login\": \"2026-03-11T08:00:00Z\",\n        \"current_context\": \"ADMIN\"\n    }\n}\n```\n\n**401 Unauthorized** — Token manquant ou invalide\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Authentication credentials were not provided.\",\n    \"code\": \"UNAUTHORIZED\"\n}\n```\n\n**401 Unauthorized** — Token expiré\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Token has expired\",\n    \"code\": \"TOKEN_EXPIRED\"\n}\n```"
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"ERROR\",\n    \"message\": \"Token has expired\",\n    \"code\": \"TOKEN_EXPIRED\"\n}"
+            }
+          ]
+        }
+      ],
+      "description": "Informations de l'utilisateur connecté (Auth Service)"
+    },
+    {
+      "name": "👑 Admin — Saga Pattern",
+      "item": [
+        {
+          "name": "Create User (Saga step 1)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.data && jsonData.data.auth_user_id) {",
+                  "        pm.collectionVariables.set('auth_user_id', jsonData.data.auth_user_id);",
+                  "        console.log('auth_user_id sauvegardé:', jsonData.data.auth_user_id);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"newuser@restau.com\",\n    \"phone\": \"+221771234567\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/admin/create-user/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "admin",
+                "create-user",
+                ""
+              ]
+            },
+            "description": "## Créer un compte Auth (Saga étape 1)\n\nCrée un compte Auth inactif avec un mot de passe temporaire. **Étape 1 du Saga Pattern** — appelé par le User Service.\n\n**Workflow:**\n1. Le User Service appelle cet endpoint → reçoit `auth_user_id` + `temporary_password`\n2. Le User Service crée le profil métier en base\n3. Le User Service appelle `activate-and-notify` pour finaliser\n4. Si étape 2 ou 3 échoue → le User Service appelle `delete-user` pour rollback\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| email | string | Oui | Email unique du nouveau compte |\n| phone | string | Non | Numéro de téléphone (optionnel) |\n\n### Réponses\n\n**201 Created** — Compte Auth créé\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Compte Auth créé avec succès\",\n    \"data\": {\n        \"auth_user_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n        \"email\": \"newuser@restau.com\",\n        \"temporary_password\": \"TempXyz789!\",\n        \"is_active\": false\n    }\n}\n```\n\n**400 Bad Request** — Email déjà utilisé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Un compte avec cet email existe déjà\",\n    \"code\": \"EMAIL_ALREADY_EXISTS\"\n}\n```\n\n**400 Bad Request** — Téléphone déjà utilisé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Un compte avec ce numéro existe déjà\",\n    \"code\": \"PHONE_ALREADY_EXISTS\"\n}\n```\n\n**401 Unauthorized** — Non authentifié ou droits insuffisants\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Droits insuffisants\",\n    \"code\": \"FORBIDDEN\"\n}\n```"
+          },
+          "response": [
+            {
+              "name": "201 Created — Compte Auth créé",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"email\": \"newuser@restau.com\",\n    \"phone\": \"+221771234567\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/auth/admin/create-user/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "admin",
+                    "create-user",
+                    ""
+                  ]
+                },
+                "description": "## Créer un compte Auth (Saga étape 1)\n\nCrée un compte Auth inactif avec un mot de passe temporaire. **Étape 1 du Saga Pattern** — appelé par le User Service.\n\n**Workflow:**\n1. Le User Service appelle cet endpoint → reçoit `auth_user_id` + `temporary_password`\n2. Le User Service crée le profil métier en base\n3. Le User Service appelle `activate-and-notify` pour finaliser\n4. Si étape 2 ou 3 échoue → le User Service appelle `delete-user` pour rollback\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| email | string | Oui | Email unique du nouveau compte |\n| phone | string | Non | Numéro de téléphone (optionnel) |\n\n### Réponses\n\n**201 Created** — Compte Auth créé\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Compte Auth créé avec succès\",\n    \"data\": {\n        \"auth_user_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n        \"email\": \"newuser@restau.com\",\n        \"temporary_password\": \"TempXyz789!\",\n        \"is_active\": false\n    }\n}\n```\n\n**400 Bad Request** — Email déjà utilisé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Un compte avec cet email existe déjà\",\n    \"code\": \"EMAIL_ALREADY_EXISTS\"\n}\n```\n\n**400 Bad Request** — Téléphone déjà utilisé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Un compte avec ce numéro existe déjà\",\n    \"code\": \"PHONE_ALREADY_EXISTS\"\n}\n```\n\n**401 Unauthorized** — Non authentifié ou droits insuffisants\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Droits insuffisants\",\n    \"code\": \"FORBIDDEN\"\n}\n```"
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Compte Auth créé avec succès\",\n    \"data\": {\n        \"auth_user_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n        \"email\": \"newuser@restau.com\",\n        \"temporary_password\": \"TempXyz789!\",\n        \"is_active\": false\n    }\n}"
+            },
+            {
+              "name": "400 Bad Request — Email déjà utilisé",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"email\": \"newuser@restau.com\",\n    \"phone\": \"+221771234567\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/auth/admin/create-user/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "admin",
+                    "create-user",
+                    ""
+                  ]
+                },
+                "description": "## Créer un compte Auth (Saga étape 1)\n\nCrée un compte Auth inactif avec un mot de passe temporaire. **Étape 1 du Saga Pattern** — appelé par le User Service.\n\n**Workflow:**\n1. Le User Service appelle cet endpoint → reçoit `auth_user_id` + `temporary_password`\n2. Le User Service crée le profil métier en base\n3. Le User Service appelle `activate-and-notify` pour finaliser\n4. Si étape 2 ou 3 échoue → le User Service appelle `delete-user` pour rollback\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| email | string | Oui | Email unique du nouveau compte |\n| phone | string | Non | Numéro de téléphone (optionnel) |\n\n### Réponses\n\n**201 Created** — Compte Auth créé\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Compte Auth créé avec succès\",\n    \"data\": {\n        \"auth_user_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n        \"email\": \"newuser@restau.com\",\n        \"temporary_password\": \"TempXyz789!\",\n        \"is_active\": false\n    }\n}\n```\n\n**400 Bad Request** — Email déjà utilisé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Un compte avec cet email existe déjà\",\n    \"code\": \"EMAIL_ALREADY_EXISTS\"\n}\n```\n\n**400 Bad Request** — Téléphone déjà utilisé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Un compte avec ce numéro existe déjà\",\n    \"code\": \"PHONE_ALREADY_EXISTS\"\n}\n```\n\n**401 Unauthorized** — Non authentifié ou droits insuffisants\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Droits insuffisants\",\n    \"code\": \"FORBIDDEN\"\n}\n```"
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"ERROR\",\n    \"message\": \"Un compte avec cet email existe déjà\",\n    \"code\": \"EMAIL_ALREADY_EXISTS\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Activate and Notify (Saga step 2)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"first_name\": \"Moussa\",\n    \"last_name\": \"Diop\",\n    \"temporary_password\": \"TempXyz789!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/admin/activate-and-notify/{{auth_user_id}}/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "admin",
+                "activate-and-notify",
+                "{{auth_user_id}}",
+                ""
+              ]
+            },
+            "description": "## Activer et notifier (Saga étape 2)\n\nActive le compte Auth créé à l'étape 1 et envoie un email de bienvenue avec le mot de passe temporaire.\n\n**URL param:** `auth_user_id` — UUID retourné par l'étape 1 (auto-sauvegardé dans la variable de collection)\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| first_name | string | Oui | Prénom (pour personnaliser l'email de bienvenue) |\n| last_name | string | Oui | Nom de famille |\n| temporary_password | string | Oui | Mot de passe temporaire généré à l'étape 1 |\n\n### Réponses\n\n**200 OK** — Compte activé et email envoyé\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Compte activé et email de bienvenue envoyé\",\n    \"data\": {\n        \"auth_user_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n        \"email\": \"newuser@restau.com\",\n        \"is_active\": true,\n        \"email_sent\": true\n    }\n}\n```\n\n**404 Not Found** — Utilisateur non trouvé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Utilisateur Auth non trouvé\",\n    \"code\": \"USER_NOT_FOUND\"\n}\n```\n\n**400 Bad Request** — Compte déjà actif\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Ce compte est déjà actif\",\n    \"code\": \"ALREADY_ACTIVE\"\n}\n```"
+          },
+          "response": [
+            {
+              "name": "200 OK — Compte activé",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"first_name\": \"Moussa\",\n    \"last_name\": \"Diop\",\n    \"temporary_password\": \"TempXyz789!\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/auth/admin/activate-and-notify/{{auth_user_id}}/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "admin",
+                    "activate-and-notify",
+                    "{{auth_user_id}}",
+                    ""
+                  ]
+                },
+                "description": "## Activer et notifier (Saga étape 2)\n\nActive le compte Auth créé à l'étape 1 et envoie un email de bienvenue avec le mot de passe temporaire.\n\n**URL param:** `auth_user_id` — UUID retourné par l'étape 1 (auto-sauvegardé dans la variable de collection)\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| first_name | string | Oui | Prénom (pour personnaliser l'email de bienvenue) |\n| last_name | string | Oui | Nom de famille |\n| temporary_password | string | Oui | Mot de passe temporaire généré à l'étape 1 |\n\n### Réponses\n\n**200 OK** — Compte activé et email envoyé\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Compte activé et email de bienvenue envoyé\",\n    \"data\": {\n        \"auth_user_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n        \"email\": \"newuser@restau.com\",\n        \"is_active\": true,\n        \"email_sent\": true\n    }\n}\n```\n\n**404 Not Found** — Utilisateur non trouvé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Utilisateur Auth non trouvé\",\n    \"code\": \"USER_NOT_FOUND\"\n}\n```\n\n**400 Bad Request** — Compte déjà actif\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Ce compte est déjà actif\",\n    \"code\": \"ALREADY_ACTIVE\"\n}\n```"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Compte activé et email de bienvenue envoyé\",\n    \"data\": {\n        \"auth_user_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n        \"email\": \"newuser@restau.com\",\n        \"is_active\": true,\n        \"email_sent\": true\n    }\n}"
+            },
+            {
+              "name": "404 Not Found — Utilisateur non trouvé",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"first_name\": \"Moussa\",\n    \"last_name\": \"Diop\",\n    \"temporary_password\": \"TempXyz789!\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/auth/admin/activate-and-notify/{{auth_user_id}}/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "admin",
+                    "activate-and-notify",
+                    "{{auth_user_id}}",
+                    ""
+                  ]
+                },
+                "description": "## Activer et notifier (Saga étape 2)\n\nActive le compte Auth créé à l'étape 1 et envoie un email de bienvenue avec le mot de passe temporaire.\n\n**URL param:** `auth_user_id` — UUID retourné par l'étape 1 (auto-sauvegardé dans la variable de collection)\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| first_name | string | Oui | Prénom (pour personnaliser l'email de bienvenue) |\n| last_name | string | Oui | Nom de famille |\n| temporary_password | string | Oui | Mot de passe temporaire généré à l'étape 1 |\n\n### Réponses\n\n**200 OK** — Compte activé et email envoyé\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Compte activé et email de bienvenue envoyé\",\n    \"data\": {\n        \"auth_user_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n        \"email\": \"newuser@restau.com\",\n        \"is_active\": true,\n        \"email_sent\": true\n    }\n}\n```\n\n**404 Not Found** — Utilisateur non trouvé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Utilisateur Auth non trouvé\",\n    \"code\": \"USER_NOT_FOUND\"\n}\n```\n\n**400 Bad Request** — Compte déjà actif\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Ce compte est déjà actif\",\n    \"code\": \"ALREADY_ACTIVE\"\n}\n```"
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"ERROR\",\n    \"message\": \"Utilisateur Auth non trouvé\",\n    \"code\": \"USER_NOT_FOUND\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete User Auth (Saga rollback)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/admin/delete-user/{{auth_user_id}}/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "admin",
+                "delete-user",
+                "{{auth_user_id}}",
+                ""
+              ]
+            },
+            "description": "## Supprimer un compte Auth (Saga rollback)\n\nSuppression **hard** (définitive) d'un compte Auth. Utilisé uniquement pour le **rollback du Saga Pattern** si la création échoue côté User Service.\n\n⚠️ **Attention:** Cette suppression est irréversible.\n\n**URL param:** `auth_user_id` — UUID du compte à supprimer\n\n### Réponses\n\n**204 No Content** — Compte supprimé\n\n**404 Not Found** — Utilisateur non trouvé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Utilisateur Auth non trouvé\",\n    \"code\": \"USER_NOT_FOUND\"\n}\n```"
+          },
+          "response": [
+            {
+              "name": "204 No Content — Compte supprimé",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/auth/admin/delete-user/{{auth_user_id}}/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "admin",
+                    "delete-user",
+                    "{{auth_user_id}}",
+                    ""
+                  ]
+                },
+                "description": "## Supprimer un compte Auth (Saga rollback)\n\nSuppression **hard** (définitive) d'un compte Auth. Utilisé uniquement pour le **rollback du Saga Pattern** si la création échoue côté User Service.\n\n⚠️ **Attention:** Cette suppression est irréversible.\n\n**URL param:** `auth_user_id` — UUID du compte à supprimer\n\n### Réponses\n\n**204 No Content** — Compte supprimé\n\n**404 Not Found** — Utilisateur non trouvé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Utilisateur Auth non trouvé\",\n    \"code\": \"USER_NOT_FOUND\"\n}\n```"
+              },
+              "status": "No Content",
+              "code": 204,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            },
+            {
+              "name": "404 Not Found — Utilisateur non trouvé",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/auth/admin/delete-user/{{auth_user_id}}/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "admin",
+                    "delete-user",
+                    "{{auth_user_id}}",
+                    ""
+                  ]
+                },
+                "description": "## Supprimer un compte Auth (Saga rollback)\n\nSuppression **hard** (définitive) d'un compte Auth. Utilisé uniquement pour le **rollback du Saga Pattern** si la création échoue côté User Service.\n\n⚠️ **Attention:** Cette suppression est irréversible.\n\n**URL param:** `auth_user_id` — UUID du compte à supprimer\n\n### Réponses\n\n**204 No Content** — Compte supprimé\n\n**404 Not Found** — Utilisateur non trouvé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Utilisateur Auth non trouvé\",\n    \"code\": \"USER_NOT_FOUND\"\n}\n```"
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"ERROR\",\n    \"message\": \"Utilisateur Auth non trouvé\",\n    \"code\": \"USER_NOT_FOUND\"\n}"
+            }
+          ]
+        }
+      ],
+      "description": "Gestion administrative des comptes Auth (création/activation/suppression via Saga Pattern).\n\nCes endpoints sont appelés par le **User Service** lors de la création d'un utilisateur via le Saga Pattern :\n1. `POST /auth/admin/create-user/` → crée le compte Auth, retourne `auth_user_id` + mot de passe temporaire\n2. `POST /auth/admin/activate-and-notify/{auth_user_id}/` → active le compte et envoie l'email de bienvenue\n3. En cas d'échec côté User Service → `DELETE /auth/admin/delete-user/{auth_user_id}/` (rollback)\n\n**Authentification requise:** JWT Admin."
+    },
+    {
+      "name": "🔧 Interne ⚠️",
+      "item": [
+        {
+          "name": "— Update Helpers (appelés par User Service) —",
+          "item": [
+            {
+              "name": "Update Phone",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"new_phone\": \"+221771234567\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/auth/update-phone/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "update-phone",
+                    ""
+                  ]
+                },
+                "description": "## ⚠️ INTERNE — Mettre à jour le téléphone\n\nAppelé par le User Service pour synchroniser le numéro de téléphone dans Auth Service quand un utilisateur le modifie.\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| new_phone | string | Oui | Nouveau numéro de téléphone |\n\n### Réponses\n\n**200 OK** — Téléphone mis à jour\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Téléphone mis à jour\"\n}\n```\n\n**400 Bad Request** — Numéro déjà utilisé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Ce numéro est déjà associé à un autre compte\",\n    \"code\": \"PHONE_ALREADY_EXISTS\"\n}\n```"
+              },
+              "response": [
+                {
+                  "name": "200 OK — Téléphone mis à jour",
+                  "originalRequest": {
+                    "method": "PATCH",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"new_phone\": \"+221771234567\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/auth/update-phone/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "auth",
+                        "update-phone",
+                        ""
+                      ]
+                    },
+                    "description": "## ⚠️ INTERNE — Mettre à jour le téléphone\n\nAppelé par le User Service pour synchroniser le numéro de téléphone dans Auth Service quand un utilisateur le modifie.\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| new_phone | string | Oui | Nouveau numéro de téléphone |\n\n### Réponses\n\n**200 OK** — Téléphone mis à jour\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Téléphone mis à jour\"\n}\n```\n\n**400 Bad Request** — Numéro déjà utilisé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Ce numéro est déjà associé à un autre compte\",\n    \"code\": \"PHONE_ALREADY_EXISTS\"\n}\n```"
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Téléphone mis à jour\"\n}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "— Sync Admin (User Service → Auth Service) —",
+          "item": [
+            {
+              "name": "Force Update Email",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"auth_user_id\": \"{{auth_user_id}}\",\n    \"new_email\": \"newemail@example.com\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/auth/admin/force-update-email/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "admin",
+                    "force-update-email",
+                    ""
+                  ]
+                },
+                "description": "## ⚠️ INTERNE — Forcer la mise à jour de l'email\n\nForce la mise à jour de l'email dans Auth Service. Appelé par le User Service lors d'une modification admin du profil.\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| auth_user_id | string (UUID) | Oui | UUID Auth de l'utilisateur |\n| new_email | string | Oui | Nouvel email |\n\n### Réponses\n\n**200 OK** — Email mis à jour\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Email mis à jour\"\n}\n```\n\n**400 Bad Request** — Email déjà utilisé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Cet email est déjà utilisé\",\n    \"code\": \"EMAIL_ALREADY_EXISTS\"\n}\n```\n\n**404 Not Found** — Utilisateur non trouvé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Utilisateur non trouvé\",\n    \"code\": \"USER_NOT_FOUND\"\n}\n```"
+              },
+              "response": [
+                {
+                  "name": "200 OK — Email mis à jour",
+                  "originalRequest": {
+                    "method": "PATCH",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"auth_user_id\": \"{{auth_user_id}}\",\n    \"new_email\": \"newemail@example.com\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/auth/admin/force-update-email/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "auth",
+                        "admin",
+                        "force-update-email",
+                        ""
+                      ]
+                    },
+                    "description": "## ⚠️ INTERNE — Forcer la mise à jour de l'email\n\nForce la mise à jour de l'email dans Auth Service. Appelé par le User Service lors d'une modification admin du profil.\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| auth_user_id | string (UUID) | Oui | UUID Auth de l'utilisateur |\n| new_email | string | Oui | Nouvel email |\n\n### Réponses\n\n**200 OK** — Email mis à jour\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Email mis à jour\"\n}\n```\n\n**400 Bad Request** — Email déjà utilisé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Cet email est déjà utilisé\",\n    \"code\": \"EMAIL_ALREADY_EXISTS\"\n}\n```\n\n**404 Not Found** — Utilisateur non trouvé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Utilisateur non trouvé\",\n    \"code\": \"USER_NOT_FOUND\"\n}\n```"
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Email mis à jour\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "Force Update Phone",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"auth_user_id\": \"{{auth_user_id}}\",\n    \"new_phone\": \"+221771234567\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/auth/admin/force-update-phone/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "admin",
+                    "force-update-phone",
+                    ""
+                  ]
+                },
+                "description": "## ⚠️ INTERNE — Forcer la mise à jour du téléphone\n\nForce la mise à jour du téléphone dans Auth Service. Appelé par le User Service lors d'une modification admin.\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| auth_user_id | string (UUID) | Oui | UUID Auth de l'utilisateur |\n| new_phone | string | Oui | Nouveau numéro |\n\n### Réponses\n\n**200 OK** — Téléphone mis à jour\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Téléphone mis à jour\"\n}\n```\n\n**400 Bad Request** — Numéro déjà utilisé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Ce numéro est déjà associé à un autre compte\",\n    \"code\": \"PHONE_ALREADY_EXISTS\"\n}\n```"
+              },
+              "response": [
+                {
+                  "name": "200 OK — Téléphone mis à jour",
+                  "originalRequest": {
+                    "method": "PATCH",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"auth_user_id\": \"{{auth_user_id}}\",\n    \"new_phone\": \"+221771234567\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/auth/admin/force-update-phone/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "auth",
+                        "admin",
+                        "force-update-phone",
+                        ""
+                      ]
+                    },
+                    "description": "## ⚠️ INTERNE — Forcer la mise à jour du téléphone\n\nForce la mise à jour du téléphone dans Auth Service. Appelé par le User Service lors d'une modification admin.\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| auth_user_id | string (UUID) | Oui | UUID Auth de l'utilisateur |\n| new_phone | string | Oui | Nouveau numéro |\n\n### Réponses\n\n**200 OK** — Téléphone mis à jour\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Téléphone mis à jour\"\n}\n```\n\n**400 Bad Request** — Numéro déjà utilisé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Ce numéro est déjà associé à un autre compte\",\n    \"code\": \"PHONE_ALREADY_EXISTS\"\n}\n```"
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Téléphone mis à jour\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "Toggle Account Status",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"auth_user_id\": \"{{auth_user_id}}\",\n    \"is_active\": false,\n    \"reason\": \"Compte suspendu pour violation des règles\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/auth/admin/toggle-account-status/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "admin",
+                    "toggle-account-status",
+                    ""
+                  ]
+                },
+                "description": "## ⚠️ INTERNE — Activer/Suspendre un compte\n\nActive ou suspend un compte Auth. Appelé par le User Service lors d'une suspension/activation admin.\n\n**Quand `is_active: false`:** Révoque aussi toutes les sessions actives.\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| auth_user_id | string (UUID) | Oui | UUID Auth de l'utilisateur |\n| is_active | boolean | Oui | `true` pour activer, `false` pour suspendre |\n| reason | string | Non | Raison de la suspension (pour les logs) |\n\n### Réponses\n\n**200 OK** — Statut mis à jour\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Compte suspendu avec succès\",\n    \"data\": {\n        \"auth_user_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n        \"is_active\": false,\n        \"sessions_revoked\": 2\n    }\n}\n```\n\n**404 Not Found** — Utilisateur non trouvé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Utilisateur non trouvé\",\n    \"code\": \"USER_NOT_FOUND\"\n}\n```"
+              },
+              "response": [
+                {
+                  "name": "200 OK — Compte suspendu",
+                  "originalRequest": {
+                    "method": "PATCH",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"auth_user_id\": \"{{auth_user_id}}\",\n    \"is_active\": false,\n    \"reason\": \"Compte suspendu pour violation des règles\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/auth/admin/toggle-account-status/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "auth",
+                        "admin",
+                        "toggle-account-status",
+                        ""
+                      ]
+                    },
+                    "description": "## ⚠️ INTERNE — Activer/Suspendre un compte\n\nActive ou suspend un compte Auth. Appelé par le User Service lors d'une suspension/activation admin.\n\n**Quand `is_active: false`:** Révoque aussi toutes les sessions actives.\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| auth_user_id | string (UUID) | Oui | UUID Auth de l'utilisateur |\n| is_active | boolean | Oui | `true` pour activer, `false` pour suspendre |\n| reason | string | Non | Raison de la suspension (pour les logs) |\n\n### Réponses\n\n**200 OK** — Statut mis à jour\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Compte suspendu avec succès\",\n    \"data\": {\n        \"auth_user_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n        \"is_active\": false,\n        \"sessions_revoked\": 2\n    }\n}\n```\n\n**404 Not Found** — Utilisateur non trouvé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Utilisateur non trouvé\",\n    \"code\": \"USER_NOT_FOUND\"\n}\n```"
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Compte suspendu avec succès\",\n    \"data\": {\n        \"auth_user_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n        \"is_active\": false,\n        \"sessions_revoked\": 2\n    }\n}"
+                }
+              ]
+            },
+            {
+              "name": "Soft Delete User",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"auth_user_id\": \"{{auth_user_id}}\",\n    \"reason\": \"Suppression demandée par l'utilisateur\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/auth/admin/soft-delete/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "admin",
+                    "soft-delete",
+                    ""
+                  ]
+                },
+                "description": "## ⚠️ INTERNE — Soft delete d'un compte Auth\n\nMarque le compte comme supprimé (`deleted_at` + `is_deleted: true`) sans suppression physique. Le compte peut être restauré.\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| auth_user_id | string (UUID) | Oui | UUID Auth de l'utilisateur |\n| reason | string | Non | Raison de la suppression |\n\n### Réponses\n\n**200 OK** — Compte soft-deleted\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Compte marqué comme supprimé\"\n}\n```\n\n**404 Not Found** — Utilisateur non trouvé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Utilisateur non trouvé\",\n    \"code\": \"USER_NOT_FOUND\"\n}\n```"
+              },
+              "response": [
+                {
+                  "name": "200 OK — Compte soft-deleted",
+                  "originalRequest": {
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"auth_user_id\": \"{{auth_user_id}}\",\n    \"reason\": \"Suppression demandée par l'utilisateur\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/auth/admin/soft-delete/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "auth",
+                        "admin",
+                        "soft-delete",
+                        ""
+                      ]
+                    },
+                    "description": "## ⚠️ INTERNE — Soft delete d'un compte Auth\n\nMarque le compte comme supprimé (`deleted_at` + `is_deleted: true`) sans suppression physique. Le compte peut être restauré.\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| auth_user_id | string (UUID) | Oui | UUID Auth de l'utilisateur |\n| reason | string | Non | Raison de la suppression |\n\n### Réponses\n\n**200 OK** — Compte soft-deleted\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Compte marqué comme supprimé\"\n}\n```\n\n**404 Not Found** — Utilisateur non trouvé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Utilisateur non trouvé\",\n    \"code\": \"USER_NOT_FOUND\"\n}\n```"
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Compte marqué comme supprimé\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "Restore User",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"auth_user_id\": \"{{auth_user_id}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/auth/admin/restore/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "admin",
+                    "restore",
+                    ""
+                  ]
+                },
+                "description": "## ⚠️ INTERNE — Restaurer un compte Auth soft-deleted\n\nRestaure un compte précédemment soft-deleted. Remet `deleted_at: null` et `is_deleted: false`.\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| auth_user_id | string (UUID) | Oui | UUID Auth du compte à restaurer |\n\n### Réponses\n\n**200 OK** — Compte restauré\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Compte restauré avec succès\"\n}\n```\n\n**400 Bad Request** — Compte non supprimé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Ce compte n'est pas supprimé\",\n    \"code\": \"NOT_DELETED\"\n}\n```\n\n**404 Not Found** — Utilisateur non trouvé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Utilisateur non trouvé\",\n    \"code\": \"USER_NOT_FOUND\"\n}\n```"
+              },
+              "response": [
+                {
+                  "name": "200 OK — Compte restauré",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"auth_user_id\": \"{{auth_user_id}}\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/auth/admin/restore/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "auth",
+                        "admin",
+                        "restore",
+                        ""
+                      ]
+                    },
+                    "description": "## ⚠️ INTERNE — Restaurer un compte Auth soft-deleted\n\nRestaure un compte précédemment soft-deleted. Remet `deleted_at: null` et `is_deleted: false`.\n\n### Body\n| Champ | Type | Requis | Description |\n|-------|------|--------|-------------|\n| auth_user_id | string (UUID) | Oui | UUID Auth du compte à restaurer |\n\n### Réponses\n\n**200 OK** — Compte restauré\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Compte restauré avec succès\"\n}\n```\n\n**400 Bad Request** — Compte non supprimé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Ce compte n'est pas supprimé\",\n    \"code\": \"NOT_DELETED\"\n}\n```\n\n**404 Not Found** — Utilisateur non trouvé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Utilisateur non trouvé\",\n    \"code\": \"USER_NOT_FOUND\"\n}\n```"
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": \"SUCCESS\",\n    \"message\": \"Compte restauré avec succès\"\n}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "— Inter-Services (JWT/User lookup) —",
+          "item": [
+            {
+              "name": "Get User by ID",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/auth/internal/users/{{auth_user_id}}/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "internal",
+                    "users",
+                    "{{auth_user_id}}",
+                    ""
+                  ]
+                },
+                "description": "## ⚠️ INTERNE — Récupérer un utilisateur par UUID\n\nRécupère les données Auth d'un utilisateur par son UUID. Utilisé par les autres services pour valider l'identité d'un utilisateur.\n\n**URL param:** `auth_user_id` — UUID de l'utilisateur\n\n### Réponses\n\n**200 OK** — Utilisateur trouvé\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"data\": {\n        \"auth_user_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n        \"email\": \"user@restau.com\",\n        \"phone\": \"+33612345678\",\n        \"is_active\": true,\n        \"email_verified\": true\n    }\n}\n```\n\n**404 Not Found** — Utilisateur non trouvé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Utilisateur non trouvé\",\n    \"code\": \"USER_NOT_FOUND\"\n}\n```"
+              },
+              "response": [
+                {
+                  "name": "200 OK — Utilisateur trouvé",
+                  "originalRequest": {
+                    "auth": {
+                      "type": "noauth"
+                    },
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{base_url}}/auth/internal/users/{{auth_user_id}}/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "auth",
+                        "internal",
+                        "users",
+                        "{{auth_user_id}}",
+                        ""
+                      ]
+                    },
+                    "description": "## ⚠️ INTERNE — Récupérer un utilisateur par UUID\n\nRécupère les données Auth d'un utilisateur par son UUID. Utilisé par les autres services pour valider l'identité d'un utilisateur.\n\n**URL param:** `auth_user_id` — UUID de l'utilisateur\n\n### Réponses\n\n**200 OK** — Utilisateur trouvé\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"data\": {\n        \"auth_user_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n        \"email\": \"user@restau.com\",\n        \"phone\": \"+33612345678\",\n        \"is_active\": true,\n        \"email_verified\": true\n    }\n}\n```\n\n**404 Not Found** — Utilisateur non trouvé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Utilisateur non trouvé\",\n    \"code\": \"USER_NOT_FOUND\"\n}\n```"
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": \"SUCCESS\",\n    \"data\": {\n        \"auth_user_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n        \"email\": \"user@restau.com\",\n        \"phone\": \"+33612345678\",\n        \"is_active\": true,\n        \"email_verified\": true\n    }\n}"
+                }
+              ]
+            },
+            {
+              "name": "Get User by Email",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/auth/internal/users/by-email/user@example.com/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "internal",
+                    "users",
+                    "by-email",
+                    "user@example.com",
+                    ""
+                  ]
+                },
+                "description": "## ⚠️ INTERNE — Récupérer un utilisateur par email\n\nRécupère les données Auth d'un utilisateur par son email. Réseau interne uniquement.\n\n**URL param:** email — Adresse email de l'utilisateur\n\n### Réponses\n\n**200 OK** — Utilisateur trouvé\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"data\": {\n        \"auth_user_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n        \"email\": \"user@restau.com\",\n        \"is_active\": true\n    }\n}\n```\n\n**404 Not Found** — Email non trouvé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Aucun compte trouvé avec cet email\",\n    \"code\": \"USER_NOT_FOUND\"\n}\n```"
+              },
+              "response": [
+                {
+                  "name": "200 OK — Utilisateur trouvé",
+                  "originalRequest": {
+                    "auth": {
+                      "type": "noauth"
+                    },
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{base_url}}/auth/internal/users/by-email/user@example.com/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "auth",
+                        "internal",
+                        "users",
+                        "by-email",
+                        "user@example.com",
+                        ""
+                      ]
+                    },
+                    "description": "## ⚠️ INTERNE — Récupérer un utilisateur par email\n\nRécupère les données Auth d'un utilisateur par son email. Réseau interne uniquement.\n\n**URL param:** email — Adresse email de l'utilisateur\n\n### Réponses\n\n**200 OK** — Utilisateur trouvé\n```json\n{\n    \"status\": \"SUCCESS\",\n    \"data\": {\n        \"auth_user_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n        \"email\": \"user@restau.com\",\n        \"is_active\": true\n    }\n}\n```\n\n**404 Not Found** — Email non trouvé\n```json\n{\n    \"status\": \"ERROR\",\n    \"message\": \"Aucun compte trouvé avec cet email\",\n    \"code\": \"USER_NOT_FOUND\"\n}\n```"
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": \"SUCCESS\",\n    \"data\": {\n        \"auth_user_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n        \"email\": \"user@restau.com\",\n        \"is_active\": true\n    }\n}"
+                }
+              ]
+            },
+            {
+              "name": "Check Token Revocation",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/auth/internal/check-token-revocation/?jti=your-jwt-id-here",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "internal",
+                    "check-token-revocation",
+                    ""
+                  ],
+                  "query": [
+                    {
+                      "key": "jti",
+                      "value": "your-jwt-id-here",
+                      "description": "JWT ID du token (claim 'jti')"
+                    }
+                  ]
+                },
+                "description": "## ⚠️ INTERNE — Vérifier si un JWT est révoqué\n\nVérifie si un JWT a été révoqué (blacklist). Utilise Redis avec fallback base de données.\n\n**Query param:** `jti` — JWT ID du token à vérifier\n\n### Réponses\n\n**200 OK** — Token valide (non révoqué)\n```json\n{\n    \"revoked\": false\n}\n```\n\n**200 OK** — Token révoqué\n```json\n{\n    \"revoked\": true\n}\n```"
+              },
+              "response": [
+                {
+                  "name": "200 OK — Token valide",
+                  "originalRequest": {
+                    "auth": {
+                      "type": "noauth"
+                    },
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{base_url}}/auth/internal/check-token-revocation/?jti=your-jwt-id-here",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "auth",
+                        "internal",
+                        "check-token-revocation",
+                        ""
+                      ],
+                      "query": [
+                        {
+                          "key": "jti",
+                          "value": "your-jwt-id-here",
+                          "description": "JWT ID du token (claim 'jti')"
+                        }
+                      ]
+                    },
+                    "description": "## ⚠️ INTERNE — Vérifier si un JWT est révoqué\n\nVérifie si un JWT a été révoqué (blacklist). Utilise Redis avec fallback base de données.\n\n**Query param:** `jti` — JWT ID du token à vérifier\n\n### Réponses\n\n**200 OK** — Token valide (non révoqué)\n```json\n{\n    \"revoked\": false\n}\n```\n\n**200 OK** — Token révoqué\n```json\n{\n    \"revoked\": true\n}\n```"
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"revoked\": false\n}"
+                },
+                {
+                  "name": "200 OK — Token révoqué",
+                  "originalRequest": {
+                    "auth": {
+                      "type": "noauth"
+                    },
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{base_url}}/auth/internal/check-token-revocation/?jti=your-jwt-id-here",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "auth",
+                        "internal",
+                        "check-token-revocation",
+                        ""
+                      ],
+                      "query": [
+                        {
+                          "key": "jti",
+                          "value": "your-jwt-id-here",
+                          "description": "JWT ID du token (claim 'jti')"
+                        }
+                      ]
+                    },
+                    "description": "## ⚠️ INTERNE — Vérifier si un JWT est révoqué\n\nVérifie si un JWT a été révoqué (blacklist). Utilise Redis avec fallback base de données.\n\n**Query param:** `jti` — JWT ID du token à vérifier\n\n### Réponses\n\n**200 OK** — Token valide (non révoqué)\n```json\n{\n    \"revoked\": false\n}\n```\n\n**200 OK** — Token révoqué\n```json\n{\n    \"revoked\": true\n}\n```"
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"revoked\": true\n}"
+                }
+              ]
+            },
+            {
+              "name": "Check Token Validity",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/auth/internal/check-token-validity/?user_id={{auth_user_id}}&token_iat=1700000000",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "internal",
+                    "check-token-validity",
+                    ""
+                  ],
+                  "query": [
+                    {
+                      "key": "user_id",
+                      "value": "{{auth_user_id}}",
+                      "description": "UUID Auth de l'utilisateur"
+                    },
+                    {
+                      "key": "token_iat",
+                      "value": "1700000000",
+                      "description": "Timestamp d'émission du token (Unix epoch)"
+                    }
+                  ]
+                },
+                "description": "## ⚠️ INTERNE — Vérifier si un token est valide\n\nVérifie si un token a été invalidé par une connexion plus récente (protection anti-session replay). Compare le `iat` (issued at) du token avec la date de la dernière connexion enregistrée.\n\n**Query params:**\n- `user_id` — UUID Auth de l'utilisateur\n- `token_iat` — Timestamp Unix de l'émission du token\n\n### Réponses\n\n**200 OK** — Token valide\n```json\n{\n    \"valid\": true\n}\n```\n\n**200 OK** — Token invalidé\n```json\n{\n    \"valid\": false,\n    \"reason\": \"Token issued before last login\"\n}\n```"
+              },
+              "response": [
+                {
+                  "name": "200 OK — Token valide",
+                  "originalRequest": {
+                    "auth": {
+                      "type": "noauth"
+                    },
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{base_url}}/auth/internal/check-token-validity/?user_id={{auth_user_id}}&token_iat=1700000000",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "auth",
+                        "internal",
+                        "check-token-validity",
+                        ""
+                      ],
+                      "query": [
+                        {
+                          "key": "user_id",
+                          "value": "{{auth_user_id}}",
+                          "description": "UUID Auth de l'utilisateur"
+                        },
+                        {
+                          "key": "token_iat",
+                          "value": "1700000000",
+                          "description": "Timestamp d'émission du token (Unix epoch)"
+                        }
+                      ]
+                    },
+                    "description": "## ⚠️ INTERNE — Vérifier si un token est valide\n\nVérifie si un token a été invalidé par une connexion plus récente (protection anti-session replay). Compare le `iat` (issued at) du token avec la date de la dernière connexion enregistrée.\n\n**Query params:**\n- `user_id` — UUID Auth de l'utilisateur\n- `token_iat` — Timestamp Unix de l'émission du token\n\n### Réponses\n\n**200 OK** — Token valide\n```json\n{\n    \"valid\": true\n}\n```\n\n**200 OK** — Token invalidé\n```json\n{\n    \"valid\": false,\n    \"reason\": \"Token issued before last login\"\n}\n```"
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"valid\": true\n}"
+                },
+                {
+                  "name": "200 OK — Token invalidé",
+                  "originalRequest": {
+                    "auth": {
+                      "type": "noauth"
+                    },
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{base_url}}/auth/internal/check-token-validity/?user_id={{auth_user_id}}&token_iat=1700000000",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "auth",
+                        "internal",
+                        "check-token-validity",
+                        ""
+                      ],
+                      "query": [
+                        {
+                          "key": "user_id",
+                          "value": "{{auth_user_id}}",
+                          "description": "UUID Auth de l'utilisateur"
+                        },
+                        {
+                          "key": "token_iat",
+                          "value": "1700000000",
+                          "description": "Timestamp d'émission du token (Unix epoch)"
+                        }
+                      ]
+                    },
+                    "description": "## ⚠️ INTERNE — Vérifier si un token est valide\n\nVérifie si un token a été invalidé par une connexion plus récente (protection anti-session replay). Compare le `iat` (issued at) du token avec la date de la dernière connexion enregistrée.\n\n**Query params:**\n- `user_id` — UUID Auth de l'utilisateur\n- `token_iat` — Timestamp Unix de l'émission du token\n\n### Réponses\n\n**200 OK** — Token valide\n```json\n{\n    \"valid\": true\n}\n```\n\n**200 OK** — Token invalidé\n```json\n{\n    \"valid\": false,\n    \"reason\": \"Token issued before last login\"\n}\n```"
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"valid\": false,\n    \"reason\": \"Token issued before last login\"\n}"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "description": "⚠️ **ENDPOINTS INTERNES** — Non accessibles depuis le frontend en production.\n\nCes endpoints sont appelés par d'autres microservices via le réseau Docker interne uniquement.\n\n| Sous-dossier | Appelé par |\n|---|---|\n| Update Helpers | User Service → Auth Service (sync téléphone) |\n| Sync Admin | User Service → Auth Service (actions admin) |\n| Inter-Services | Middleware JWT des autres services |\n\n**⚠️ Avertissement:** Ces endpoints ne doivent jamais être exposés publiquement."
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{access_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://api.hello-restauration.test-vps-online.xyz/api/v1",
+      "type": "string",
+      "description": "URL de base partagée entre tous les services (inclut /api/v1)"
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refresh_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "auth_user_id",
+      "value": "",
+      "type": "string",
+      "description": "UUID de l'utilisateur dans Auth Service (depuis JWT ou réponse login)"
+    }
+  ]
+}

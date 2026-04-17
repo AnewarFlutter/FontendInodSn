@@ -1,0 +1,24 @@
+# UPDATE_USER_LIVREUR_PROFILE
+$path: /user/users/{user_id}/profile/livreur/
+$method: PATCH
+$description: "Modifier le profil livreur. Permission: user.update"
+$auth: true
+$skip: true
+$params:
+  $path:
+    user_id: { $type: string, $optional: false }
+  $body:
+    type_vehicule: { $type: string, $optional: true, $description: "MOTO, VELO, VOITURE, SCOOTER" }
+    immatriculation: { $type: string, $optional: true }
+    zones_livraison: { $type: array, $items: { $type: string }, $optional: true }
+    disponible: { $type: boolean, $optional: true }
+$response:
+  $default:
+    $schema:
+      message: { $type: string }
+      data: { $type: object }
+  $byStatus:
+    "404":
+      $schema:
+        error: { $type: string }
+        code: { $type: string, $description: "ex: PROFILE_NOT_FOUND" }

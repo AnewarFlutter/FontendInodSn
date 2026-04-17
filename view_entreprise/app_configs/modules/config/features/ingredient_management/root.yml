@@ -1,0 +1,26 @@
+# ------------------------------------------------------------------
+# Feature : ingredient_management (gestion des ingrédients)
+# ------------------------------------------------------------------
+$name: ingredient_management
+$description: "CRUD des ingrédients utilisés dans la composition des items"
+$fileNameCasing: snakeCase
+$override: false
+$delete: false
+$skip: false
+$rewriteInController: true
+$rewriteInDataSourceImpl: false
+
+$enums: []
+$types:
+  - $name: CreateIngredientPayload
+    $attributes:
+      - { $name: name, $type: string, $optional: false }
+      - { $name: is_active, $type: boolean, $optional: false }
+
+$usecases:
+  - $include: "./usecases/GetIngredientsList.yml"
+  - $include: "./usecases/CreateIngredient.yml"
+  - $include: "./usecases/GetIngredientDetail.yml"
+  - $include: "./usecases/UpdateIngredient.yml"
+  - $include: "./usecases/PatchIngredient.yml"
+  - $include: "./usecases/DeleteIngredient.yml"

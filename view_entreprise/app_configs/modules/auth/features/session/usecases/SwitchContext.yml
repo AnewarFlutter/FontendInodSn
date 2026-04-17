@@ -1,0 +1,43 @@
+# --------------------------------------------------------------
+# switchContext - POST
+# --------------------------------------------------------------
+$name: switchContext
+$description: "Change le contexte (rôle) de l'utilisateur connecté. Retourne de nouveaux tokens avec le contexte mis à jour."
+$skip: true
+$async: true
+
+$params:
+  - $name: payload
+    $type: SwitchContextPayload
+    $related: "--module auth --feature session --kind custom --step feature"
+    $optional: false
+
+$returnDescription: "Réponse complète avec nouveaux tokens et profil utilisateur mis à jour (même structure que login)"
+$returnType:
+  $type: LoginResponseData
+  $nullable: true
+  $related:
+    - $name: LoginResponseData
+      $module: auth
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: AUTH.SWITCH_CONTEXT
+  $mapping:
+    $body:
+      context: payload.context
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: SwitchContextPayload
+    $from: "--module auth --feature session --kind custom --step feature"
+    $step: feature
+  - $name: LoginResponseData
+    $from: "--module auth --kind custom --step module"
+    $step: module

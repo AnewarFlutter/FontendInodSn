@@ -1,0 +1,43 @@
+# --------------------------------------------------------------
+# AddItemKitchenAreas - POST
+# --------------------------------------------------------------
+$name: addItemKitchenAreas
+$description: "Ajoute des zones cuisine à un item"
+$skip: false
+$async: true
+
+$params:
+  - $name: itemId
+    $type: string
+    $optional: false
+  - $name: payload
+    $type: AddItemKitchenAreasPayload
+    $optional: false
+    $related: "--module config --feature item_management --kind custom --step feature"
+
+$returnDescription: "Résultat de l'ajout de zones cuisine"
+$returnType:
+  $type: object
+  $nullable: true
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.ADD_ITEM_KITCHEN_AREAS
+  $mapping:
+    $path:
+      item_id: itemId
+    $body:
+      kitchen_area_ids: payload.kitchen_area_ids
+      is_active: payload.is_active
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: AddItemKitchenAreasPayload
+    $from: "--module config --feature item_management --kind custom --step feature"
+    $step: feature

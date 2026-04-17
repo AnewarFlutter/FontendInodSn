@@ -1,0 +1,41 @@
+# --------------------------------------------------------------
+# GetItemDetail - GET
+# --------------------------------------------------------------
+$name: getItemDetail
+$description: "Récupère le détail d'un item par son identifiant"
+$skip: false
+$async: true
+
+$params:
+  - $name: itemId
+    $type: string
+    $optional: false
+
+$returnDescription: "Le détail de l'item"
+$returnType:
+  $type: ItemBasic
+  $nullable: true
+  $related:
+    - $name: ItemBasic
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.GET_ITEM_DETAIL
+  $mapping:
+    $path:
+      item_id: itemId
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: ItemBasic
+    $from: "--module config --kind custom --step module"
+    $step: module

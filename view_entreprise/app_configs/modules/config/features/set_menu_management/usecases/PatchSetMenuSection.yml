@@ -1,0 +1,50 @@
+# --------------------------------------------------------------
+# PatchSetMenuSection - PATCH
+# --------------------------------------------------------------
+$name: patchSetMenuSection
+$description: "Met à jour partiellement une section de menu composé (max_selections, category_id)"
+$skip: false
+$async: true
+
+$params:
+  - $name: setMenuSectionId
+    $type: string
+    $optional: false
+  - $name: max_selections
+    $type: number
+    $optional: true
+  - $name: category_id
+    $type: string
+    $optional: true
+
+$returnDescription: "La section de menu composé patchée"
+$returnType:
+  $type: SetMenuSectionBasic
+  $nullable: true
+  $related:
+    - $name: SetMenuSectionBasic
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.PATCH_SET_MENU_SECTION
+  $mapping:
+    $path:
+      set_menu_section_id: setMenuSectionId
+    $body:
+      max_selections: max_selections
+      category_id: category_id
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: SetMenuSectionBasic
+    $from: "--module config --kind custom --step module"
+    $step: module

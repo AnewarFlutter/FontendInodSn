@@ -1,0 +1,24 @@
+# ------------------------------------------------------------------
+# REMOVE_ITEM_KITCHEN_AREAS - Retirer des zones cuisine d'un item
+# ------------------------------------------------------------------
+$path: /config/items/{item_id}/remove-kitchen-areas/
+$method: POST
+$description: "Retirer des zones cuisine d'un item"
+$auth: true
+$skip: false
+$params:
+  $path:
+    item_id: { $type: number, $optional: false }
+  $body:
+    kitchen_area_ids: { $type: array, $items: { $type: number }, $optional: false }
+$response:
+  $default:
+    $schema:
+      message: { $type: string }
+  $byStatus:
+    "400":
+      $schema:
+        error: { $type: string }
+    "404":
+      $schema:
+        detail: { $type: string }

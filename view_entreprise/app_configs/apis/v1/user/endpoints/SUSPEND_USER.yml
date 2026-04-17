@@ -1,0 +1,41 @@
+# ------------------------------------------------------------------
+# SUSPEND_USER - Suspension d'un utilisateur (Admin)
+# ------------------------------------------------------------------
+
+$path: /user/users/{user_id}/suspend/
+$method: POST
+$description: "Suspendre un utilisateur. Permission: user.deactivate"
+$auth: true
+$skip: true
+$params:
+  $path:
+    user_id: { $type: string, $optional: false }
+  $body:
+    reason: { $type: string, $optional: true, $description: "Motif de suspension" }
+$response:
+  $default:
+    $schema:
+      message: { $type: string, $description: "ex: Utilisateur suspendu avec succès" }
+      data:
+        $type: object
+        $schema:
+          success: { $type: boolean }
+          user_id: { $type: string }
+          email: { $type: string }
+          status_activation: { $type: string, $description: "ex: SUSPENDED" }
+          reason: { $type: string }
+  $byStatus:
+    "400":
+      $description: "Utilisateur déjà suspendu"
+      $schema:
+        error: { $type: string }
+        code: { $type: string, $description: "ex: ALREADY_SUSPENDED" }
+    "403":
+      $description: "Permission insuffisante pour suspendre un utilisateur"
+      $schema:
+        detail: { $type: string }
+    "404":
+      $description: "Utilisateur non trouvé"
+      $schema:
+        error: { $type: string }
+        code: { $type: string }

@@ -1,0 +1,39 @@
+# --------------------------------------------------------------
+# refreshToken - POST
+# --------------------------------------------------------------
+$name: refreshToken
+$description: "Rafraîchissement du token d'accès. Rotation des tokens : l'ancien refresh_token est révoqué et un nouveau émis."
+$skip: true
+$async: true
+
+$params:
+  - $name: refresh_token
+    $type: string
+    $optional: false
+
+$returnDescription: "Nouveau pair de tokens (access + refresh)"
+$returnType:
+  $type: TokenPair
+  $nullable: true
+  $related:
+    - $name: TokenPair
+      $module: auth
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: AUTH.REFRESH_TOKEN
+  $mapping:
+    $body:
+      refresh_token: refresh_token
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: TokenPair
+    $from: "--module auth --kind custom --step module"
+    $step: module

@@ -1,0 +1,31 @@
+# --------------------------------------------------------------
+# DeleteQuantityType - DELETE
+# --------------------------------------------------------------
+$name: deleteQuantityType
+$description: "Supprime un type de quantité par son identifiant"
+$skip: false
+$async: true
+
+$params:
+  - $name: quantityTypeId
+    $type: string
+    $optional: false
+
+$returnDescription: "Confirmation de suppression"
+$returnType:
+  $type: object
+  $nullable: true
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.DELETE_QUANTITY_TYPE
+  $mapping:
+    $path:
+      quantity_type_id: quantityTypeId
+  $responseMapping:
+    $returnValue: ""

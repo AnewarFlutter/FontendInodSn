@@ -1,0 +1,31 @@
+# --------------------------------------------------------------
+# GetItemIngredients - GET
+# --------------------------------------------------------------
+$name: getItemIngredients
+$description: "Récupère les ingrédients associés à un item"
+$skip: false
+$async: true
+
+$params:
+  - $name: itemId
+    $type: string
+    $optional: false
+
+$returnDescription: "Les ingrédients de l'item"
+$returnType:
+  $type: object
+  $nullable: true
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.GET_ITEM_INGREDIENTS
+  $mapping:
+    $path:
+      item_id: itemId
+  $responseMapping:
+    $returnValue: ""

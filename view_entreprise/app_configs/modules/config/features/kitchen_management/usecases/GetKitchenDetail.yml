@@ -1,0 +1,37 @@
+# --------------------------------------------------------------
+# GetKitchenDetail - GET
+# --------------------------------------------------------------
+$name: getKitchenDetail
+$description: "Récupère le détail d'une cuisine par son identifiant"
+$skip: false
+$async: true
+
+$params:
+  - { $name: kitchenId, $type: string, $optional: false }
+
+$returnDescription: "Le détail de la cuisine"
+$returnType:
+  $type: KitchenBasic
+  $nullable: true
+  $related:
+    - $name: KitchenBasic
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.GET_KITCHEN_DETAIL
+  $mapping:
+    $path:
+      kitchen_id: kitchenId
+  $responseMapping:
+    $returnValue: data
+
+$imports:
+  - $name: KitchenBasic
+    $from: "--module config --kind custom --step module"
+    $step: module

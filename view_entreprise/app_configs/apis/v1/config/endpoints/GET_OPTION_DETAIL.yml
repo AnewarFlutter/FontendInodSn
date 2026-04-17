@@ -1,0 +1,24 @@
+# ------------------------------------------------------------------
+# GET_OPTION_DETAIL - Détail d'une option
+# ------------------------------------------------------------------
+$path: /config/options/{option_id}/
+$method: GET
+$description: "Récupérer le détail d'une option"
+$auth: true
+$skip: false
+$params:
+  $path:
+    option_id: { $type: number, $optional: false }
+$response:
+  $default:
+    $schema:
+      id: { $type: number }
+      parent_group: { $type: number }
+      name: { $type: string }
+      additional_amount: { $type: number }
+      display_order: { $type: number, $optional: true }
+      is_active: { $type: boolean }
+  $byStatus:
+    "404":
+      $schema:
+        detail: { $type: string }

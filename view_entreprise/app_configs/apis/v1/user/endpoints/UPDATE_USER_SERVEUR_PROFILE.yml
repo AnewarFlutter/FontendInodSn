@@ -1,0 +1,23 @@
+# UPDATE_USER_SERVEUR_PROFILE
+$path: /user/users/{user_id}/profile/serveur/
+$method: PATCH
+$description: "Modifier le profil serveur. Permission: user.update"
+$auth: true
+$skip: true
+$params:
+  $path:
+    user_id: { $type: string, $optional: false }
+  $body:
+    sections_assignees: { $type: array, $items: { $type: string }, $optional: true }
+    tables_assignees: { $type: array, $items: { $type: number }, $optional: true }
+    langues_parlees: { $type: array, $items: { $type: string }, $optional: true }
+$response:
+  $default:
+    $schema:
+      message: { $type: string }
+      data: { $type: object }
+  $byStatus:
+    "404":
+      $schema:
+        error: { $type: string }
+        code: { $type: string, $description: "ex: PROFILE_NOT_FOUND" }

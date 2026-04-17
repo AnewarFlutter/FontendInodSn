@@ -1,0 +1,32 @@
+# ------------------------------------------------------------------
+# CREATE_ITEM - Créer un item
+# ------------------------------------------------------------------
+$path: /config/items/
+$method: POST
+$description: "Créer un nouvel item"
+$auth: true
+$skip: false
+$params:
+  $body:
+    name: { $type: string, $optional: false }
+    item_type: { $type: number, $optional: false }
+    display_name: { $type: string, $optional: true, $nullable: true }
+    description: { $type: string, $optional: true, $nullable: true }
+    price: { $type: number, $optional: false }
+    nb_portion_min: { $type: number, $optional: true, $nullable: true }
+    temps_preparation: { $type: number, $optional: true, $nullable: true }
+    is_active: { $type: boolean, $optional: false }
+$response:
+  $default:
+    $description: "201 Created"
+    $schema:
+      id: { $type: number }
+      name: { $type: string }
+      item_type: { $type: number }
+      price: { $type: number }
+      is_active: { $type: boolean }
+  $byStatus:
+    "400":
+      $schema:
+        error: { $type: string }
+        code: { $type: string }

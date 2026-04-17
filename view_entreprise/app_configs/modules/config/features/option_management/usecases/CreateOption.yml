@@ -1,0 +1,45 @@
+# --------------------------------------------------------------
+# CreateOption - POST
+# --------------------------------------------------------------
+$name: createOption
+$description: "Crée une nouvelle option"
+$skip: false
+$async: true
+
+$params:
+  - $name: payload
+    $type: CreateOptionPayload
+    $optional: false
+    $related: "--module config --feature option_management --kind custom --step feature"
+
+$returnDescription: "L'option créée"
+$returnType:
+  $type: OptionBasic
+  $nullable: true
+  $related:
+    - $name: OptionBasic
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.CREATE_OPTION
+  $mapping:
+    $body:
+      payload: payload
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: CreateOptionPayload
+    $from: "--module config --feature option_management --kind custom --step feature"
+    $step: feature
+  - $name: OptionBasic
+    $from: "--module config --kind custom --step module"
+    $step: module

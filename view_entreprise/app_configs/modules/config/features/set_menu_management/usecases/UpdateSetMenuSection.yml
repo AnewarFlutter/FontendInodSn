@@ -1,0 +1,50 @@
+# --------------------------------------------------------------
+# UpdateSetMenuSection - PUT
+# --------------------------------------------------------------
+$name: updateSetMenuSection
+$description: "Met à jour complètement une section de menu composé"
+$skip: false
+$async: true
+
+$params:
+  - $name: setMenuSectionId
+    $type: string
+    $optional: false
+  - $name: payload
+    $type: CreateSetMenuSectionPayload
+    $optional: false
+    $related: "--module config --feature set_menu_management --kind custom --step feature"
+
+$returnDescription: "La section de menu composé mise à jour"
+$returnType:
+  $type: SetMenuSectionBasic
+  $nullable: true
+  $related:
+    - $name: SetMenuSectionBasic
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.UPDATE_SET_MENU_SECTION
+  $mapping:
+    $path:
+      set_menu_section_id: setMenuSectionId
+    $body:
+      payload: payload
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: CreateSetMenuSectionPayload
+    $from: "--module config --feature set_menu_management --kind custom --step feature"
+    $step: feature
+  - $name: SetMenuSectionBasic
+    $from: "--module config --kind custom --step module"
+    $step: module

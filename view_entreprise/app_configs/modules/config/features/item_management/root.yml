@@ -1,0 +1,121 @@
+# ------------------------------------------------------------------
+# Feature : item_management (gestion des items/plats)
+# ------------------------------------------------------------------
+$name: item_management
+$description: "CRUD, activation/désactivation, statistiques et gestion des relations (catégories, zones cuisine, groupes d'options, ingrédients) des items"
+$fileNameCasing: snakeCase
+$override: false
+$delete: false
+$skip: false
+$rewriteInController: true
+$rewriteInDataSourceImpl: false
+
+$enums: []
+$types:
+  - $name: CreateItemPayload
+    $attributes:
+      - { $name: name, $type: string, $optional: false }
+      - { $name: item_type, $type: number, $optional: false }
+      - { $name: display_name, $type: string, $optional: true }
+      - { $name: description, $type: string, $optional: true }
+      - { $name: price, $type: number, $optional: false }
+      - { $name: nb_portion_min, $type: number, $optional: true }
+      - { $name: temps_preparation, $type: number, $optional: true }
+      - { $name: is_active, $type: boolean, $optional: false }
+
+  - $name: AddItemCategoriesPayload
+    $attributes:
+      - $name: category_ids
+        $type: string
+        $list: true
+        $optional: false
+
+  - $name: AddItemKitchenAreasPayload
+    $attributes:
+      - $name: kitchen_area_ids
+        $type: string
+        $list: true
+        $optional: false
+      - { $name: is_active, $type: boolean, $optional: false }
+
+  - $name: ToggleItemKitchenAreaPayload
+    $attributes:
+      - { $name: is_active, $type: boolean, $optional: false }
+
+  - $name: AddItemOptionGroupPayload
+    $attributes:
+      - { $name: group_option_id, $type: number, $optional: false }
+      - { $name: is_mandatory, $type: boolean, $optional: false }
+      - $name: selection_type
+        $type: SelectionTypeEnum
+        $optional: false
+        $related:
+          $name: SelectionTypeEnum
+          $module: config
+          $kind: enum
+          $step: module
+      - { $name: max_selections, $type: number, $optional: false }
+
+  - $name: UpdateItemOptionGroupPayload
+    $attributes:
+      - { $name: is_mandatory, $type: boolean, $optional: true }
+      - $name: selection_type
+        $type: SelectionTypeEnum
+        $optional: true
+        $related:
+          $name: SelectionTypeEnum
+          $module: config
+          $kind: enum
+          $step: module
+      - { $name: max_selections, $type: number, $optional: true }
+
+  - $name: ItemIngredientEntry
+    $attributes:
+      - { $name: ingredient_id, $type: number, $optional: false }
+      - { $name: quantity, $type: string, $optional: false }
+      - { $name: quantity_type_id, $type: number, $optional: false }
+      - { $name: is_optional, $type: boolean, $optional: false }
+
+  - $name: AddItemIngredientsPayload
+    $attributes:
+      - $name: ingredients
+        $type: ItemIngredientEntry
+        $list: true
+        $optional: false
+        $related:
+          $name: ItemIngredientEntry
+          $module: config
+          $feature: item_management
+          $kind: custom
+          $step: feature
+
+  - $name: UpdateItemIngredientPayload
+    $attributes:
+      - { $name: quantity, $type: number, $optional: true }
+      - { $name: quantity_type_id, $type: number, $optional: true }
+
+$usecases:
+  - $include: "./usecases/GetItemsList.yml"
+  - $include: "./usecases/CreateItem.yml"
+  - $include: "./usecases/GetItemDetail.yml"
+  - $include: "./usecases/UpdateItem.yml"
+  - $include: "./usecases/PatchItem.yml"
+  - $include: "./usecases/DeleteItem.yml"
+  - $include: "./usecases/ActivateItem.yml"
+  - $include: "./usecases/DeactivateItem.yml"
+  - $include: "./usecases/GetItemsStats.yml"
+  - $include: "./usecases/GetItemCategories.yml"
+  - $include: "./usecases/AddItemCategories.yml"
+  - $include: "./usecases/RemoveItemCategories.yml"
+  - $include: "./usecases/GetItemKitchenAreas.yml"
+  - $include: "./usecases/AddItemKitchenAreas.yml"
+  - $include: "./usecases/ToggleItemKitchenArea.yml"
+  - $include: "./usecases/RemoveItemKitchenAreas.yml"
+  - $include: "./usecases/GetItemOptionGroups.yml"
+  - $include: "./usecases/AddItemOptionGroup.yml"
+  - $include: "./usecases/UpdateItemOptionGroup.yml"
+  - $include: "./usecases/RemoveItemOptionGroups.yml"
+  - $include: "./usecases/GetItemIngredients.yml"
+  - $include: "./usecases/AddItemIngredients.yml"
+  - $include: "./usecases/UpdateItemIngredient.yml"
+  - $include: "./usecases/RemoveItemIngredients.yml"

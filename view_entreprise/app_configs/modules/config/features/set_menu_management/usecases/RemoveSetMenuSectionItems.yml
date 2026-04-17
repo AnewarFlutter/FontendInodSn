@@ -1,0 +1,42 @@
+# --------------------------------------------------------------
+# RemoveSetMenuSectionItems - POST
+# --------------------------------------------------------------
+$name: removeSetMenuSectionItems
+$description: "Retire des items d'une section de menu composé"
+$skip: false
+$async: true
+
+$params:
+  - $name: setMenuSectionId
+    $type: string
+    $optional: false
+  - $name: payload
+    $type: SetMenuSectionItemsPayload
+    $optional: false
+    $related: "--module config --feature set_menu_management --kind custom --step feature"
+
+$returnDescription: "Résultat du retrait d'items de la section"
+$returnType:
+  $type: object
+  $nullable: true
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.REMOVE_SET_MENU_SECTION_ITEMS
+  $mapping:
+    $path:
+      set_menu_section_id: setMenuSectionId
+    $body:
+      payload: payload
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: SetMenuSectionItemsPayload
+    $from: "--module config --feature set_menu_management --kind custom --step feature"
+    $step: feature

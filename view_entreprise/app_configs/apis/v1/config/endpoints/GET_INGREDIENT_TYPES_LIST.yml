@@ -1,0 +1,36 @@
+# ------------------------------------------------------------------
+# GET_INGREDIENT_TYPES_LIST - Liste des types d'ingrédients
+# ------------------------------------------------------------------
+$path: /config/ingredient-types/
+$method: GET
+$description: "Lister tous les types d'ingrédients"
+$auth: true
+$skip: false
+$params:
+  $query:
+    search: { $type: string, $optional: true }
+    is_active: { $type: boolean, $optional: true }
+    ordering: { $type: string, $optional: true }
+$response:
+  $default:
+    $schema:
+      status: { $type: string }
+      message: { $type: string }
+      data:
+        $type: object
+        $schema:
+          ingredient_types:
+            $type: array
+            $items:
+              $type: object
+              $schema:
+                id: { $type: string }
+                name: { $type: string }
+                description: { $type: string, $nullable: true }
+                display_order: { $type: number, $nullable: true }
+                is_active: { $type: boolean }
+          count: { $type: number }
+  $byStatus:
+    "401":
+      $schema:
+        detail: { $type: string }

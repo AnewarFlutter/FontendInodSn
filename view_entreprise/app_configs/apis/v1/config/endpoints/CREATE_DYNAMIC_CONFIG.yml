@@ -1,0 +1,27 @@
+# ------------------------------------------------------------------
+# CREATE_DYNAMIC_CONFIG - Créer une configuration dynamique
+# ------------------------------------------------------------------
+$path: /config/config/
+$method: POST
+$description: "Créer une nouvelle configuration dynamique"
+$auth: true
+$skip: false
+$params:
+  $body:
+    key: { $type: string, $optional: false }
+    value: { $type: string, $optional: false }
+    data_type: { $type: string, $optional: false, $description: "Type de données : boolean, string, integer, float, json" }
+    description: { $type: string, $optional: true }
+$response:
+  $default:
+    $description: "201 Created"
+    $schema:
+      id: { $type: number }
+      key: { $type: string }
+      value: { $type: string }
+      data_type: { $type: string }
+      description: { $type: string, $optional: true, $nullable: true }
+  $byStatus:
+    "400":
+      $schema:
+        error: { $type: string }

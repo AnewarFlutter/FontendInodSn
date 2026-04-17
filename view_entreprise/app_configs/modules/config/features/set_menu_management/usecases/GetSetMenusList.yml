@@ -1,0 +1,49 @@
+# --------------------------------------------------------------
+# GetSetMenusList - GET
+# --------------------------------------------------------------
+$name: getSetMenusList
+$description: "Liste tous les menus composés avec pagination et filtres"
+$skip: false
+$async: true
+
+$params:
+  - $name: is_active
+    $type: boolean
+    $optional: true
+  - $name: search
+    $type: string
+    $optional: true
+  - $name: ordering
+    $type: string
+    $optional: true
+
+$returnDescription: "Liste paginée des menus composés"
+$returnType:
+  $type: PaginatedSetMenus
+  $nullable: true
+  $related:
+    - $name: PaginatedSetMenus
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.GET_SET_MENUS_LIST
+  $mapping:
+    $query:
+      is_active: is_active
+      search: search
+      ordering: ordering
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: PaginatedSetMenus
+    $from: "--module config --kind custom --step module"
+    $step: module

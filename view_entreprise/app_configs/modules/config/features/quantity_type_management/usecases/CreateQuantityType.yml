@@ -1,0 +1,45 @@
+# --------------------------------------------------------------
+# CreateQuantityType - POST
+# --------------------------------------------------------------
+$name: createQuantityType
+$description: "Crée un nouveau type de quantité"
+$skip: false
+$async: true
+
+$params:
+  - $name: payload
+    $type: CreateQuantityTypePayload
+    $optional: false
+    $related: "--module config --feature quantity_type_management --kind custom --step feature"
+
+$returnDescription: "Le type de quantité créé"
+$returnType:
+  $type: QuantityTypeBasic
+  $nullable: true
+  $related:
+    - $name: QuantityTypeBasic
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.CREATE_QUANTITY_TYPE
+  $mapping:
+    $body:
+      payload: payload
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: CreateQuantityTypePayload
+    $from: "--module config --feature quantity_type_management --kind custom --step feature"
+    $step: feature
+  - $name: QuantityTypeBasic
+    $from: "--module config --kind custom --step module"
+    $step: module

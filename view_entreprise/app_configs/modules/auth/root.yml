@@ -1,0 +1,167 @@
+# ====================== AUTH MODULE ======================
+
+$name: auth
+$fileNameCasing: snakeCase
+$description: "Module d'authentification : gestion des sessions, tokens, mots de passe et administration des utilisateurs"
+$override: false
+$delete: false
+$skip: true
+
+$enums:
+  - $name: LoginContextEnum
+    $generate: true
+    $splitPerFile: true
+    $values: ["ADMIN", "CAISSE", "CUISINE", "SERVICE", "LIVRAISON"]
+    $description: "Contextes de connexion disponibles dans l'application restauration"
+    $descriptions:
+      ADMIN: "Espace administrateur"
+      CAISSE: "Espace caisse"
+      CUISINE: "Espace cuisine"
+      SERVICE: "Espace service en salle"
+      LIVRAISON: "Espace livraison"
+
+  - $name: IdentifierTypeEnum
+    $generate: true
+    $splitPerFile: true
+    $values: ["email", "phone"]
+    $description: "Type d'identifiant utilisé pour la connexion"
+    $descriptions:
+      email: "Connexion par adresse email"
+      phone: "Connexion par numéro de téléphone"
+
+$types:
+  # ─── Token ───────────────────────────────────────────────────
+  - $name: TokenPair
+    $attributes:
+      - { $name: access_token, $type: string, $optional: false }
+      - { $name: refresh_token, $type: string, $optional: false }
+      - { $name: token_type, $type: string, $optional: false, $description: "Type de token : Bearer" }
+      - { $name: expires_in, $type: number, $optional: false, $description: "Durée de validité du access_token en secondes" }
+
+  # ─── Permissions ─────────────────────────────────────────────
+  - $name: RolePermissionsCustom
+    $attributes:
+      - { $name: added, $type: string, $list: true, $optional: false }
+      - { $name: removed, $type: string, $list: true, $optional: false }
+
+  - $name: RolePermissions
+    $attributes:
+      - { $name: base, $type: string, $list: true, $optional: false }
+      - $name: custom
+        $type: RolePermissionsCustom
+        $optional: false
+        $related:
+          $name: RolePermissionsCustom
+          $module: auth
+          $kind: custom
+          $step: module
+
+  # ─── Rôle ────────────────────────────────────────────────────
+  - $name: CurrentRole
+    $attributes:
+      - { $name: code, $type: string, $optional: false, $description: "Code du rôle ex: SUPER_ADMIN" }
+      - { $name: name, $type: string, $optional: false }
+      - { $name: level, $type: number, $optional: false }
+      - $name: context
+        $type: LoginContextEnum
+        $optional: false
+        $related:
+          $name: LoginContextEnum
+          $module: auth
+          $kind: enum
+          $step: module
+      - $name: permissions
+        $type: RolePermissions
+        $optional: false
+        $related:
+          $name: RolePermissions
+          $module: auth
+          $kind: custom
+          $step: module
+
+  # ─── Profil utilisateur ──────────────────────────────────────
+  - $name: UserProfileData
+    $attributes:
+      - { $name: id, $type: string, $optional: false }
+      - { $name: auth_user_id, $type: string, $optional: false }
+      - { $name: email, $type: string, $optional: false }
+      - { $name: firstname, $type: string, $optional: false }
+      - { $name: lastname, $type: string, $optional: false }
+      - { $name: pseudo, $type: string, $optional: false }
+      - { $name: photo, $type: string, $optional: true, $nullable: true }
+      - { $name: gender, $type: string, $optional: true, $nullable: true }
+      - { $name: birth_date, $type: string, $optional: true, $nullable: true }
+      - { $name: telephone, $type: string, $optional: true, $nullable: true }
+      - { $name: created_at, $type: string, $optional: false }
+      - $name: current_role
+        $type: CurrentRole
+        $optional: false
+        $related:
+          $name: CurrentRole
+          $module: auth
+          $kind: custom
+          $step: module
+      - $name: available_roles
+        $type: CurrentRole
+        $list: true
+        $optional: false
+        $related:
+          $name: CurrentRole
+          $module: auth
+          $kind: custom
+          $step: module
+
+  - $name: LoginUserWrapper
+    $attributes:
+      - $name: data
+        $type: UserProfileData
+        $optional: false
+        $related:
+          $name: UserProfileData
+          $module: auth
+          $kind: custom
+          $step: module
+      - { $name: email_verified, $type: boolean, $optional: false }
+      - { $name: is_active, $type: boolean, $optional: false }
+
+  # ─── Réponse Login ───────────────────────────────────────────
+  - $name: LoginResponseData
+    $attributes:
+      - { $name: status, $type: string, $optional: false, $description: "Statut de la réponse : SUCCESS" }
+      - { $name: message, $type: string, $optional: false }
+      - $name: token
+        $type: TokenPair
+        $optional: false
+        $related:
+          $name: TokenPair
+          $module: auth
+          $kind: custom
+          $step: module
+      - $name: user
+        $type: LoginUserWrapper
+        $optional: false
+        $related:
+          $name: LoginUserWrapper
+          $module: auth
+          $kind: custom
+          $step: module
+
+  # ─── Profil courant (GET /me) ─────────────────────────────────
+  - $name: AuthUserBasic
+    $attributes:
+      - { $name: auth_user_id, $type: string, $optional: false }
+      - { $name: email, $type: string, $optional: true, $nullable: true }
+      - { $name: phone, $type: string, $optional: true, $nullable: true }
+      - { $name: is_active, $type: boolean, $optional: false }
+      - $name: context
+        $type: LoginContextEnum
+        $optional: true
+        $nullable: true
+        $related:
+          $name: LoginContextEnum
+          $module: auth
+          $kind: enum
+          $step: module
+
+$features:
+  - $include: "./features/session/root.yml"

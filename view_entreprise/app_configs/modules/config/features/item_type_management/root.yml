@@ -1,0 +1,36 @@
+# ------------------------------------------------------------------
+# Feature : item_type_management (gestion des types d'items)
+# ------------------------------------------------------------------
+$name: item_type_management
+$description: "CRUD, activation/désactivation et statistiques des types d'items"
+$fileNameCasing: snakeCase
+$override: false
+$delete: false
+$skip: false
+$rewriteInController: true
+$rewriteInDataSourceImpl: false
+
+$enums: []
+$types:
+  - $name: CreateItemTypePayload
+    $attributes:
+      - { $name: name, $type: string, $optional: false }
+      - { $name: code, $type: string, $optional: false }
+      - { $name: is_active, $type: boolean, $optional: false }
+
+  - $name: UpdateItemTypePayload
+    $attributes:
+      - { $name: name, $type: string, $optional: false }
+      - { $name: code, $type: string, $optional: false }
+      - { $name: is_active, $type: boolean, $optional: false }
+
+$usecases:
+  - $include: "./usecases/GetItemTypesList.yml"
+  - $include: "./usecases/CreateItemType.yml"
+  - $include: "./usecases/GetItemTypeDetail.yml"
+  - $include: "./usecases/UpdateItemType.yml"
+  - $include: "./usecases/PatchItemType.yml"
+  - $include: "./usecases/DeleteItemType.yml"
+  - $include: "./usecases/ActivateItemType.yml"
+  - $include: "./usecases/DeactivateItemType.yml"
+  - $include: "./usecases/GetItemTypesStats.yml"

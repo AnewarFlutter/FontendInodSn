@@ -1,0 +1,34 @@
+# --------------------------------------------------------------
+# getUserStats - GET
+# --------------------------------------------------------------
+$name: getUserStats
+$description: "Récupère les statistiques globales des utilisateurs (totaux, actifs/inactifs, répartition par rôle). Permission: user.view_stats"
+$skip: true
+$async: true
+
+$params: []
+
+$returnDescription: "Statistiques globales des utilisateurs"
+$returnType:
+  $type: UserStatsResponse
+  $nullable: true
+  $related:
+    - $name: UserStatsResponse
+      $module: user
+      $feature: stats
+      $kind: custom
+      $step: feature
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: USER.GET_USER_STATS
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: UserStatsResponse
+    $from: "--module user --feature stats --kind custom --step feature"
+    $step: feature

@@ -1,0 +1,30 @@
+# ------------------------------------------------------------------
+# GET_INGREDIENTS_LIST - Liste des ingrédients
+# ------------------------------------------------------------------
+$path: /config/ingredients/
+$method: GET
+$description: "Lister tous les ingrédients"
+$auth: true
+$skip: false
+$params:
+  $query:
+    search: { $type: string, $optional: true }
+    is_active: { $type: boolean, $optional: true }
+$response:
+  $default:
+    $schema:
+      count: { $type: number }
+      next: { $type: string, $nullable: true }
+      previous: { $type: string, $nullable: true }
+      results:
+        $type: array
+        $items:
+          $type: object
+          $schema:
+            id: { $type: number }
+            name: { $type: string }
+            is_active: { $type: boolean }
+  $byStatus:
+    "401":
+      $schema:
+        detail: { $type: string }

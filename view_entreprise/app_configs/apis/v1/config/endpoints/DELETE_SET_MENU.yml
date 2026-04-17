@@ -1,0 +1,20 @@
+# ------------------------------------------------------------------
+# DELETE_SET_MENU - Supprimer une formule
+# ------------------------------------------------------------------
+$path: /config/set-menus/{set_menu_id}/
+$method: DELETE
+$description: "Supprimer une formule"
+$auth: true
+$skip: false
+$params:
+  $path:
+    set_menu_id: { $type: number, $optional: false }
+$response:
+  $default:
+    $description: "204 No Content"
+    $schema:
+      message: { $type: string }
+  $byStatus:
+    "404":
+      $schema:
+        detail: { $type: string }

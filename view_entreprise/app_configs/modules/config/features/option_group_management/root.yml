@@ -1,0 +1,31 @@
+# ------------------------------------------------------------------
+# Feature : option_group_management (gestion des groupes d'options)
+# ------------------------------------------------------------------
+$name: option_group_management
+$description: "CRUD, activation/désactivation, réordonnancement et liste des options d'un groupe"
+$fileNameCasing: snakeCase
+$override: false
+$delete: false
+$skip: false
+$rewriteInController: true
+$rewriteInDataSourceImpl: false
+
+$enums: []
+$types:
+  - $name: CreateOptionGroupPayload
+    $attributes:
+      - { $name: name, $type: string, $optional: false }
+      - { $name: display_order, $type: number, $optional: true }
+      - { $name: is_active, $type: boolean, $optional: false }
+
+$usecases:
+  - $include: "./usecases/GetOptionGroupsList.yml"
+  - $include: "./usecases/CreateOptionGroup.yml"
+  - $include: "./usecases/GetOptionGroupDetail.yml"
+  - $include: "./usecases/UpdateOptionGroup.yml"
+  - $include: "./usecases/PatchOptionGroup.yml"
+  - $include: "./usecases/DeleteOptionGroup.yml"
+  - $include: "./usecases/ActivateOptionGroup.yml"
+  - $include: "./usecases/DeactivateOptionGroup.yml"
+  - $include: "./usecases/ReorderOptionGroup.yml"
+  - $include: "./usecases/GetOptionGroupOptions.yml"

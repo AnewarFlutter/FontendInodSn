@@ -1,0 +1,22 @@
+# UPDATE_USER_MANAGER_PROFILE
+$path: /user/users/{user_id}/profile/manager/
+$method: PATCH
+$description: "Modifier le profil manager. Permission: user.update"
+$auth: true
+$skip: true
+$params:
+  $path:
+    user_id: { $type: string, $optional: false }
+  $body:
+    notes: { $type: string, $optional: true }
+    responsabilites: { $type: array, $items: { $type: string }, $optional: true }
+$response:
+  $default:
+    $schema:
+      message: { $type: string }
+      data: { $type: object }
+  $byStatus:
+    "404":
+      $schema:
+        error: { $type: string }
+        code: { $type: string, $description: "ex: PROFILE_NOT_FOUND" }

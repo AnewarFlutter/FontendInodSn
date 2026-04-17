@@ -1,0 +1,46 @@
+# --------------------------------------------------------------
+# PatchIngredientType - PATCH
+# --------------------------------------------------------------
+$name: patchIngredientType
+$description: "Met a jour partiellement un type d'ingredient"
+$skip: false
+$async: true
+
+$params:
+  - { $name: ingredientTypeId, $type: string, $optional: false }
+  - $name: payload
+    $type: CreateIngredientTypePayload
+    $optional: false
+    $related: "--module config --feature ingredient_type_management --kind custom --step feature"
+
+$returnDescription: "Le type d'ingredient modifie"
+$returnType:
+  $type: IngredientTypeBasic
+  $nullable: true
+  $related:
+    - $name: IngredientTypeBasic
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.PATCH_INGREDIENT_TYPE
+  $mapping:
+    $path:
+      ingredient_type_id: ingredientTypeId
+    $body:
+      payload: payload
+  $responseMapping:
+    $returnValue: data
+
+$imports:
+  - $name: CreateIngredientTypePayload
+    $from: "--module config --feature ingredient_type_management --kind custom --step feature"
+    $step: feature
+  - $name: IngredientTypeBasic
+    $from: "--module config --kind custom --step module"
+    $step: module

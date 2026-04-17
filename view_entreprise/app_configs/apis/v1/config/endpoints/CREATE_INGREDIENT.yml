@@ -1,0 +1,23 @@
+# ------------------------------------------------------------------
+# CREATE_INGREDIENT - Créer un ingrédient
+# ------------------------------------------------------------------
+$path: /config/ingredients/
+$method: POST
+$description: "Créer un nouvel ingrédient"
+$auth: true
+$skip: false
+$params:
+  $body:
+    name: { $type: string, $optional: false }
+    is_active: { $type: boolean, $optional: false }
+$response:
+  $default:
+    $description: "201 Created"
+    $schema:
+      id: { $type: number }
+      name: { $type: string }
+      is_active: { $type: boolean }
+  $byStatus:
+    "400":
+      $schema:
+        error: { $type: string }

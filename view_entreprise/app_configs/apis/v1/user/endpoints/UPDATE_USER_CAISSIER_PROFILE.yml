@@ -1,0 +1,23 @@
+# UPDATE_USER_CAISSIER_PROFILE
+$path: /user/users/{user_id}/profile/caissier/
+$method: PATCH
+$description: "Modifier le profil caissier. Permission: user.update"
+$auth: true
+$skip: true
+$params:
+  $path:
+    user_id: { $type: string, $optional: false }
+  $body:
+    pos_terminal_id: { $type: string, $optional: true }
+    assigned_cash_register: { $type: string, $optional: true }
+    last_cash_register_opening: { $type: string, $optional: true, $description: "Datetime ISO 8601" }
+$response:
+  $default:
+    $schema:
+      message: { $type: string }
+      data: { $type: object }
+  $byStatus:
+    "404":
+      $schema:
+        error: { $type: string }
+        code: { $type: string, $description: "ex: PROFILE_NOT_FOUND" }

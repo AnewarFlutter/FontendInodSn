@@ -1,0 +1,20 @@
+# ------------------------------------------------------------------
+# GET_ITEM_TYPES_STATS - Statistiques des types d'items
+# ------------------------------------------------------------------
+$path: /config/item-types/stats/
+$method: GET
+$description: "Récupérer les statistiques des types d'items"
+$auth: true
+$skip: false
+$params:
+  $query: {}
+$response:
+  $default:
+    $schema:
+      total: { $type: number }
+      active: { $type: number }
+      inactive: { $type: number }
+  $byStatus:
+    "401":
+      $schema:
+        detail: { $type: string }

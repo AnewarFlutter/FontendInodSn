@@ -1,0 +1,44 @@
+# ------------------------------------------------------------------
+# Feature : area_management (gestion des zones)
+# ------------------------------------------------------------------
+$name: area_management
+$description: "CRUD, activation/désactivation, réordonnancement et sous-ressources des zones (TABLE et KITCHEN)"
+$fileNameCasing: snakeCase
+$override: false
+$delete: false
+$skip: true
+$rewriteInController: true
+$rewriteInDataSourceImpl: false
+
+$enums: []
+$types:
+  - $name: CreateAreaPayload
+    $attributes:
+      - { $name: name, $type: string, $optional: false }
+      - $name: area_type
+        $type: AreaTypeEnum
+        $optional: false
+        $related:
+          $name: AreaTypeEnum
+          $module: config
+          $kind: enum
+          $step: module
+      - { $name: description, $type: string, $optional: true }
+      - { $name: display_order, $type: number, $optional: true }
+
+  - $name: ActivateAreaPayload
+    $attributes:
+      - { $name: reactivate_items, $type: boolean, $optional: true }
+
+$usecases:
+  - $include: "./usecases/GetAreasList.yml"
+  - $include: "./usecases/CreateArea.yml"
+  - $include: "./usecases/GetAreaDetail.yml"
+  - $include: "./usecases/UpdateArea.yml"
+  - $include: "./usecases/PatchArea.yml"
+  - $include: "./usecases/DeleteArea.yml"
+  - $include: "./usecases/ActivateArea.yml"
+  - $include: "./usecases/DeactivateArea.yml"
+  - $include: "./usecases/ReorderArea.yml"
+  - $include: "./usecases/GetAreaItems.yml"
+  - $include: "./usecases/GetAreaTables.yml"

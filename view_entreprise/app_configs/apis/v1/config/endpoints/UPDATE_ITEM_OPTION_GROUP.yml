@@ -1,0 +1,27 @@
+# ------------------------------------------------------------------
+# UPDATE_ITEM_OPTION_GROUP - Mettre à jour un groupe d'options d'un item
+# ------------------------------------------------------------------
+$path: /config/items/{item_id}/update-option-group/{option_group_id}/
+$method: PATCH
+$description: "Mettre à jour la configuration d'un groupe d'options pour un item"
+$auth: true
+$skip: false
+$params:
+  $path:
+    item_id: { $type: number, $optional: false }
+    option_group_id: { $type: number, $optional: false }
+  $body:
+    is_mandatory: { $type: boolean, $optional: true }
+    selection_type: { $type: string, $optional: true, $description: "Type de sélection : SINGLE, MULTIPLE" }
+    max_selections: { $type: number, $optional: true }
+$response:
+  $default:
+    $schema:
+      message: { $type: string }
+  $byStatus:
+    "400":
+      $schema:
+        error: { $type: string }
+    "404":
+      $schema:
+        detail: { $type: string }

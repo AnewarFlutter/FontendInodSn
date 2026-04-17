@@ -1,0 +1,39 @@
+# ------------------------------------------------------------------
+# GET_KITCHENS_LIST - Liste des cuisines
+# ------------------------------------------------------------------
+$path: /config/kitchens/
+$method: GET
+$description: "Lister toutes les cuisines avec filtres"
+$auth: true
+$skip: false
+$params:
+  $query:
+    is_active: { $type: boolean, $optional: true }
+    area: { $type: string, $optional: true, $description: "Filtrer par zone" }
+    responsable_id: { $type: string, $optional: true, $description: "Filtrer par responsable" }
+    search: { $type: string, $optional: true }
+    ordering: { $type: string, $optional: true }
+$response:
+  $default:
+    $schema:
+      count: { $type: number }
+      next: { $type: string, $nullable: true }
+      previous: { $type: string, $nullable: true }
+      results:
+        $type: array
+        $items:
+          $type: object
+          $schema:
+            id: { $type: string }
+            name: { $type: string }
+            slug: { $type: string }
+            description: { $type: string, $nullable: true }
+            icon: { $type: string, $nullable: true }
+            area: { $type: string, $nullable: true }
+            area_name: { $type: string, $nullable: true }
+            responsable_id: { $type: string, $nullable: true }
+            is_active: { $type: boolean }
+  $byStatus:
+    "401":
+      $schema:
+        detail: { $type: string }

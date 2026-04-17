@@ -1,0 +1,41 @@
+# --------------------------------------------------------------
+# GetSetMenuSectionDetail - GET
+# --------------------------------------------------------------
+$name: getSetMenuSectionDetail
+$description: "Récupère le détail d'une section de menu composé par son identifiant"
+$skip: false
+$async: true
+
+$params:
+  - $name: setMenuSectionId
+    $type: string
+    $optional: false
+
+$returnDescription: "Le détail de la section de menu composé"
+$returnType:
+  $type: SetMenuSectionBasic
+  $nullable: true
+  $related:
+    - $name: SetMenuSectionBasic
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.GET_SET_MENU_SECTION_DETAIL
+  $mapping:
+    $path:
+      set_menu_section_id: setMenuSectionId
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: SetMenuSectionBasic
+    $from: "--module config --kind custom --step module"
+    $step: module

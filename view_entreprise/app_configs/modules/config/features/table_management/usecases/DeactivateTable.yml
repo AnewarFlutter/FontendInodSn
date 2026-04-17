@@ -1,0 +1,41 @@
+# --------------------------------------------------------------
+# DeactivateTable - POST
+# --------------------------------------------------------------
+$name: deactivateTable
+$description: "Désactive une table par son identifiant"
+$skip: false
+$async: true
+
+$params:
+  - $name: tableId
+    $type: string
+    $optional: false
+
+$returnDescription: "La table désactivée"
+$returnType:
+  $type: TableBasic
+  $nullable: true
+  $related:
+    - $name: TableBasic
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: false
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.DEACTIVATE_TABLE
+  $mapping:
+    $path:
+      table_id: tableId
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: TableBasic
+    $from: "--module config --kind custom --step module"
+    $step: module

@@ -1,0 +1,38 @@
+# ------------------------------------------------------------------
+# Feature : dynamic_config_management (configurations dynamiques)
+# ------------------------------------------------------------------
+$name: dynamic_config_management
+$description: "CRUD et accès par clé/type des configurations dynamiques de l'application"
+$fileNameCasing: snakeCase
+$override: false
+$delete: false
+$skip: false
+$rewriteInController: true
+$rewriteInDataSourceImpl: false
+
+$enums: []
+$types:
+  - $name: CreateDynamicConfigPayload
+    $attributes:
+      - { $name: key, $type: string, $optional: false }
+      - { $name: value, $type: string, $optional: false }
+      - { $name: data_type, $type: string, $optional: false, $description: "Type : boolean, string, integer, float, json" }
+      - { $name: description, $type: string, $optional: true }
+
+  - $name: UpdateDynamicConfigByKeyPayload
+    $attributes:
+      - { $name: key, $type: string, $optional: false }
+      - { $name: value, $type: string, $optional: false }
+      - { $name: data_type, $type: string, $optional: false }
+
+$usecases:
+  - $include: "./usecases/GetDynamicConfigsList.yml"
+  - $include: "./usecases/CreateDynamicConfig.yml"
+  - $include: "./usecases/GetDynamicConfigDetail.yml"
+  - $include: "./usecases/UpdateDynamicConfig.yml"
+  - $include: "./usecases/PatchDynamicConfig.yml"
+  - $include: "./usecases/DeleteDynamicConfig.yml"
+  - $include: "./usecases/GetDynamicConfigByKey.yml"
+  - $include: "./usecases/UpdateDynamicConfigByKey.yml"
+  - $include: "./usecases/DeleteDynamicConfigByKey.yml"
+  - $include: "./usecases/GetDynamicConfigsByType.yml"

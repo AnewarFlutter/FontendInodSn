@@ -1,0 +1,26 @@
+# UPDATE_USER_EMAIL
+$path: /user/users/{user_id}/update-email/
+$method: PATCH
+$description: "Modifier l'email. Champ requis : new_email. Permission: user.update"
+$auth: true
+$skip: true
+$params:
+  $path:
+    user_id: { $type: string, $optional: false }
+  $body:
+    new_email: { $type: string, $optional: false }
+$response:
+  $default:
+    $schema:
+      message: { $type: string }
+  $byStatus:
+    "400":
+      $description: "Email invalide ou déjà utilisé"
+      $schema:
+        error: { $type: string, $description: "ex: Le champ new_email est requis" }
+        code: { $type: string, $description: "ex: MISSING_FIELDS" }
+    "404":
+      $description: "Utilisateur non trouvé"
+      $schema:
+        error: { $type: string }
+        code: { $type: string }

@@ -1,0 +1,42 @@
+# ------------------------------------------------------------------
+# CREATE_SET_MENU - Créer une formule
+# ------------------------------------------------------------------
+$path: /config/set-menus/
+$method: POST
+$description: "Créer une nouvelle formule avec ses sections optionnelles"
+$auth: true
+$skip: false
+$params:
+  $body:
+    name: { $type: string, $optional: false }
+    description: { $type: string, $optional: true }
+    price: { $type: number, $optional: false }
+    display_order: { $type: number, $optional: true }
+    sections:
+      $type: array
+      $optional: true
+      $items:
+        $type: object
+        $schema:
+          category_id: { $type: number, $optional: false }
+          name: { $type: string, $optional: true }
+          min_selections: { $type: number, $optional: true }
+          max_selections: { $type: number, $optional: false }
+          display_order: { $type: number, $optional: true }
+          item_ids:
+            $type: array
+            $optional: false
+            $items:
+              $type: number
+$response:
+  $default:
+    $description: "201 Created"
+    $schema:
+      id: { $type: number }
+      name: { $type: string }
+      price: { $type: number }
+      is_active: { $type: boolean }
+  $byStatus:
+    "400":
+      $schema:
+        error: { $type: string }

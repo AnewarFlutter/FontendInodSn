@@ -1,0 +1,29 @@
+# ------------------------------------------------------------------
+# UPDATE_OPTION_GROUP - Mettre à jour complètement un groupe d'options
+# ------------------------------------------------------------------
+$path: /config/option-groups/{option_group_id}/
+$method: PUT
+$description: "Mettre à jour complètement un groupe d'options"
+$auth: true
+$skip: false
+$params:
+  $path:
+    option_group_id: { $type: number, $optional: false }
+  $body:
+    name: { $type: string, $optional: false }
+    display_order: { $type: number, $optional: false }
+    is_active: { $type: boolean, $optional: false }
+$response:
+  $default:
+    $schema:
+      id: { $type: number }
+      name: { $type: string }
+      display_order: { $type: number, $nullable: true }
+      is_active: { $type: boolean }
+  $byStatus:
+    "400":
+      $schema:
+        error: { $type: string }
+    "404":
+      $schema:
+        detail: { $type: string }

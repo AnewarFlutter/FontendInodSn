@@ -1,0 +1,34 @@
+# ------------------------------------------------------------------
+# ACTIVATE_USER - Activation d'un utilisateur suspendu (Admin)
+# ------------------------------------------------------------------
+
+$path: /user/users/{user_id}/activate/
+$method: POST
+$description: "Activer un utilisateur suspendu. Permission: user.activate"
+$auth: true
+$skip: true
+$params:
+  $path:
+    user_id: { $type: string, $optional: false }
+$response:
+  $default:
+    $schema:
+      message: { $type: string, $description: "ex: Utilisateur activé avec succès" }
+      data:
+        $type: object
+        $schema:
+          success: { $type: boolean }
+          user_id: { $type: string }
+          email: { $type: string }
+          status_activation: { $type: string, $description: "ex: ACTIVE" }
+          reason: { $type: string }
+  $byStatus:
+    "400":
+      $description: "Utilisateur déjà actif"
+      $schema:
+        error: { $type: string }
+        code: { $type: string, $description: "ex: ALREADY_ACTIVE" }
+    "404":
+      $schema:
+        error: { $type: string }
+        code: { $type: string }

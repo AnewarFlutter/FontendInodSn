@@ -1,0 +1,24 @@
+# ------------------------------------------------------------------
+# GET_PERMISSIONS_CATEGORIES - Catégories de permissions (Admin)
+# ------------------------------------------------------------------
+
+$path: /user/permissions/categories/
+$method: GET
+$description: "Lister les catégories de permissions pour affichage groupé. Permission: permission.list"
+$auth: true
+$skip: true
+$response:
+  $default:
+    $schema:
+      data:
+        $type: object
+        $schema:
+          count: { $type: number }
+          user_level: { $type: number }
+          filtered: { $type: boolean }
+          categories: { $type: array, $items: { $type: string }, $description: "ex: CATEGORY, CONFIG, EMPLOYEE, MENU..." }
+  $byStatus:
+    "403":
+      $schema:
+        error: { $type: string }
+        code: { $type: string }

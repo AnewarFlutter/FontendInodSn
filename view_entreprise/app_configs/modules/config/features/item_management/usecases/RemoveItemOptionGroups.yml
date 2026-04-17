@@ -1,0 +1,37 @@
+# --------------------------------------------------------------
+# RemoveItemOptionGroups - POST
+# --------------------------------------------------------------
+$name: removeItemOptionGroups
+$description: "Retire des groupes d'options d'un item"
+$skip: false
+$async: true
+
+$params:
+  - $name: itemId
+    $type: string
+    $optional: false
+  - $name: group_option_ids
+    $type: string
+    $list: true
+    $optional: false
+
+$returnDescription: "Résultat du retrait des groupes d'options"
+$returnType:
+  $type: object
+  $nullable: true
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.REMOVE_ITEM_OPTION_GROUPS
+  $mapping:
+    $path:
+      item_id: itemId
+    $body:
+      group_option_ids: group_option_ids
+  $responseMapping:
+    $returnValue: ""

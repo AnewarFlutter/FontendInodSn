@@ -1,0 +1,34 @@
+# --------------------------------------------------------------
+# GetKitchensStats - GET
+# --------------------------------------------------------------
+$name: getKitchensStats
+$description: "Récupère les statistiques des cuisines"
+$skip: false
+$async: true
+
+$params: []
+
+$returnDescription: "Statistiques des cuisines"
+$returnType:
+  $type: KitchenStats
+  $nullable: true
+  $related:
+    - $name: KitchenStats
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.GET_KITCHENS_STATS
+  $mapping: {}
+  $responseMapping:
+    $returnValue: data
+
+$imports:
+  - $name: KitchenStats
+    $from: "--module config --kind custom --step module"
+    $step: module

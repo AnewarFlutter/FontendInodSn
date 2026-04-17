@@ -1,0 +1,30 @@
+# ------------------------------------------------------------------
+# PATCH_TABLE - Mettre à jour partiellement une table
+# ------------------------------------------------------------------
+$path: /config/tables/{table_id}/
+$method: PATCH
+$description: "Mettre à jour partiellement une table"
+$auth: true
+$skip: false
+$params:
+  $path:
+    table_id: { $type: number, $optional: false }
+  $body:
+    table_number: { $type: string, $optional: true }
+    capacity: { $type: number, $optional: true }
+    table_area: { $type: number, $optional: true }
+    is_active: { $type: boolean, $optional: true }
+$response:
+  $default:
+    $schema:
+      id: { $type: number }
+      table_number: { $type: string }
+      capacity: { $type: number }
+      is_active: { $type: boolean }
+  $byStatus:
+    "400":
+      $schema:
+        error: { $type: string }
+    "404":
+      $schema:
+        detail: { $type: string }

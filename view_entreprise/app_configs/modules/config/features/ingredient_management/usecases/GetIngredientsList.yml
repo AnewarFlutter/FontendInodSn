@@ -1,0 +1,45 @@
+# --------------------------------------------------------------
+# GetIngredientsList - GET
+# --------------------------------------------------------------
+$name: getIngredientsList
+$description: "Liste tous les ingrédients avec pagination et filtres"
+$skip: false
+$async: true
+
+$params:
+  - $name: search
+    $type: string
+    $optional: true
+  - $name: is_active
+    $type: boolean
+    $optional: true
+
+$returnDescription: "Liste paginée des ingrédients"
+$returnType:
+  $type: PaginatedIngredients
+  $nullable: true
+  $related:
+    - $name: PaginatedIngredients
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.GET_INGREDIENTS_LIST
+  $mapping:
+    $query:
+      search: search
+      is_active: is_active
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: PaginatedIngredients
+    $from: "--module config --kind custom --step module"
+    $step: module

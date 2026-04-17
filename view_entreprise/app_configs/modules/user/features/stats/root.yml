@@ -1,0 +1,24 @@
+# ------------------------------------------------------------------
+# Feature : stats (Statistiques globales des utilisateurs)
+# ------------------------------------------------------------------
+$name: stats
+$description: "Statistiques globales des utilisateurs : totaux par rôle, actifs/inactifs"
+$fileNameCasing: snakeCase
+$override: false
+$delete: false
+$skip: true
+$rewriteInController: true
+$rewriteInDataSourceImpl: false
+
+$enums: []
+
+$types:
+  - $name: UserStatsResponse
+    $attributes:
+      - { $name: total, $type: number, $optional: false }
+      - { $name: active, $type: number, $optional: false }
+      - { $name: inactive, $type: number, $optional: false }
+      - { $name: by_role, $type: object, $optional: false }
+
+$usecases:
+  - $include: "./usecases/GetUserStats.yml"

@@ -1,0 +1,31 @@
+# --------------------------------------------------------------
+# GetItemCategories - GET
+# --------------------------------------------------------------
+$name: getItemCategories
+$description: "Récupère les catégories associées à un item"
+$skip: false
+$async: true
+
+$params:
+  - $name: itemId
+    $type: string
+    $optional: false
+
+$returnDescription: "Les catégories de l'item"
+$returnType:
+  $type: object
+  $nullable: true
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.GET_ITEM_CATEGORIES
+  $mapping:
+    $path:
+      item_id: itemId
+  $responseMapping:
+    $returnValue: ""

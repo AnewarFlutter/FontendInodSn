@@ -1,0 +1,57 @@
+# --------------------------------------------------------------
+# PatchItem - PATCH
+# --------------------------------------------------------------
+$name: patchItem
+$description: "Met à jour partiellement un item"
+$skip: false
+$async: true
+
+$params:
+  - $name: itemId
+    $type: string
+    $optional: false
+  - $name: payload
+    $type: CreateItemPayload
+    $optional: false
+    $related: "--module config --feature item_management --kind custom --step feature"
+
+$returnDescription: "L'item patché"
+$returnType:
+  $type: ItemBasic
+  $nullable: true
+  $related:
+    - $name: ItemBasic
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.PATCH_ITEM
+  $mapping:
+    $path:
+      item_id: itemId
+    $body:
+      name: payload.name
+      item_type: payload.item_type
+      display_name: payload.display_name
+      description: payload.description
+      price: payload.price
+      nb_portion_min: payload.nb_portion_min
+      temps_preparation: payload.temps_preparation
+      is_active: payload.is_active
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: CreateItemPayload
+    $from: "--module config --feature item_management --kind custom --step feature"
+    $step: feature
+  - $name: ItemBasic
+    $from: "--module config --kind custom --step module"
+    $step: module

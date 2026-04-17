@@ -1,0 +1,41 @@
+# ------------------------------------------------------------------
+# GRANT_USER_PERMISSIONS - Accord de permissions individuelles (Admin)
+# ------------------------------------------------------------------
+
+$path: /user/users/{user_id}/permissions/
+$method: POST
+$description: "Accorder des permissions individuelles à un utilisateur. Permission: permission.grant"
+$auth: true
+$skip: true
+$params:
+  $path:
+    user_id: { $type: string, $optional: false }
+  $body:
+    permissions: { $type: array, $items: { $type: string }, $optional: false, $description: "Codes de permissions ex: user.view_all, category.create" }
+$response:
+  $default:
+    $schema:
+      message: { $type: string, $description: "ex: 1 permission(s) accordée(s) avec succès" }
+      data:
+        $type: object
+        $schema:
+          user_id: { $type: string }
+          email: { $type: string }
+          granted_permissions: { $type: array, $items: { $type: string }, $description: "Permissions nouvellement accordées" }
+          already_granted: { $type: array, $items: { $type: string }, $description: "Permissions déjà possédées" }
+          current_permissions: { $type: array, $items: { $type: string }, $description: "Toutes les permissions actuelles" }
+  $byStatus:
+    "400":
+      $description: "Permission invalide ou déjà accordée à cet utilisateur"
+      $schema:
+        error: { $type: string }
+        code: { $type: string }
+    "403":
+      $description: "Permission insuffisante pour accorder des permissions"
+      $schema:
+        detail: { $type: string }
+    "404":
+      $description: "Utilisateur non trouvé"
+      $schema:
+        error: { $type: string }
+        code: { $type: string }

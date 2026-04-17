@@ -1,0 +1,24 @@
+# --------------------------------------------------------------
+# getPermissionsList - GET
+# --------------------------------------------------------------
+$name: getPermissionsList
+$description: "Liste toutes les permissions disponibles dans le système. Permission: permission.list"
+$skip: true
+$async: true
+
+$params: []
+
+$returnDescription: "Liste de toutes les permissions du système"
+$returnType:
+  $type: object
+  $list: true
+  $nullable: true
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: USER.GET_PERMISSIONS_LIST
+  $responseMapping:
+    $returnValue: results

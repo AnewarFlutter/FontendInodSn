@@ -1,0 +1,31 @@
+# --------------------------------------------------------------
+# DeleteSetMenu - DELETE
+# --------------------------------------------------------------
+$name: deleteSetMenu
+$description: "Supprime un menu composé par son identifiant"
+$skip: false
+$async: true
+
+$params:
+  - $name: setMenuId
+    $type: string
+    $optional: false
+
+$returnDescription: "Confirmation de suppression"
+$returnType:
+  $type: object
+  $nullable: true
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.DELETE_SET_MENU
+  $mapping:
+    $path:
+      set_menu_id: setMenuId
+  $responseMapping:
+    $returnValue: ""

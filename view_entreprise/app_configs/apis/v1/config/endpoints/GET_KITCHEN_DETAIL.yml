@@ -1,0 +1,27 @@
+# ------------------------------------------------------------------
+# GET_KITCHEN_DETAIL - Détail d'une cuisine
+# ------------------------------------------------------------------
+$path: /config/kitchens/{kitchen_id}/
+$method: GET
+$description: "Récupérer le détail d'une cuisine par son identifiant"
+$auth: true
+$skip: false
+$params:
+  $path:
+    kitchen_id: { $type: string, $optional: false }
+$response:
+  $default:
+    $schema:
+      id: { $type: string }
+      name: { $type: string }
+      slug: { $type: string }
+      description: { $type: string, $nullable: true }
+      icon: { $type: string, $nullable: true }
+      area: { $type: string, $nullable: true }
+      area_name: { $type: string, $nullable: true }
+      responsable_id: { $type: string, $nullable: true }
+      is_active: { $type: boolean }
+  $byStatus:
+    "404":
+      $schema:
+        detail: { $type: string }

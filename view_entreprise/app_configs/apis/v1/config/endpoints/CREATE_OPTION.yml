@@ -1,0 +1,30 @@
+# ------------------------------------------------------------------
+# CREATE_OPTION - Créer une option
+# ------------------------------------------------------------------
+$path: /config/options/
+$method: POST
+$description: "Créer une nouvelle option"
+$auth: true
+$skip: false
+$params:
+  $body:
+    parent_group: { $type: number, $optional: false }
+    name: { $type: string, $optional: false }
+    additional_amount: { $type: number, $optional: false }
+    display_order: { $type: number, $optional: true }
+    is_active: { $type: boolean, $optional: false }
+$response:
+  $default:
+    $description: "201 Created"
+    $schema:
+      id: { $type: number }
+      parent_group: { $type: number }
+      name: { $type: string }
+      additional_amount: { $type: number }
+      display_order: { $type: number }
+      is_active: { $type: boolean }
+  $byStatus:
+    "400":
+      $schema:
+        error: { $type: string }
+        code: { $type: string }

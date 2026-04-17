@@ -1,0 +1,19 @@
+# ====================== AUTH API ======================
+# Service d'authentification : login, tokens, gestion des sessions, admin users
+# Centralise tous les endpoints du service auth accessibles depuis le front admin
+
+$description: "Service d'authentification - login, tokens, sessions et gestion admin des utilisateurs"
+
+$routes:
+  LOGIN:
+    $include: "./endpoints/LOGIN.yml"
+  LOGOUT:
+    $include: "./endpoints/LOGOUT.yml"
+  REFRESH_TOKEN:
+    $include: "./endpoints/REFRESH_TOKEN.yml"
+  SWITCH_CONTEXT:
+    $include: "./endpoints/SWITCH_CONTEXT.yml"
+  CHANGE_PASSWORD:
+    $include: "./endpoints/CHANGE_PASSWORD.yml"
+
+$skip: true

@@ -1,0 +1,55 @@
+# ------------------------------------------------------------------
+# CREATE_USER - Création d'un utilisateur (Saga Pattern Auth+User)
+# ------------------------------------------------------------------
+
+$path: /user/users/
+$method: POST
+$description: "Créer un utilisateur. Permission: user.create"
+$auth: true
+$skip: true
+$params:
+  $body:
+    email: { $type: string, $optional: false }
+    first_name: { $type: string, $optional: false }
+    last_name: { $type: string, $optional: false }
+    gender: { $type: string, $optional: false, $description: "ex: M, F" }
+    address: { $type: string, $optional: false }
+    roles: { $type: array, $items: { $type: string }, $optional: false, $description: "Codes de rôles ex: SERVEUR, LIVREUR" }
+    telephone: { $type: string, $optional: true, $nullable: true }
+    birth_date: { $type: string, $optional: true, $nullable: true, $description: "Format : YYYY-MM-DD" }
+    nationality: { $type: string, $optional: true, $nullable: true }
+$response:
+  $default:
+    $description: "201 Created"
+    $schema:
+      status: { $type: string, $description: "ex: SUCCESS" }
+      message: { $type: string }
+      data:
+        $type: object
+        $schema:
+          id: { $type: string }
+          email: { $type: string }
+          first_name: { $type: string }
+          last_name: { $type: string }
+          status_activation: { $type: string }
+          roles: { $type: array, $items: { $type: object } }
+  $byStatus:
+    "400":
+      $description: "Données invalides (champs manquants ou email déjà utilisé)"
+      $schema:
+        error: { $type: string, $description: "ex: Données invalides" }
+        code: { $type: string, $description: "ex: VALIDATION_ERROR" }
+        details:
+          $type: object
+          $description: "Erreurs par champ ex: { email: ['Saisissez une adresse e-mail valide.'] }"
+          $keyType: { $type: string }
+          $valueType: { $type: array, $items: { $type: string } }
+    "403":
+      $description: "Permission insuffisante"
+      $schema:
+        detail: { $type: string }
+    "500":
+      $description: "Saga Pattern échoué — rollback automatique effectué"
+      $schema:
+        error: { $type: string }
+        code: { $type: string, $description: "ex: SAGA_FAILED" }

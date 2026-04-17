@@ -1,0 +1,30 @@
+# ------------------------------------------------------------------
+# UPDATE_AREA - Mettre à jour complètement une zone
+# ------------------------------------------------------------------
+$path: /config/areas/{area_id}/
+$method: PUT
+$description: "Mettre à jour complètement une zone"
+$auth: true
+$skip: false
+$params:
+  $path:
+    area_id: { $type: number, $optional: false }
+  $body:
+    name: { $type: string, $optional: false }
+    area_type: { $type: string, $optional: false, $description: "Type de zone : TABLE, KITCHEN" }
+    description: { $type: string, $optional: true, $nullable: true }
+    display_order: { $type: number, $optional: true, $nullable: true }
+$response:
+  $default:
+    $schema:
+      id: { $type: number }
+      name: { $type: string }
+      area_type: { $type: string }
+      is_active: { $type: boolean }
+  $byStatus:
+    "400":
+      $schema:
+        error: { $type: string }
+    "404":
+      $schema:
+        detail: { $type: string }

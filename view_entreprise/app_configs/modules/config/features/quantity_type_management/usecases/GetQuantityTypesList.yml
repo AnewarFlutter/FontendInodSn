@@ -1,0 +1,45 @@
+# --------------------------------------------------------------
+# GetQuantityTypesList - GET
+# --------------------------------------------------------------
+$name: getQuantityTypesList
+$description: "Liste tous les types de quantité avec pagination et filtres"
+$skip: false
+$async: true
+
+$params:
+  - $name: search
+    $type: string
+    $optional: true
+  - $name: is_active
+    $type: boolean
+    $optional: true
+
+$returnDescription: "Liste paginée des types de quantité"
+$returnType:
+  $type: PaginatedQuantityTypes
+  $nullable: true
+  $related:
+    - $name: PaginatedQuantityTypes
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.GET_QUANTITY_TYPES_LIST
+  $mapping:
+    $query:
+      search: search
+      is_active: is_active
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: PaginatedQuantityTypes
+    $from: "--module config --kind custom --step module"
+    $step: module

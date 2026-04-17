@@ -1,0 +1,28 @@
+# ------------------------------------------------------------------
+# GET_ITEM_DETAIL - Détail d'un item
+# ------------------------------------------------------------------
+$path: /config/items/{item_id}/
+$method: GET
+$description: "Récupérer le détail d'un item"
+$auth: true
+$skip: false
+$params:
+  $path:
+    item_id: { $type: number, $optional: false }
+  $query: {}
+$response:
+  $default:
+    $schema:
+      id: { $type: number }
+      name: { $type: string }
+      display_name: { $type: string, $nullable: true }
+      description: { $type: string, $nullable: true }
+      item_type: { $type: number }
+      price: { $type: number }
+      nb_portion_min: { $type: number, $nullable: true }
+      temps_preparation: { $type: number, $nullable: true }
+      is_active: { $type: boolean }
+  $byStatus:
+    "404":
+      $schema:
+        detail: { $type: string }

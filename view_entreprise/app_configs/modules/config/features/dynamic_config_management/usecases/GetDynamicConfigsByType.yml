@@ -1,0 +1,41 @@
+# --------------------------------------------------------------
+# GetDynamicConfigsByType - GET
+# --------------------------------------------------------------
+$name: getDynamicConfigsByType
+$description: "Récupère les configurations dynamiques d'un type de données spécifique"
+$skip: false
+$async: true
+
+$params:
+  - $name: dataType
+    $type: string
+    $optional: false
+
+$returnDescription: "Liste paginée des configurations dynamiques du type donné"
+$returnType:
+  $type: PaginatedDynamicConfigs
+  $nullable: true
+  $related:
+    - $name: PaginatedDynamicConfigs
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.GET_DYNAMIC_CONFIGS_BY_TYPE
+  $mapping:
+    $path:
+      data_type: dataType
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: PaginatedDynamicConfigs
+    $from: "--module config --kind custom --step module"
+    $step: module

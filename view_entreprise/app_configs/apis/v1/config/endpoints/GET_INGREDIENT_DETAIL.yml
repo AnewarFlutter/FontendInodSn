@@ -1,0 +1,21 @@
+# ------------------------------------------------------------------
+# GET_INGREDIENT_DETAIL - Détail d'un ingrédient
+# ------------------------------------------------------------------
+$path: /config/ingredients/{ingredient_id}/
+$method: GET
+$description: "Récupérer le détail d'un ingrédient"
+$auth: true
+$skip: false
+$params:
+  $path:
+    ingredient_id: { $type: number, $optional: false }
+$response:
+  $default:
+    $schema:
+      id: { $type: number }
+      name: { $type: string }
+      is_active: { $type: boolean }
+  $byStatus:
+    "404":
+      $schema:
+        detail: { $type: string }

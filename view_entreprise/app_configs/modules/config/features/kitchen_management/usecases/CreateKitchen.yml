@@ -1,0 +1,43 @@
+# --------------------------------------------------------------
+# CreateKitchen - POST
+# --------------------------------------------------------------
+$name: createKitchen
+$description: "Crée une nouvelle cuisine"
+$skip: false
+$async: true
+
+$params:
+  - $name: payload
+    $type: CreateKitchenPayload
+    $optional: false
+    $related: "--module config --feature kitchen_management --kind custom --step feature"
+
+$returnDescription: "La cuisine créée"
+$returnType:
+  $type: KitchenBasic
+  $nullable: true
+  $related:
+    - $name: KitchenBasic
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.CREATE_KITCHEN
+  $mapping:
+    $body:
+      payload: payload
+  $responseMapping:
+    $returnValue: data
+
+$imports:
+  - $name: CreateKitchenPayload
+    $from: "--module config --feature kitchen_management --kind custom --step feature"
+    $step: feature
+  - $name: KitchenBasic
+    $from: "--module config --kind custom --step module"
+    $step: module

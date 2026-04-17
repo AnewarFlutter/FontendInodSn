@@ -1,0 +1,28 @@
+# ------------------------------------------------------------------
+# GET_ITEM_TYPES_LIST - Liste des types d'items
+# ------------------------------------------------------------------
+$path: /config/item-types/
+$method: GET
+$description: "Lister tous les types d'items"
+$auth: true
+$skip: false
+$params:
+  $query: {}
+$response:
+  $default:
+    $schema:
+      count: { $type: number }
+      next: { $type: string, $nullable: true }
+      previous: { $type: string, $nullable: true }
+      results:
+        $type: array
+        $items:
+          $type: object
+          $schema:
+            id: { $type: number }
+            name: { $type: string }
+            is_active: { $type: boolean }
+  $byStatus:
+    "401":
+      $schema:
+        detail: { $type: string }

@@ -1,0 +1,31 @@
+# --------------------------------------------------------------
+# GetItemOptionGroups - GET
+# --------------------------------------------------------------
+$name: getItemOptionGroups
+$description: "Récupère les groupes d'options associés à un item"
+$skip: false
+$async: true
+
+$params:
+  - $name: itemId
+    $type: string
+    $optional: false
+
+$returnDescription: "Les groupes d'options de l'item"
+$returnType:
+  $type: object
+  $nullable: true
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.GET_ITEM_OPTION_GROUPS
+  $mapping:
+    $path:
+      item_id: itemId
+  $responseMapping:
+    $returnValue: ""

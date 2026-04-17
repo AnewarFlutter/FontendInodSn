@@ -1,0 +1,41 @@
+# --------------------------------------------------------------
+# GetDynamicConfigDetail - GET
+# --------------------------------------------------------------
+$name: getDynamicConfigDetail
+$description: "Récupère le détail d'une configuration dynamique par son identifiant"
+$skip: false
+$async: true
+
+$params:
+  - $name: configId
+    $type: string
+    $optional: false
+
+$returnDescription: "Le détail de la configuration dynamique"
+$returnType:
+  $type: DynamicConfigBasic
+  $nullable: true
+  $related:
+    - $name: DynamicConfigBasic
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.GET_DYNAMIC_CONFIG_DETAIL
+  $mapping:
+    $path:
+      config_id: configId
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: DynamicConfigBasic
+    $from: "--module config --kind custom --step module"
+    $step: module

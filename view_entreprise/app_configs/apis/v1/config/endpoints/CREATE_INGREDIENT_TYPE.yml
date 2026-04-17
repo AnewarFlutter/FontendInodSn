@@ -1,0 +1,32 @@
+# ------------------------------------------------------------------
+# CREATE_INGREDIENT_TYPE - Créer un type d'ingrédient
+# ------------------------------------------------------------------
+$path: /config/ingredient-types/
+$method: POST
+$description: "Créer un nouveau type d'ingrédient"
+$auth: true
+$skip: false
+$params:
+  $body:
+    name: { $type: string, $optional: false }
+    description: { $type: string, $optional: true, $nullable: true }
+    display_order: { $type: number, $optional: true, $nullable: true }
+$response:
+  $default:
+    $description: "201 Created"
+    $schema:
+      status: { $type: string }
+      message: { $type: string }
+      data:
+        $type: object
+        $schema:
+          ingredient_type:
+            $type: object
+            $schema:
+              id: { $type: string }
+              name: { $type: string }
+  $byStatus:
+    "400":
+      $schema:
+        error: { $type: string }
+        code: { $type: string }

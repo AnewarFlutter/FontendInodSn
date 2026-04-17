@@ -1,0 +1,30 @@
+# ------------------------------------------------------------------
+# GET_INGREDIENT_TYPE_DETAIL - Détail d'un type d'ingrédient
+# ------------------------------------------------------------------
+$path: /config/ingredient-types/{ingredient_type_id}/
+$method: GET
+$description: "Récupérer le détail d'un type d'ingrédient"
+$auth: true
+$skip: false
+$params:
+  $path:
+    ingredient_type_id: { $type: string, $optional: false }
+$response:
+  $default:
+    $schema:
+      status: { $type: string }
+      data:
+        $type: object
+        $schema:
+          ingredient_type:
+            $type: object
+            $schema:
+              id: { $type: string }
+              name: { $type: string }
+              description: { $type: string, $nullable: true }
+              display_order: { $type: number, $nullable: true }
+              is_active: { $type: boolean }
+  $byStatus:
+    "404":
+      $schema:
+        detail: { $type: string }

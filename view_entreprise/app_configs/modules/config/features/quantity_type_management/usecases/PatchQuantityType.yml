@@ -1,0 +1,50 @@
+# --------------------------------------------------------------
+# PatchQuantityType - PATCH
+# --------------------------------------------------------------
+$name: patchQuantityType
+$description: "Met à jour partiellement un type de quantité"
+$skip: false
+$async: true
+
+$params:
+  - $name: quantityTypeId
+    $type: string
+    $optional: false
+  - $name: payload
+    $type: CreateQuantityTypePayload
+    $optional: false
+    $related: "--module config --feature quantity_type_management --kind custom --step feature"
+
+$returnDescription: "Le type de quantité patché"
+$returnType:
+  $type: QuantityTypeBasic
+  $nullable: true
+  $related:
+    - $name: QuantityTypeBasic
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.PATCH_QUANTITY_TYPE
+  $mapping:
+    $path:
+      quantity_type_id: quantityTypeId
+    $body:
+      payload: payload
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: CreateQuantityTypePayload
+    $from: "--module config --feature quantity_type_management --kind custom --step feature"
+    $step: feature
+  - $name: QuantityTypeBasic
+    $from: "--module config --kind custom --step module"
+    $step: module

@@ -1,0 +1,37 @@
+# --------------------------------------------------------------
+# RemoveItemKitchenAreas - POST
+# --------------------------------------------------------------
+$name: removeItemKitchenAreas
+$description: "Retire des zones cuisine d'un item"
+$skip: false
+$async: true
+
+$params:
+  - $name: itemId
+    $type: string
+    $optional: false
+  - $name: kitchen_area_ids
+    $type: string
+    $list: true
+    $optional: false
+
+$returnDescription: "Résultat du retrait de zones cuisine"
+$returnType:
+  $type: object
+  $nullable: true
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.REMOVE_ITEM_KITCHEN_AREAS
+  $mapping:
+    $path:
+      item_id: itemId
+    $body:
+      kitchen_area_ids: kitchen_area_ids
+  $responseMapping:
+    $returnValue: ""

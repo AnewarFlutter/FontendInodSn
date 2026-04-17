@@ -1,0 +1,35 @@
+# --------------------------------------------------------------
+# GetKitchensByArea - GET
+# --------------------------------------------------------------
+$name: getKitchensByArea
+$description: "Récupère les cuisines groupées par zone KITCHEN"
+$skip: false
+$async: true
+
+$params: []
+
+$returnDescription: "Cuisines groupées par zone"
+$returnType:
+  $type: KitchenZoneGroup
+  $list: true
+  $nullable: true
+  $related:
+    - $name: KitchenZoneGroup
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.GET_KITCHENS_BY_AREA
+  $mapping: {}
+  $responseMapping:
+    $returnValue: data
+
+$imports:
+  - $name: KitchenZoneGroup
+    $from: "--module config --kind custom --step module"
+    $step: module

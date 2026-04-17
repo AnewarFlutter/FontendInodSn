@@ -1,0 +1,27 @@
+# ------------------------------------------------------------------
+# ADD_ITEM_OPTION_GROUP - Associer un groupe d'options à un item
+# ------------------------------------------------------------------
+$path: /config/items/{item_id}/add-option-group/
+$method: POST
+$description: "Associer un groupe d'options à un item"
+$auth: true
+$skip: false
+$params:
+  $path:
+    item_id: { $type: number, $optional: false }
+  $body:
+    group_option_id: { $type: number, $optional: false }
+    is_mandatory: { $type: boolean, $optional: false }
+    selection_type: { $type: string, $optional: false, $description: "Type de sélection : SINGLE, MULTIPLE" }
+    max_selections: { $type: number, $optional: false }
+$response:
+  $default:
+    $schema:
+      message: { $type: string }
+  $byStatus:
+    "400":
+      $schema:
+        error: { $type: string }
+    "404":
+      $schema:
+        detail: { $type: string }

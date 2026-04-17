@@ -1,0 +1,22 @@
+# ------------------------------------------------------------------
+# GET_SET_MENU_SECTION_DETAIL - Détail d'une section de formule
+# ------------------------------------------------------------------
+$path: /config/set-menu-sections/{set_menu_section_id}/
+$method: GET
+$description: "Récupérer le détail d'une section de formule"
+$auth: true
+$skip: false
+$params:
+  $path:
+    set_menu_section_id: { $type: number, $optional: false }
+$response:
+  $default:
+    $schema:
+      id: { $type: number }
+      set_menu: { $type: number }
+      category_id: { $type: number }
+      max_selections: { $type: number }
+  $byStatus:
+    "404":
+      $schema:
+        detail: { $type: string }

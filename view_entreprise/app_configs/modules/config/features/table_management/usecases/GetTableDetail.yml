@@ -1,0 +1,41 @@
+# --------------------------------------------------------------
+# GetTableDetail - GET
+# --------------------------------------------------------------
+$name: getTableDetail
+$description: "Récupère le détail d'une table par son identifiant"
+$skip: false
+$async: true
+
+$params:
+  - $name: tableId
+    $type: string
+    $optional: false
+
+$returnDescription: "Le détail de la table"
+$returnType:
+  $type: TableBasic
+  $nullable: true
+  $related:
+    - $name: TableBasic
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: false
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.GET_TABLE_DETAIL
+  $mapping:
+    $path:
+      table_id: tableId
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: TableBasic
+    $from: "--module config --kind custom --step module"
+    $step: module

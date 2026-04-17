@@ -1,0 +1,31 @@
+# --------------------------------------------------------------
+# DeleteSetMenuSection - DELETE
+# --------------------------------------------------------------
+$name: deleteSetMenuSection
+$description: "Supprime une section de menu composé par son identifiant"
+$skip: false
+$async: true
+
+$params:
+  - $name: setMenuSectionId
+    $type: string
+    $optional: false
+
+$returnDescription: "Confirmation de suppression"
+$returnType:
+  $type: object
+  $nullable: true
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.DELETE_SET_MENU_SECTION
+  $mapping:
+    $path:
+      set_menu_section_id: setMenuSectionId
+  $responseMapping:
+    $returnValue: ""

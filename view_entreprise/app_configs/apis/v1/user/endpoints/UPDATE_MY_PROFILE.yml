@@ -1,0 +1,49 @@
+# ------------------------------------------------------------------
+# UPDATE_MY_PROFILE - Mise à jour du profil personnel de l'admin
+# ------------------------------------------------------------------
+
+$path: /user/me/
+$method: PATCH
+$description: "Mettre à jour son profil personnel. Retourne le profil mis à jour complet."
+$auth: true
+$skip: true
+$params:
+  $body:
+    first_name: { $type: string, $optional: true }
+    last_name: { $type: string, $optional: true }
+    telephone: { $type: string, $optional: true, $nullable: true }
+    birth_date: { $type: string, $optional: true, $nullable: true, $description: "Format : YYYY-MM-DD" }
+    gender: { $type: string, $optional: true, $description: "ex: M, F" }
+    address: { $type: string, $optional: true }
+    nationality: { $type: string, $optional: true }
+$response:
+  $default:
+    $description: "Retourne le profil complet mis à jour (même structure que GET /user/me/)"
+    $schema:
+      id: { $type: string }
+      email: { $type: string }
+      first_name: { $type: string }
+      last_name: { $type: string }
+      telephone: { $type: string, $optional: true, $nullable: true }
+      birth_date: { $type: string, $optional: true, $nullable: true }
+      gender: { $type: string, $optional: true }
+      nationality: { $type: string, $optional: true, $nullable: true }
+      address: { $type: string, $optional: true }
+      photo: { $type: string, $optional: true, $nullable: true }
+      status_activation: { $type: string }
+      active_role: { $type: string, $optional: true, $nullable: true }
+      active_profile: { $type: object, $optional: true, $nullable: true }
+      permissions: { $type: array, $items: { $type: string } }
+      created_at: { $type: string }
+      updated_at: { $type: string }
+  $byStatus:
+    "400":
+      $description: "Données invalides (champ manquant ou format incorrect)"
+      $schema:
+        status: { $type: string }
+        message: { $type: string }
+        errors: { $type: object, $optional: true }
+    "401":
+      $description: "Token manquant ou invalide"
+      $schema:
+        detail: { $type: string }

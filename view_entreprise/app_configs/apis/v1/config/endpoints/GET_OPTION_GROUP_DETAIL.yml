@@ -1,0 +1,23 @@
+# ------------------------------------------------------------------
+# GET_OPTION_GROUP_DETAIL - Détail d'un groupe d'options
+# ------------------------------------------------------------------
+$path: /config/option-groups/{option_group_id}/
+$method: GET
+$description: "Récupérer le détail d'un groupe d'options"
+$auth: true
+$skip: false
+$params:
+  $path:
+    option_group_id: { $type: number, $optional: false }
+  $query: {}
+$response:
+  $default:
+    $schema:
+      id: { $type: number }
+      name: { $type: string }
+      display_order: { $type: number, $nullable: true }
+      is_active: { $type: boolean }
+  $byStatus:
+    "404":
+      $schema:
+        detail: { $type: string }

@@ -1,0 +1,31 @@
+# ------------------------------------------------------------------
+# GET_MY_PERMISSIONS - Récupération des permissions effectives de l'admin
+# ------------------------------------------------------------------
+
+$path: /user/me/permissions/
+$method: GET
+$description: "Récupérer ses permissions effectives (rôles + permissions individuelles)."
+$auth: true
+$skip: true
+$response:
+  $default:
+    $schema:
+      count: { $type: number }
+      permissions:
+        $type: array
+        $items:
+          $type: object
+          $schema:
+            id: { $type: string }
+            code: { $type: string, $description: "ex: category.create" }
+            name: { $type: string }
+            description: { $type: string }
+            category: { $type: string, $description: "ex: CATEGORY, USER, MENU..." }
+            is_active: { $type: boolean }
+            is_system: { $type: boolean }
+            created_at: { $type: string }
+  $byStatus:
+    "401":
+      $description: "Token manquant ou invalide"
+      $schema:
+        detail: { $type: string }

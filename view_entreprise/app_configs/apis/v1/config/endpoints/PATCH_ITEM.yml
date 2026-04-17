@@ -1,0 +1,33 @@
+# ------------------------------------------------------------------
+# PATCH_ITEM - Mettre à jour partiellement un item
+# ------------------------------------------------------------------
+$path: /config/items/{item_id}/
+$method: PATCH
+$description: "Mettre à jour partiellement un item"
+$auth: true
+$skip: false
+$params:
+  $path:
+    item_id: { $type: number, $optional: false }
+  $body:
+    name: { $type: string, $optional: true }
+    item_type: { $type: number, $optional: true }
+    display_name: { $type: string, $optional: true, $nullable: true }
+    description: { $type: string, $optional: true, $nullable: true }
+    price: { $type: number, $optional: true }
+    nb_portion_min: { $type: number, $optional: true, $nullable: true }
+    temps_preparation: { $type: number, $optional: true, $nullable: true }
+    is_active: { $type: boolean, $optional: true }
+$response:
+  $default:
+    $schema:
+      id: { $type: number }
+      name: { $type: string }
+      is_active: { $type: boolean }
+  $byStatus:
+    "400":
+      $schema:
+        error: { $type: string }
+    "404":
+      $schema:
+        detail: { $type: string }

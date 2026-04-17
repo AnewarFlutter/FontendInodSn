@@ -1,0 +1,23 @@
+# ------------------------------------------------------------------
+# GET_DYNAMIC_CONFIG_BY_KEY - Récupérer une configuration par clé
+# ------------------------------------------------------------------
+$path: /config/config/by-key/{config_key}/
+$method: GET
+$description: "Récupérer une configuration dynamique par sa clé"
+$auth: true
+$skip: false
+$params:
+  $path:
+    config_key: { $type: string, $optional: false }
+$response:
+  $default:
+    $schema:
+      id: { $type: number }
+      key: { $type: string }
+      value: { $type: string }
+      data_type: { $type: string }
+      description: { $type: string, $optional: true, $nullable: true }
+  $byStatus:
+    "404":
+      $schema:
+        detail: { $type: string }

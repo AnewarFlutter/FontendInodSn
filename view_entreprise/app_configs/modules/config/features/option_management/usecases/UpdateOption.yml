@@ -1,0 +1,50 @@
+# --------------------------------------------------------------
+# UpdateOption - PUT
+# --------------------------------------------------------------
+$name: updateOption
+$description: "Met à jour complètement une option"
+$skip: false
+$async: true
+
+$params:
+  - $name: optionId
+    $type: string
+    $optional: false
+  - $name: payload
+    $type: CreateOptionPayload
+    $optional: false
+    $related: "--module config --feature option_management --kind custom --step feature"
+
+$returnDescription: "L'option mise à jour"
+$returnType:
+  $type: OptionBasic
+  $nullable: true
+  $related:
+    - $name: OptionBasic
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.UPDATE_OPTION
+  $mapping:
+    $path:
+      option_id: optionId
+    $body:
+      payload: payload
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: CreateOptionPayload
+    $from: "--module config --feature option_management --kind custom --step feature"
+    $step: feature
+  - $name: OptionBasic
+    $from: "--module config --kind custom --step module"
+    $step: module

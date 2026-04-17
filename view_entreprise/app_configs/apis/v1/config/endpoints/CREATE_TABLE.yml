@@ -1,0 +1,28 @@
+# ------------------------------------------------------------------
+# CREATE_TABLE - Créer une table
+# ------------------------------------------------------------------
+$path: /config/tables/
+$method: POST
+$description: "Créer une nouvelle table"
+$auth: true
+$skip: false
+$params:
+  $body:
+    table_number: { $type: string, $optional: false }
+    capacity: { $type: number, $optional: false }
+    table_area: { $type: number, $optional: false }
+    is_active: { $type: boolean, $optional: false }
+$response:
+  $default:
+    $description: "201 Created"
+    $schema:
+      id: { $type: number }
+      table_number: { $type: string }
+      capacity: { $type: number }
+      table_area: { $type: number }
+      is_active: { $type: boolean }
+  $byStatus:
+    "400":
+      $schema:
+        error: { $type: string }
+        code: { $type: string }

@@ -1,0 +1,41 @@
+# --------------------------------------------------------------
+# DeactivateArea - POST
+# --------------------------------------------------------------
+$name: deactivateArea
+$description: "Désactive une zone par son identifiant"
+$skip: false
+$async: true
+
+$params:
+  - $name: areaId
+    $type: string
+    $optional: false
+
+$returnDescription: "La zone désactivée"
+$returnType:
+  $type: AreaBasic
+  $nullable: true
+  $related:
+    - $name: AreaBasic
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.DEACTIVATE_AREA
+  $mapping:
+    $path:
+      area_id: areaId
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: AreaBasic
+    $from: "--module config --kind custom --step module"
+    $step: module

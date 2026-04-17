@@ -1,0 +1,20 @@
+# ------------------------------------------------------------------
+# ACTIVATE_ITEM - Activer un item
+# ------------------------------------------------------------------
+$path: /config/items/{item_id}/activate/
+$method: POST
+$description: "Activer un item"
+$auth: true
+$skip: false
+$params:
+  $path:
+    item_id: { $type: number, $optional: false }
+  $body: {}
+$response:
+  $default:
+    $schema:
+      message: { $type: string }
+  $byStatus:
+    "404":
+      $schema:
+        detail: { $type: string }

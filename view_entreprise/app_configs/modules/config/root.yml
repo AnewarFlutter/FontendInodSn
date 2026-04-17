@@ -1,0 +1,436 @@
+# ====================== CONFIG MODULE ======================
+
+$name: config
+$fileNameCasing: snakeCase
+$description: "Module de configuration : types d'items, items, zones, tables, options, ingrédients, types de quantité, configurations dynamiques et formules"
+$override: false
+$delete: false
+$skip: false
+
+$enums:
+  - $name: AreaTypeEnum
+    $generate: true
+    $splitPerFile: true
+    $values: ["TABLE", "KITCHEN"]
+    $description: "Type de zone dans le restaurant"
+    $descriptions:
+      TABLE: "Zone de tables (salle)"
+      KITCHEN: "Zone de cuisine"
+
+  - $name: TableStatusEnum
+    $generate: true
+    $splitPerFile: true
+    $values: ["AVAILABLE", "OCCUPIED", "RESERVED", "OUT_OF_SERVICE"]
+    $description: "Statut actuel d'une table"
+    $descriptions:
+      AVAILABLE: "Table disponible"
+      OCCUPIED: "Table occupée"
+      RESERVED: "Table réservée"
+      OUT_OF_SERVICE: "Table hors service"
+
+  - $name: SelectionTypeEnum
+    $generate: true
+    $splitPerFile: true
+    $values: ["SINGLE", "MULTIPLE"]
+    $description: "Type de sélection pour un groupe d'options lié à un item"
+    $descriptions:
+      SINGLE: "Une seule option sélectionnable"
+      MULTIPLE: "Plusieurs options sélectionnables"
+
+  - $name: ConfigDataTypeEnum
+    $generate: true
+    $splitPerFile: true
+    $values: ["boolean"]
+    $description: "Type de données pour les configurations dynamiques. Valeurs possibles : boolean, string, integer, float, json"
+    $descriptions:
+      boolean: "Valeur booléenne (true/false)"
+
+$types:
+  # ─── Item Type ───────────────────────────────────────────────
+  - $name: ItemTypeBasic
+    $attributes:
+      - { $name: id, $type: string, $optional: false }
+      - { $name: name, $type: string, $optional: false }
+      - { $name: is_active, $type: boolean, $optional: false }
+
+  - $name: PaginatedItemTypes
+    $attributes:
+      - { $name: count, $type: number, $optional: false }
+      - { $name: next, $type: string, $optional: true, $nullable: true }
+      - { $name: previous, $type: string, $optional: true, $nullable: true }
+      - $name: results
+        $type: ItemTypeBasic
+        $list: true
+        $optional: false
+        $related:
+          $name: ItemTypeBasic
+          $module: config
+          $kind: custom
+          $step: module
+
+  - $name: ItemTypeStats
+    $attributes:
+      - { $name: total, $type: number, $optional: false }
+      - { $name: active, $type: number, $optional: false }
+      - { $name: inactive, $type: number, $optional: false }
+
+  # ─── Item ─────────────────────────────────────────────────────
+  - $name: ItemBasic
+    $attributes:
+      - { $name: id, $type: string, $optional: false }
+      - { $name: name, $type: string, $optional: false }
+      - { $name: item_type, $type: string, $optional: false }
+      - { $name: display_name, $type: string, $optional: true, $nullable: true }
+      - { $name: description, $type: string, $optional: true, $nullable: true }
+      - { $name: price, $type: number, $optional: false }
+      - { $name: nb_portion_min, $type: number, $optional: true, $nullable: true }
+      - { $name: temps_preparation, $type: number, $optional: true, $nullable: true }
+      - { $name: is_active, $type: boolean, $optional: false }
+
+  - $name: PaginatedItems
+    $attributes:
+      - { $name: count, $type: number, $optional: false }
+      - { $name: next, $type: string, $optional: true, $nullable: true }
+      - { $name: previous, $type: string, $optional: true, $nullable: true }
+      - $name: results
+        $type: ItemBasic
+        $list: true
+        $optional: false
+        $related:
+          $name: ItemBasic
+          $module: config
+          $kind: custom
+          $step: module
+
+  - $name: ItemStats
+    $attributes:
+      - { $name: total, $type: number, $optional: false }
+      - { $name: active, $type: number, $optional: false }
+      - { $name: inactive, $type: number, $optional: false }
+      - { $name: unique_ingredients, $type: number, $optional: false }
+      - { $name: categories, $type: number, $optional: false }
+
+  # ─── Area ─────────────────────────────────────────────────────
+  - $name: AreaStats
+    $attributes:
+      - { $name: total, $type: number, $optional: false }
+      - { $name: total_cuisine, $type: number, $optional: false }
+      - { $name: total_tables, $type: number, $optional: false }
+      - { $name: total_general, $type: number, $optional: false }
+      - { $name: total_actives, $type: number, $optional: false }
+      - { $name: total_inactives, $type: number, $optional: false }
+      - { $name: total_supprimees, $type: number, $optional: false }
+
+  - $name: AreaBasic
+    $attributes:
+      - { $name: id, $type: string, $optional: false }
+      - { $name: uuid, $type: string, $optional: true, $nullable: true }
+      - { $name: name, $type: string, $optional: false }
+      - $name: area_type
+        $type: AreaTypeEnum
+        $optional: false
+        $related:
+          $name: AreaTypeEnum
+          $module: config
+          $kind: enum
+          $step: module
+      - { $name: description, $type: string, $optional: true, $nullable: true }
+      - { $name: display_order, $type: number, $optional: true, $nullable: true }
+      - { $name: is_active, $type: boolean, $optional: false }
+
+  - $name: PaginatedAreas
+    $attributes:
+      - { $name: count, $type: number, $optional: false }
+      - { $name: next, $type: string, $optional: true, $nullable: true }
+      - { $name: previous, $type: string, $optional: true, $nullable: true }
+      - $name: results
+        $type: AreaBasic
+        $list: true
+        $optional: false
+        $related:
+          $name: AreaBasic
+          $module: config
+          $kind: custom
+          $step: module
+
+  # ─── Table ────────────────────────────────────────────────────
+  - $name: TableBasic
+    $attributes:
+      - { $name: id, $type: string, $optional: false }
+      - { $name: uuid, $type: string, $optional: true, $nullable: true }
+      - { $name: table_number, $type: number, $optional: false }
+      - { $name: capacity, $type: number, $optional: false }
+      - { $name: area, $type: string, $optional: true, $nullable: true }
+      - { $name: area_name, $type: string, $optional: true, $nullable: true }
+      - { $name: name, $type: string, $optional: true, $nullable: true }
+      - { $name: is_active, $type: boolean, $optional: false }
+      - $name: status
+        $type: TableStatusEnum
+        $optional: false
+        $related:
+          $name: TableStatusEnum
+          $module: config
+          $kind: enum
+          $step: module
+      - { $name: status_display, $type: string, $optional: true, $nullable: true }
+      - { $name: created_at, $type: string, $optional: true, $nullable: true }
+      - { $name: updated_at, $type: string, $optional: true, $nullable: true }
+
+  - $name: PaginatedTables
+    $attributes:
+      - { $name: count, $type: number, $optional: false }
+      - { $name: next, $type: string, $optional: true, $nullable: true }
+      - { $name: previous, $type: string, $optional: true, $nullable: true }
+      - $name: results
+        $type: TableBasic
+        $list: true
+        $optional: false
+        $related:
+          $name: TableBasic
+          $module: config
+          $kind: custom
+          $step: module
+
+  - $name: TableStats
+    $attributes:
+      - { $name: total, $type: number, $optional: false }
+      - { $name: actives, $type: number, $optional: false }
+      - { $name: inactives, $type: number, $optional: false }
+      - { $name: disponibles, $type: number, $optional: false }
+      - { $name: occupees, $type: number, $optional: false }
+      - { $name: reservees, $type: number, $optional: false }
+      - { $name: hors_service, $type: number, $optional: false }
+
+  # ─── Option Group ─────────────────────────────────────────────
+  - $name: OptionGroupBasic
+    $attributes:
+      - { $name: id, $type: string, $optional: false }
+      - { $name: name, $type: string, $optional: false }
+      - { $name: display_order, $type: number, $optional: true, $nullable: true }
+      - { $name: is_active, $type: boolean, $optional: false }
+
+  - $name: PaginatedOptionGroups
+    $attributes:
+      - { $name: count, $type: number, $optional: false }
+      - { $name: next, $type: string, $optional: true, $nullable: true }
+      - { $name: previous, $type: string, $optional: true, $nullable: true }
+      - $name: results
+        $type: OptionGroupBasic
+        $list: true
+        $optional: false
+        $related:
+          $name: OptionGroupBasic
+          $module: config
+          $kind: custom
+          $step: module
+
+  # ─── Option ───────────────────────────────────────────────────
+  - $name: OptionBasic
+    $attributes:
+      - { $name: id, $type: string, $optional: false }
+      - { $name: parent_group, $type: string, $optional: false }
+      - { $name: name, $type: string, $optional: false }
+      - { $name: additional_amount, $type: number, $optional: false }
+      - { $name: display_order, $type: number, $optional: true, $nullable: true }
+      - { $name: is_active, $type: boolean, $optional: false }
+
+  - $name: PaginatedOptions
+    $attributes:
+      - { $name: count, $type: number, $optional: false }
+      - { $name: next, $type: string, $optional: true, $nullable: true }
+      - { $name: previous, $type: string, $optional: true, $nullable: true }
+      - $name: results
+        $type: OptionBasic
+        $list: true
+        $optional: false
+        $related:
+          $name: OptionBasic
+          $module: config
+          $kind: custom
+          $step: module
+
+  # ─── Ingredient ───────────────────────────────────────────────
+  - $name: IngredientBasic
+    $attributes:
+      - { $name: id, $type: string, $optional: false }
+      - { $name: name, $type: string, $optional: false }
+      - { $name: is_active, $type: boolean, $optional: false }
+
+  - $name: PaginatedIngredients
+    $attributes:
+      - { $name: count, $type: number, $optional: false }
+      - { $name: next, $type: string, $optional: true, $nullable: true }
+      - { $name: previous, $type: string, $optional: true, $nullable: true }
+      - $name: results
+        $type: IngredientBasic
+        $list: true
+        $optional: false
+        $related:
+          $name: IngredientBasic
+          $module: config
+          $kind: custom
+          $step: module
+
+  # ─── Quantity Type ────────────────────────────────────────────
+  - $name: QuantityTypeBasic
+    $attributes:
+      - { $name: id, $type: string, $optional: false }
+      - { $name: name, $type: string, $optional: false }
+      - { $name: abbreviation, $type: string, $optional: false }
+      - { $name: is_active, $type: boolean, $optional: false }
+
+  - $name: PaginatedQuantityTypes
+    $attributes:
+      - { $name: count, $type: number, $optional: false }
+      - { $name: next, $type: string, $optional: true, $nullable: true }
+      - { $name: previous, $type: string, $optional: true, $nullable: true }
+      - $name: results
+        $type: QuantityTypeBasic
+        $list: true
+        $optional: false
+        $related:
+          $name: QuantityTypeBasic
+          $module: config
+          $kind: custom
+          $step: module
+
+  # ─── Dynamic Config ───────────────────────────────────────────
+  - $name: DynamicConfigBasic
+    $attributes:
+      - { $name: id, $type: string, $optional: false }
+      - { $name: key, $type: string, $optional: false }
+      - { $name: value, $type: string, $optional: false }
+      - { $name: data_type, $type: string, $optional: false }
+      - { $name: description, $type: string, $optional: true, $nullable: true }
+
+  - $name: PaginatedDynamicConfigs
+    $attributes:
+      - { $name: count, $type: number, $optional: false }
+      - { $name: next, $type: string, $optional: true, $nullable: true }
+      - { $name: previous, $type: string, $optional: true, $nullable: true }
+      - $name: results
+        $type: DynamicConfigBasic
+        $list: true
+        $optional: false
+        $related:
+          $name: DynamicConfigBasic
+          $module: config
+          $kind: custom
+          $step: module
+
+  # ─── Set Menu ─────────────────────────────────────────────────
+  - $name: SetMenuBasic
+    $attributes:
+      - { $name: id, $type: string, $optional: false }
+      - { $name: name, $type: string, $optional: false }
+      - { $name: description, $type: string, $optional: true, $nullable: true }
+      - { $name: price, $type: number, $optional: false }
+      - { $name: display_order, $type: number, $optional: true, $nullable: true }
+      - { $name: is_active, $type: boolean, $optional: false }
+
+  - $name: PaginatedSetMenus
+    $attributes:
+      - { $name: count, $type: number, $optional: false }
+      - { $name: next, $type: string, $optional: true, $nullable: true }
+      - { $name: previous, $type: string, $optional: true, $nullable: true }
+      - $name: results
+        $type: SetMenuBasic
+        $list: true
+        $optional: false
+        $related:
+          $name: SetMenuBasic
+          $module: config
+          $kind: custom
+          $step: module
+
+  - $name: SetMenuSectionBasic
+    $attributes:
+      - { $name: id, $type: string, $optional: false }
+      - { $name: set_menu, $type: string, $optional: false }
+      - { $name: category_id, $type: string, $optional: false }
+      - { $name: max_selections, $type: string, $optional: false }
+
+  - $name: PaginatedSetMenuSections
+    $attributes:
+      - { $name: count, $type: number, $optional: false }
+      - { $name: next, $type: string, $optional: true, $nullable: true }
+      - { $name: previous, $type: string, $optional: true, $nullable: true }
+      - $name: results
+        $type: SetMenuSectionBasic
+        $list: true
+        $optional: false
+        $related:
+          $name: SetMenuSectionBasic
+          $module: config
+          $kind: custom
+          $step: module
+
+  # ─── Ingredient Type ──────────────────────────────────────────
+  - $name: IngredientTypeBasic
+    $attributes:
+      - { $name: id, $type: string, $optional: false }
+      - { $name: name, $type: string, $optional: false }
+      - { $name: description, $type: string, $optional: true, $nullable: true }
+      - { $name: display_order, $type: number, $optional: true, $nullable: true }
+      - { $name: is_active, $type: boolean, $optional: false }
+
+  - $name: IngredientTypeStats
+    $attributes:
+      - { $name: total_types, $type: number, $optional: false }
+      - { $name: types_actifs, $type: number, $optional: false }
+      - { $name: types_inactifs, $type: number, $optional: false }
+
+  # ─── Kitchen ──────────────────────────────────────────────────
+  - $name: KitchenBasic
+    $attributes:
+      - { $name: id, $type: string, $optional: false }
+      - { $name: name, $type: string, $optional: false }
+      - { $name: slug, $type: string, $optional: false }
+      - { $name: description, $type: string, $optional: true, $nullable: true }
+      - { $name: icon, $type: string, $optional: true, $nullable: true }
+      - { $name: area, $type: string, $optional: true, $nullable: true }
+      - { $name: area_name, $type: string, $optional: true, $nullable: true }
+      - { $name: responsable_id, $type: string, $optional: true, $nullable: true }
+      - { $name: is_active, $type: boolean, $optional: false }
+
+  - $name: KitchenStats
+    $attributes:
+      - { $name: total, $type: number, $optional: false }
+      - { $name: active, $type: number, $optional: false }
+      - { $name: inactive, $type: number, $optional: false }
+
+  - $name: KitchenZoneGroup
+    $attributes:
+      - { $name: id, $type: string, $optional: false }
+      - { $name: name, $type: string, $optional: false }
+      - $name: kitchens
+        $type: KitchenBasic
+        $list: true
+        $optional: false
+        $related:
+          $name: KitchenBasic
+          $module: config
+          $kind: custom
+          $step: module
+      - { $name: total_kitchens, $type: number, $optional: false }
+
+  # ─── Shared ───────────────────────────────────────────────────
+  - $name: SimpleStats
+    $attributes:
+      - { $name: total, $type: number, $optional: false }
+      - { $name: active, $type: number, $optional: false }
+      - { $name: inactive, $type: number, $optional: false }
+
+$features:
+  - $include: "./features/item_type_management/root.yml"
+  - $include: "./features/item_management/root.yml"
+  - $include: "./features/area_management/root.yml"
+  - $include: "./features/table_management/root.yml"
+  - $include: "./features/option_group_management/root.yml"
+  - $include: "./features/option_management/root.yml"
+  - $include: "./features/ingredient_management/root.yml"
+  - $include: "./features/quantity_type_management/root.yml"
+  - $include: "./features/dynamic_config_management/root.yml"
+  - $include: "./features/set_menu_management/root.yml"
+  - $include: "./features/kitchen_management/root.yml"
+  - $include: "./features/ingredient_type_management/root.yml"

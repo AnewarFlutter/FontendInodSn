@@ -1,0 +1,107 @@
+# ------------------------------------------------------------------
+# GET_USER_DETAIL - Détails d'un utilisateur (Admin)
+# ------------------------------------------------------------------
+
+$path: /user/users/{user_id}/
+$method: GET
+$description: "Récupérer les détails complets d'un utilisateur. Permission: user.view_all"
+$auth: true
+$skip: true
+$params:
+  $path:
+    user_id: { $type: string, $optional: false }
+$response:
+  $default:
+    $schema:
+      data:
+        $type: object
+        $schema:
+          id: { $type: string }
+          email: { $type: string }
+          first_name: { $type: string }
+          last_name: { $type: string }
+          pseudo: { $type: string }
+          photo: { $type: string, $nullable: true }
+          telephone: { $type: string, $nullable: true }
+          birth_date: { $type: string, $nullable: true }
+          gender: { $type: string, $optional: true }
+          nationality: { $type: string, $optional: true }
+          address: { $type: string, $optional: true }
+          status_activation: { $type: string, $description: "ex: ACTIVE, SUSPENDED, DELETED" }
+          status_verification: { $type: string, $description: "ex: IN_PROGRESS, VERIFIED" }
+          preferences: { $type: object }
+          is_deleted: { $type: boolean }
+          deleted_at: { $type: string, $nullable: true }
+          roles:
+            $type: array
+            $description: "Rôles actifs de l'utilisateur"
+            $items:
+              $type: object
+              $schema:
+                code: { $type: string, $description: "ex: LIVREUR, MANAGER, CUISINIER" }
+                name: { $type: string }
+                assigned_at: { $type: string }
+                assigned_by: { $type: string, $description: "UUID de l'admin ayant assigné le rôle" }
+          permissions:
+            $type: object
+            $description: "Permissions groupées par catégorie — base (rôles) + custom (individuelles) + summary"
+            $schema:
+              base:
+                $type: object
+                $description: "Permissions héritées des rôles, clé = code catégorie, valeur = liste d'objets permission"
+                $additionalProperties:
+                  $type: array
+                  $items:
+                    $type: object
+                    $schema:
+                      id: { $type: string }
+                      code: { $type: string }
+                      name: { $type: string }
+                      description: { $type: string }
+                      category: { $type: string }
+                      category_name: { $type: string }
+                      is_active: { $type: boolean }
+                      is_system: { $type: boolean }
+                      created_at: { $type: string }
+              custom:
+                $type: object
+                $schema:
+                  added:
+                    $type: object
+                    $description: "Permissions individuellement ajoutées, même structure que base"
+                    $additionalProperties:
+                      $type: array
+                      $items: { $type: object }
+                  removed:
+                    $type: object
+                    $description: "Permissions individuellement révoquées, même structure que base"
+                    $additionalProperties:
+                      $type: array
+                      $items: { $type: object }
+              summary:
+                $type: object
+                $schema:
+                  total_base: { $type: number }
+                  total_custom_added: { $type: number }
+                  total_custom_removed: { $type: number }
+                  total_effective: { $type: number }
+          profiles:
+            $type: object
+            $description: "Profils métier, null si non activé"
+            $schema:
+              cuisinier: { $type: object, $nullable: true }
+              serveur: { $type: object, $nullable: true }
+              livreur: { $type: object, $nullable: true }
+              caissier: { $type: object, $nullable: true }
+              default: { $type: object, $nullable: true }
+          created_at: { $type: string }
+          updated_at: { $type: string }
+  $byStatus:
+    "403":
+      $description: "Permission insuffisante"
+      $schema:
+        detail: { $type: string }
+    "404":
+      $description: "Utilisateur non trouvé"
+      $schema:
+        detail: { $type: string }

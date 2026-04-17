@@ -1,0 +1,41 @@
+# --------------------------------------------------------------
+# DeactivateOptionGroup - POST
+# --------------------------------------------------------------
+$name: deactivateOptionGroup
+$description: "Désactive un groupe d'options par son identifiant"
+$skip: false
+$async: true
+
+$params:
+  - $name: optionGroupId
+    $type: string
+    $optional: false
+
+$returnDescription: "Le groupe d'options désactivé"
+$returnType:
+  $type: OptionGroupBasic
+  $nullable: true
+  $related:
+    - $name: OptionGroupBasic
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.DEACTIVATE_OPTION_GROUP
+  $mapping:
+    $path:
+      option_group_id: optionGroupId
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: OptionGroupBasic
+    $from: "--module config --kind custom --step module"
+    $step: module

@@ -1,0 +1,41 @@
+# ------------------------------------------------------------------
+# GET_ITEMS_LIST - Liste des items
+# ------------------------------------------------------------------
+$path: /config/items/
+$method: GET
+$description: "Lister tous les items avec filtres"
+$auth: true
+$skip: false
+$params:
+  $query:
+    is_active: { $type: boolean, $optional: true }
+    search: { $type: string, $optional: true }
+    ordering: { $type: string, $optional: true }
+    item_type: { $type: number, $optional: true }
+    category: { $type: number, $optional: true }
+    kitchen_area: { $type: number, $optional: true }
+    price_min: { $type: number, $optional: true }
+    price_max: { $type: number, $optional: true }
+    temps_max: { $type: number, $optional: true }
+    has_allergene: { $type: boolean, $optional: true }
+$response:
+  $default:
+    $schema:
+      count: { $type: number }
+      next: { $type: string, $nullable: true }
+      previous: { $type: string, $nullable: true }
+      results:
+        $type: array
+        $items:
+          $type: object
+          $schema:
+            id: { $type: number }
+            name: { $type: string }
+            display_name: { $type: string, $nullable: true }
+            item_type: { $type: number }
+            price: { $type: number }
+            is_active: { $type: boolean }
+  $byStatus:
+    "401":
+      $schema:
+        detail: { $type: string }

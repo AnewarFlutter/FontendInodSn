@@ -1,0 +1,50 @@
+# --------------------------------------------------------------
+# GetOptionGroupOptions - GET
+# --------------------------------------------------------------
+$name: getOptionGroupOptions
+$description: "Récupère les options associées à un groupe d'options"
+$skip: false
+$async: true
+
+$params:
+  - $name: optionGroupId
+    $type: string
+    $optional: false
+  - $name: is_active
+    $type: boolean
+    $optional: true
+  - $name: ordering
+    $type: string
+    $optional: true
+
+$returnDescription: "Liste paginée des options du groupe"
+$returnType:
+  $type: PaginatedOptions
+  $nullable: true
+  $related:
+    - $name: PaginatedOptions
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.GET_OPTION_GROUP_OPTIONS
+  $mapping:
+    $path:
+      option_group_id: optionGroupId
+    $query:
+      is_active: is_active
+      ordering: ordering
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: PaginatedOptions
+    $from: "--module config --kind custom --step module"
+    $step: module

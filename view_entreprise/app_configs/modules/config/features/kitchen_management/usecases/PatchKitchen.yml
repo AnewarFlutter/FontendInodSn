@@ -1,0 +1,46 @@
+# --------------------------------------------------------------
+# PatchKitchen - PATCH
+# --------------------------------------------------------------
+$name: patchKitchen
+$description: "Met à jour partiellement une cuisine"
+$skip: false
+$async: true
+
+$params:
+  - { $name: kitchenId, $type: string, $optional: false }
+  - $name: payload
+    $type: CreateKitchenPayload
+    $optional: false
+    $related: "--module config --feature kitchen_management --kind custom --step feature"
+
+$returnDescription: "La cuisine modifiée"
+$returnType:
+  $type: KitchenBasic
+  $nullable: true
+  $related:
+    - $name: KitchenBasic
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.PATCH_KITCHEN
+  $mapping:
+    $path:
+      kitchen_id: kitchenId
+    $body:
+      payload: payload
+  $responseMapping:
+    $returnValue: data
+
+$imports:
+  - $name: CreateKitchenPayload
+    $from: "--module config --feature kitchen_management --kind custom --step feature"
+    $step: feature
+  - $name: KitchenBasic
+    $from: "--module config --kind custom --step module"
+    $step: module

@@ -1,0 +1,41 @@
+# --------------------------------------------------------------
+# ActivateOptionGroup - POST
+# --------------------------------------------------------------
+$name: activateOptionGroup
+$description: "Active un groupe d'options par son identifiant"
+$skip: false
+$async: true
+
+$params:
+  - $name: optionGroupId
+    $type: string
+    $optional: false
+
+$returnDescription: "Le groupe d'options activé"
+$returnType:
+  $type: OptionGroupBasic
+  $nullable: true
+  $related:
+    - $name: OptionGroupBasic
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.ACTIVATE_OPTION_GROUP
+  $mapping:
+    $path:
+      option_group_id: optionGroupId
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: OptionGroupBasic
+    $from: "--module config --kind custom --step module"
+    $step: module

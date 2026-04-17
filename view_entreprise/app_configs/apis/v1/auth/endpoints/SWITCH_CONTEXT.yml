@@ -1,0 +1,41 @@
+# ------------------------------------------------------------------
+# SWITCH_CONTEXT - Changement de contexte de rôle
+# ------------------------------------------------------------------
+
+$path: /auth/switch-context/
+$method: POST
+$description: "Change le contexte (rôle) de l'utilisateur connecté. Retourne de nouveaux tokens avec le rôle mis à jour."
+$auth: true
+$skip: true
+$params:
+  $body:
+    context: { $type: string, $optional: false, $description: "Nouveau contexte : ADMIN, CAISSE, CUISINE, SERVICE, LIVRAISON" }
+$response:
+  $default:
+    $description: "Nouveaux tokens avec le contexte mis à jour"
+    $schema:
+      status: { $type: string, $description: "ex: SUCCESS" }
+      message: { $type: string, $description: "ex: Contexte changé vers ADMIN" }
+      token:
+        $type: object
+        $schema:
+          access_token: { $type: string }
+          refresh_token: { $type: string }
+          token_type: { $type: string, $description: "Bearer" }
+          expires_in: { $type: number, $description: "Durée de validité en secondes" }
+      current_context: { $type: string, $description: "ex: ADMIN" }
+  $byStatus:
+    "400":
+      $description: "Contexte non autorisé pour cet utilisateur, ou erreur de validation DRF"
+      $schema:
+        context: { $type: array, $items: { $type: string }, $optional: true, $description: "Erreurs DRF sur le champ context" }
+        non_field_errors: { $type: array, $items: { $type: string }, $optional: true }
+        status: { $type: string, $optional: true, $description: "ex: ERROR" }
+        message: { $type: string, $optional: true, $description: "ex: Vous n'avez pas le rôle requis pour le contexte ADMIN" }
+        code: { $type: string, $optional: true, $description: "ex: CONTEXT_NOT_ALLOWED" }
+    "401":
+      $description: "Token manquant, expiré ou invalide"
+      $schema:
+        status: { $type: string, $description: "ex: ERROR" }
+        message: { $type: string, $description: "ex: Authentication credentials were not provided." }
+        code: { $type: string, $description: "ex: UNAUTHORIZED" }

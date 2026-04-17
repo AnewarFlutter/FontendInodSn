@@ -1,0 +1,41 @@
+# --------------------------------------------------------------
+# ActivateItem - POST
+# --------------------------------------------------------------
+$name: activateItem
+$description: "Active un item par son identifiant"
+$skip: false
+$async: true
+
+$params:
+  - $name: itemId
+    $type: string
+    $optional: false
+
+$returnDescription: "L'item activé"
+$returnType:
+  $type: ItemBasic
+  $nullable: true
+  $related:
+    - $name: ItemBasic
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.ACTIVATE_ITEM
+  $mapping:
+    $path:
+      item_id: itemId
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: ItemBasic
+    $from: "--module config --kind custom --step module"
+    $step: module

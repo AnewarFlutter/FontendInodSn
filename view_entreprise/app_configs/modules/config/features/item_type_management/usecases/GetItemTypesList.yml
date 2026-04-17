@@ -1,0 +1,45 @@
+# --------------------------------------------------------------
+# GetItemTypesList - GET
+# --------------------------------------------------------------
+$name: getItemTypesList
+$description: "Liste tous les types d'items avec pagination et recherche"
+$skip: false
+$async: true
+
+$params:
+  - $name: page
+    $type: number
+    $optional: true
+  - $name: search
+    $type: string
+    $optional: true
+
+$returnDescription: "Liste paginée des types d'items"
+$returnType:
+  $type: PaginatedItemTypes
+  $nullable: true
+  $related:
+    - $name: PaginatedItemTypes
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.GET_ITEM_TYPES_LIST
+  $mapping:
+    $query:
+      page: page
+      search: search
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: PaginatedItemTypes
+    $from: "--module config --kind custom --step module"
+    $step: module

@@ -1,0 +1,41 @@
+# --------------------------------------------------------------
+# GetItemTypeDetail - GET
+# --------------------------------------------------------------
+$name: getItemTypeDetail
+$description: "Récupère le détail d'un type d'item par son identifiant"
+$skip: false
+$async: true
+
+$params:
+  - $name: itemTypeId
+    $type: string
+    $optional: false
+
+$returnDescription: "Le détail du type d'item"
+$returnType:
+  $type: ItemTypeBasic
+  $nullable: true
+  $related:
+    - $name: ItemTypeBasic
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.GET_ITEM_TYPE_DETAIL
+  $mapping:
+    $path:
+      item_type_id: itemTypeId
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: ItemTypeBasic
+    $from: "--module config --kind custom --step module"
+    $step: module

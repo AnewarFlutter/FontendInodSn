@@ -1,0 +1,32 @@
+# ------------------------------------------------------------------
+# LOGOUT - Déconnexion et révocation des tokens
+# ------------------------------------------------------------------
+
+$path: /auth/logout/
+$method: POST
+$description: "Déconnexion et révocation des tokens. logout_all=true révoque toutes les sessions actives."
+$auth: true
+$skip: true
+$params:
+  $body:
+    refresh_token: { $type: string, $optional: false }
+    logout_all: { $type: boolean, $optional: true, $description: "Si true, révoque toutes les sessions actives de l'utilisateur" }
+$response:
+  $default:
+    $schema:
+      status: { $type: string, $description: "ex: SUCCESS" }
+      message: { $type: string }
+      sessions_revoked: { $type: number, $optional: true, $description: "Présent si logout_all=true" }
+  $byStatus:
+    "400":
+      $description: "Token invalide, malformé ou déjà révoqué"
+      $schema:
+        status: { $type: string, $description: "ex: ERROR" }
+        message: { $type: string, $description: "ex: Token invalide ou déjà révoqué" }
+        code: { $type: string, $description: "ex: INVALID_TOKEN" }
+    "401":
+      $description: "Token d'accès manquant ou invalide dans le header Authorization"
+      $schema:
+        status: { $type: string, $description: "ex: ERROR" }
+        message: { $type: string, $description: "ex: Authentication credentials were not provided." }
+        code: { $type: string, $description: "ex: UNAUTHORIZED" }

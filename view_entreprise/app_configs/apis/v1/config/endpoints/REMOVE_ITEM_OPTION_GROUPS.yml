@@ -1,0 +1,24 @@
+# ------------------------------------------------------------------
+# REMOVE_ITEM_OPTION_GROUPS - Retirer des groupes d'options d'un item
+# ------------------------------------------------------------------
+$path: /config/items/{item_id}/remove-option-groups/
+$method: POST
+$description: "Retirer des groupes d'options d'un item"
+$auth: true
+$skip: false
+$params:
+  $path:
+    item_id: { $type: number, $optional: false }
+  $body:
+    group_option_ids: { $type: array, $items: { $type: number }, $optional: false }
+$response:
+  $default:
+    $schema:
+      message: { $type: string }
+  $byStatus:
+    "400":
+      $schema:
+        error: { $type: string }
+    "404":
+      $schema:
+        detail: { $type: string }

@@ -1,0 +1,52 @@
+# ------------------------------------------------------------------
+# Feature : session (Gestion des sessions et tokens auth)
+# ------------------------------------------------------------------
+$name: session
+$description: "Gestion des sessions utilisateur : connexion, déconnexion, refresh token, changement de contexte et profil courant"
+$fileNameCasing: snakeCase
+$override: false
+$delete: false
+$skip: true
+$rewriteInController: true
+$rewriteInDataSourceImpl: false
+
+$enums: []
+
+$types:
+  - $name: LoginPayload
+    $attributes:
+      - $name: identifier_type
+        $type: IdentifierTypeEnum
+        $optional: false
+        $related:
+          $name: IdentifierTypeEnum
+          $module: auth
+          $kind: enum
+          $step: module
+      - { $name: identifier, $type: string, $optional: false, $description: "Email ou numéro de téléphone" }
+      - { $name: password, $type: string, $optional: false }
+      - $name: context
+        $type: LoginContextEnum
+        $optional: false
+        $related:
+          $name: LoginContextEnum
+          $module: auth
+          $kind: enum
+          $step: module
+
+  - $name: SwitchContextPayload
+    $attributes:
+      - $name: context
+        $type: LoginContextEnum
+        $optional: false
+        $related:
+          $name: LoginContextEnum
+          $module: auth
+          $kind: enum
+          $step: module
+
+$usecases:
+  - $include: "./usecases/Login.yml"
+  - $include: "./usecases/Logout.yml"
+  - $include: "./usecases/RefreshToken.yml"
+  - $include: "./usecases/SwitchContext.yml"

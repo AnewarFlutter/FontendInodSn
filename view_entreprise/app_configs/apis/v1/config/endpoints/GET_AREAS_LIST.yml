@@ -1,0 +1,36 @@
+# ------------------------------------------------------------------
+# GET_AREAS_LIST - Liste des zones
+# ------------------------------------------------------------------
+$path: /config/areas/
+$method: GET
+$description: "Lister toutes les zones avec filtres"
+$auth: true
+$skip: false
+$params:
+  $query:
+    area_type: { $type: string, $optional: true, $description: "Type de zone : TABLE, KITCHEN" }
+    is_active: { $type: boolean, $optional: true }
+    has_items: { $type: boolean, $optional: true }
+    search: { $type: string, $optional: true }
+    ordering: { $type: string, $optional: true }
+$response:
+  $default:
+    $schema:
+      count: { $type: number }
+      next: { $type: string, $nullable: true }
+      previous: { $type: string, $nullable: true }
+      results:
+        $type: array
+        $items:
+          $type: object
+          $schema:
+            id: { $type: number }
+            name: { $type: string }
+            area_type: { $type: string }
+            description: { $type: string, $nullable: true }
+            display_order: { $type: number, $nullable: true }
+            is_active: { $type: boolean }
+  $byStatus:
+    "401":
+      $schema:
+        detail: { $type: string }

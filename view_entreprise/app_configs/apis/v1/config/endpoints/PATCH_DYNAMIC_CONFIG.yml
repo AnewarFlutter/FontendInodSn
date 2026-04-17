@@ -1,0 +1,25 @@
+# ------------------------------------------------------------------
+# PATCH_DYNAMIC_CONFIG - Modifier partiellement une configuration dynamique
+# ------------------------------------------------------------------
+$path: /config/config/{config_id}/
+$method: PATCH
+$description: "Modifier partiellement une configuration dynamique"
+$auth: true
+$skip: false
+$params:
+  $path:
+    config_id: { $type: number, $optional: false }
+  $body:
+    value: { $type: string, $optional: true }
+    description: { $type: string, $optional: true }
+$response:
+  $default:
+    $schema:
+      id: { $type: number }
+      key: { $type: string }
+      value: { $type: string }
+      data_type: { $type: string }
+  $byStatus:
+    "400":
+      $schema:
+        error: { $type: string }

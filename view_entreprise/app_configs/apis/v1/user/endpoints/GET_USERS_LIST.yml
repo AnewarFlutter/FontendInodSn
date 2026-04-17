@@ -1,0 +1,46 @@
+# ------------------------------------------------------------------
+# GET_USERS_LIST - Liste de tous les utilisateurs (Admin)
+# ------------------------------------------------------------------
+
+$path: /user/users/
+$method: GET
+$description: "Lister tous les utilisateurs avec pagination. Permission: user.view_all"
+$auth: true
+$skip: true
+$params:
+  $query:
+    page: { $type: number, $optional: true }
+    page_size: { $type: number, $optional: true }
+    search: { $type: string, $optional: true }
+    role: { $type: string, $optional: true, $description: "Filtrer par rôle ex: SERVEUR" }
+    status: { $type: string, $optional: true, $description: "Filtrer par statut ex: ACTIVE, SUSPENDED, DELETED" }
+$response:
+  $default:
+    $schema:
+      data:
+        $type: object
+        $schema:
+          count: { $type: number }
+          page: { $type: number }
+          page_size: { $type: number }
+          results:
+            $type: array
+            $items:
+              $type: object
+              $schema:
+                id: { $type: string }
+                email: { $type: string }
+                telephone: { $type: string, $nullable: true }
+                first_name: { $type: string }
+                last_name: { $type: string }
+                status_activation: { $type: string, $description: "ex: ACTIVE, SUSPENDED, DELETED" }
+                roles: { $type: array, $items: { $type: string }, $description: "Noms des rôles ex: Livreur, Manager" }
+                created_at: { $type: string }
+  $byStatus:
+    "401":
+      $schema:
+        detail: { $type: string }
+    "403":
+      $description: "Permission insuffisante"
+      $schema:
+        detail: { $type: string }

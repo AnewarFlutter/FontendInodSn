@@ -1,0 +1,20 @@
+# ------------------------------------------------------------------
+# DELETE_INGREDIENT_TYPE - Supprimer un type d'ingrédient
+# ------------------------------------------------------------------
+$path: /config/ingredient-types/{ingredient_type_id}/
+$method: DELETE
+$description: "Supprimer un type d'ingrédient"
+$auth: true
+$skip: false
+$params:
+  $path:
+    ingredient_type_id: { $type: string, $optional: false }
+$response:
+  $default:
+    $schema:
+      status: { $type: string }
+      message: { $type: string }
+  $byStatus:
+    "404":
+      $schema:
+        detail: { $type: string }

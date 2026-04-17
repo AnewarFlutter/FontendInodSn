@@ -1,0 +1,36 @@
+# ------------------------------------------------------------------
+# GET_PERMISSIONS_LIST - Liste de toutes les permissions du système (Admin)
+# ------------------------------------------------------------------
+
+$path: /user/permissions/
+$method: GET
+$description: "Lister toutes les permissions disponibles, filtrées selon le niveau de l'admin. Permission: permission.list"
+$auth: true
+$skip: true
+$response:
+  $default:
+    $schema:
+      data:
+        $type: object
+        $schema:
+          count: { $type: number }
+          user_level: { $type: number }
+          filtered: { $type: boolean }
+          permissions:
+            $type: array
+            $items:
+              $type: object
+              $schema:
+                id: { $type: string }
+                code: { $type: string, $description: "ex: category.create" }
+                name: { $type: string }
+                description: { $type: string }
+                category: { $type: string, $description: "ex: CATEGORY, USER, MENU..." }
+                is_active: { $type: boolean }
+                is_system: { $type: boolean }
+                created_at: { $type: string }
+  $byStatus:
+    "403":
+      $schema:
+        error: { $type: string }
+        code: { $type: string }

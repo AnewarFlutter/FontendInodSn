@@ -1,0 +1,44 @@
+# --------------------------------------------------------------
+# GetAreaTables - GET
+# --------------------------------------------------------------
+$name: getAreaTables
+$description: "Récupère les tables associées à une zone"
+$skip: false
+$async: true
+
+$params:
+  - $name: areaId
+    $type: string
+    $optional: false
+  - $name: status
+    $type: string
+    $optional: true
+  - $name: is_active
+    $type: boolean
+    $optional: true
+  - $name: min_capacity
+    $type: number
+    $optional: true
+
+$returnDescription: "Les tables de la zone"
+$returnType:
+  $type: object
+  $nullable: true
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.GET_AREA_TABLES
+  $mapping:
+    $path:
+      area_id: areaId
+    $query:
+      status: status
+      is_active: is_active
+      min_capacity: min_capacity
+  $responseMapping:
+    $returnValue: ""

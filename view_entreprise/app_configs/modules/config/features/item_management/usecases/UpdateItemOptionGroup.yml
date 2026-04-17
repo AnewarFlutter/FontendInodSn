@@ -1,0 +1,48 @@
+# --------------------------------------------------------------
+# UpdateItemOptionGroup - PATCH
+# --------------------------------------------------------------
+$name: updateItemOptionGroup
+$description: "Met à jour un groupe d'options associé à un item"
+$skip: false
+$async: true
+
+$params:
+  - $name: itemId
+    $type: string
+    $optional: false
+  - $name: optionGroupId
+    $type: string
+    $optional: false
+  - $name: payload
+    $type: UpdateItemOptionGroupPayload
+    $optional: false
+    $related: "--module config --feature item_management --kind custom --step feature"
+
+$returnDescription: "Résultat de la mise à jour du groupe d'options"
+$returnType:
+  $type: object
+  $nullable: true
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.UPDATE_ITEM_OPTION_GROUP
+  $mapping:
+    $path:
+      item_id: itemId
+      option_group_id: optionGroupId
+    $body:
+      is_mandatory: payload.is_mandatory
+      selection_type: payload.selection_type
+      max_selections: payload.max_selections
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: UpdateItemOptionGroupPayload
+    $from: "--module config --feature item_management --kind custom --step feature"
+    $step: feature

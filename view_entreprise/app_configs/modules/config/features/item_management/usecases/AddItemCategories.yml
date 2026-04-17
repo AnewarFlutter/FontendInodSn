@@ -1,0 +1,42 @@
+# --------------------------------------------------------------
+# AddItemCategories - POST
+# --------------------------------------------------------------
+$name: addItemCategories
+$description: "Ajoute des catégories à un item"
+$skip: false
+$async: true
+
+$params:
+  - $name: itemId
+    $type: string
+    $optional: false
+  - $name: payload
+    $type: AddItemCategoriesPayload
+    $optional: false
+    $related: "--module config --feature item_management --kind custom --step feature"
+
+$returnDescription: "Résultat de l'ajout de catégories"
+$returnType:
+  $type: object
+  $nullable: true
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.ADD_ITEM_CATEGORIES
+  $mapping:
+    $path:
+      item_id: itemId
+    $body:
+      category_ids: payload.category_ids
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: AddItemCategoriesPayload
+    $from: "--module config --feature item_management --kind custom --step feature"
+    $step: feature

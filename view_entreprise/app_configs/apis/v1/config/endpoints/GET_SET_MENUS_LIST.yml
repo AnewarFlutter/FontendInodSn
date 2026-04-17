@@ -1,0 +1,34 @@
+# ------------------------------------------------------------------
+# GET_SET_MENUS_LIST - Liste des formules/menus
+# ------------------------------------------------------------------
+$path: /config/set-menus/
+$method: GET
+$description: "Lister toutes les formules"
+$auth: true
+$skip: false
+$params:
+  $query:
+    is_active: { $type: boolean, $optional: true }
+    search: { $type: string, $optional: true }
+    ordering: { $type: string, $optional: true }
+$response:
+  $default:
+    $schema:
+      count: { $type: number }
+      next: { $type: string, $nullable: true }
+      previous: { $type: string, $nullable: true }
+      results:
+        $type: array
+        $items:
+          $type: object
+          $schema:
+            id: { $type: number }
+            name: { $type: string }
+            description: { $type: string, $optional: true, $nullable: true }
+            price: { $type: number }
+            display_order: { $type: number, $optional: true }
+            is_active: { $type: boolean }
+  $byStatus:
+    "401":
+      $schema:
+        detail: { $type: string }

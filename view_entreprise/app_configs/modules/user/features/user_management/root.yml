@@ -1,0 +1,95 @@
+# ------------------------------------------------------------------
+# Feature : user_management (Gestion admin des utilisateurs)
+# ------------------------------------------------------------------
+$name: user_management
+$description: "Gestion admin des utilisateurs : CRUD, statuts, profils métier, rôles et permissions"
+$fileNameCasing: snakeCase
+$override: false
+$delete: false
+$skip: true
+$rewriteInController: true
+$rewriteInDataSourceImpl: false
+
+$enums: []
+
+$types:
+  - $name: CreateUserPayload
+    $attributes:
+      - { $name: email, $type: string, $optional: true, $nullable: true }
+      - { $name: phone, $type: string, $optional: true, $nullable: true }
+      - { $name: first_name, $type: string, $optional: false }
+      - { $name: last_name, $type: string, $optional: false }
+      - $name: gender
+        $type: GenderEnum
+        $optional: true
+        $nullable: true
+        $related:
+          $name: GenderEnum
+          $module: user
+          $kind: enum
+          $step: module
+      - { $name: birth_date, $type: string, $optional: true, $nullable: true }
+      - { $name: nationality, $type: string, $optional: true, $nullable: true }
+      - $name: roles
+        $type: UserRoleCodeEnum
+        $list: true
+        $optional: true
+        $related:
+          $name: UserRoleCodeEnum
+          $module: user
+          $kind: enum
+          $step: module
+
+  - $name: UpdateUserPayload
+    $attributes:
+      - { $name: first_name, $type: string, $optional: true }
+      - { $name: last_name, $type: string, $optional: true }
+      - { $name: telephone, $type: string, $optional: true, $nullable: true }
+      - { $name: birth_date, $type: string, $optional: true, $nullable: true }
+      - { $name: address, $type: string, $optional: true, $nullable: true }
+      - { $name: gender, $type: string, $optional: true, $nullable: true }
+      - { $name: nationality, $type: string, $optional: true, $nullable: true }
+
+  - $name: UpdateUserCuisinierProfilePayload
+    $attributes:
+      - { $name: specialites, $type: string, $list: true, $optional: true }
+      - { $name: poste_principal, $type: string, $optional: true }
+      - { $name: allergenes_maitrises, $type: string, $list: true, $optional: true }
+
+  - $name: UpdateUserServeurProfilePayload
+    $attributes:
+      - { $name: sections_assignees, $type: string, $list: true, $optional: true }
+      - { $name: tables_assignees, $type: number, $list: true, $optional: true }
+      - { $name: langues_parlees, $type: string, $list: true, $optional: true }
+
+  - $name: UpdateUserCaissierProfilePayload
+    $attributes:
+      - { $name: pos_terminal_id, $type: string, $optional: true }
+      - { $name: assigned_cash_register, $type: string, $optional: true }
+
+  - $name: UpdateUserManagerProfilePayload
+    $attributes:
+      - { $name: notes, $type: string, $optional: true }
+      - { $name: responsabilites, $type: string, $list: true, $optional: true }
+
+$usecases:
+  - $include: "./usecases/GetUsersList.yml"
+  - $include: "./usecases/CreateUser.yml"
+  - $include: "./usecases/GetUserDetail.yml"
+  - $include: "./usecases/UpdateUser.yml"
+  - $include: "./usecases/UpdateUserEmail.yml"
+  - $include: "./usecases/UpdateUserPhone.yml"
+  - $include: "./usecases/SuspendUser.yml"
+  - $include: "./usecases/ActivateUser.yml"
+  - $include: "./usecases/SoftDeleteUser.yml"
+  - $include: "./usecases/RestoreUser.yml"
+  - $include: "./usecases/UpdateUserCuisinierProfile.yml"
+  - $include: "./usecases/UpdateUserServeurProfile.yml"
+  - $include: "./usecases/UpdateUserCaissierProfile.yml"
+  - $include: "./usecases/UpdateUserLivreurProfile.yml"
+  - $include: "./usecases/ActivateUserLivreurProfile.yml"
+  - $include: "./usecases/UpdateUserManagerProfile.yml"
+  - $include: "./usecases/AssignUserRoles.yml"
+  - $include: "./usecases/RevokeUserRoles.yml"
+  - $include: "./usecases/GrantUserPermissions.yml"
+  - $include: "./usecases/RevokeUserPermissions.yml"

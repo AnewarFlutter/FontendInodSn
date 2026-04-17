@@ -1,0 +1,37 @@
+# ------------------------------------------------------------------
+# REVOKE_USER_ROLES - Révocation de rôles d'un utilisateur (Admin)
+# ------------------------------------------------------------------
+
+$path: /user/users/{user_id}/roles/revoke/
+$method: POST
+$description: "Révoquer des rôles à un utilisateur. Permission: role.revoke — ATTENTION: méthode POST (non DELETE)"
+$auth: true
+$skip: true
+$params:
+  $path:
+    user_id: { $type: string, $optional: false }
+  $body:
+    roles: { $type: array, $items: { $type: string }, $optional: false, $description: "Codes de rôles à révoquer" }
+$response:
+  $default:
+    $schema:
+      message: { $type: string, $description: "ex: 1 rôle(s) révoqué(s) avec succès" }
+      data:
+        $type: object
+        $schema:
+          user_id: { $type: string }
+          email: { $type: string }
+          revoked_roles: { $type: array, $items: { $type: string }, $description: "Rôles révoqués" }
+          not_assigned: { $type: array, $items: { $type: string }, $description: "Rôles non possédés (ignorés)" }
+          remaining_roles: { $type: array, $items: { $type: string }, $description: "Rôles restants après révocation" }
+  $byStatus:
+    "400":
+      $description: "Rôle invalide ou non assigné à cet utilisateur"
+      $schema:
+        error: { $type: string }
+        code: { $type: string }
+    "404":
+      $description: "Utilisateur non trouvé"
+      $schema:
+        error: { $type: string }
+        code: { $type: string }

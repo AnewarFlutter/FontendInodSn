@@ -1,0 +1,45 @@
+# --------------------------------------------------------------
+# CreateSetMenu - POST
+# --------------------------------------------------------------
+$name: createSetMenu
+$description: "Crée un nouveau menu composé"
+$skip: false
+$async: true
+
+$params:
+  - $name: payload
+    $type: CreateSetMenuPayload
+    $optional: false
+    $related: "--module config --feature set_menu_management --kind custom --step feature"
+
+$returnDescription: "Le menu composé créé"
+$returnType:
+  $type: SetMenuBasic
+  $nullable: true
+  $related:
+    - $name: SetMenuBasic
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.CREATE_SET_MENU
+  $mapping:
+    $body:
+      payload: payload
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: CreateSetMenuPayload
+    $from: "--module config --feature set_menu_management --kind custom --step feature"
+    $step: feature
+  - $name: SetMenuBasic
+    $from: "--module config --kind custom --step module"
+    $step: module

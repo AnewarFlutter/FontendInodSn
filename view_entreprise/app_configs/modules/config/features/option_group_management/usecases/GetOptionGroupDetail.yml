@@ -1,0 +1,41 @@
+# --------------------------------------------------------------
+# GetOptionGroupDetail - GET
+# --------------------------------------------------------------
+$name: getOptionGroupDetail
+$description: "Récupère le détail d'un groupe d'options par son identifiant"
+$skip: false
+$async: true
+
+$params:
+  - $name: optionGroupId
+    $type: string
+    $optional: false
+
+$returnDescription: "Le détail du groupe d'options"
+$returnType:
+  $type: OptionGroupBasic
+  $nullable: true
+  $related:
+    - $name: OptionGroupBasic
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.GET_OPTION_GROUP_DETAIL
+  $mapping:
+    $path:
+      option_group_id: optionGroupId
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: OptionGroupBasic
+    $from: "--module config --kind custom --step module"
+    $step: module

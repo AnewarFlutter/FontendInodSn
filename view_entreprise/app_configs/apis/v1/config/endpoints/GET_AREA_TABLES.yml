@@ -1,0 +1,32 @@
+# ------------------------------------------------------------------
+# GET_AREA_TABLES - Tables d'une zone
+# ------------------------------------------------------------------
+$path: /config/areas/{area_id}/tables/
+$method: GET
+$description: "Récupérer les tables d'une zone"
+$auth: true
+$skip: false
+$params:
+  $path:
+    area_id: { $type: number, $optional: false }
+  $query:
+    status: { $type: string, $optional: true, $description: "Statut de la table : AVAILABLE, OCCUPIED, RESERVED" }
+    is_active: { $type: boolean, $optional: true }
+    min_capacity: { $type: number, $optional: true }
+$response:
+  $default:
+    $schema:
+      results:
+        $type: array
+        $items:
+          $type: object
+          $schema:
+            id: { $type: number }
+            table_number: { $type: string }
+            capacity: { $type: number }
+            status: { $type: string }
+            is_active: { $type: boolean }
+  $byStatus:
+    "404":
+      $schema:
+        detail: { $type: string }

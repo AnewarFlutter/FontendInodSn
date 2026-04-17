@@ -1,0 +1,32 @@
+# ------------------------------------------------------------------
+# GET_OPTION_GROUPS_LIST - Liste des groupes d'options
+# ------------------------------------------------------------------
+$path: /config/option-groups/
+$method: GET
+$description: "Lister tous les groupes d'options avec filtres"
+$auth: true
+$skip: false
+$params:
+  $query:
+    is_active: { $type: boolean, $optional: true }
+    search: { $type: string, $optional: true }
+    ordering: { $type: string, $optional: true }
+$response:
+  $default:
+    $schema:
+      count: { $type: number }
+      next: { $type: string, $nullable: true }
+      previous: { $type: string, $nullable: true }
+      results:
+        $type: array
+        $items:
+          $type: object
+          $schema:
+            id: { $type: number }
+            name: { $type: string }
+            display_order: { $type: number, $nullable: true }
+            is_active: { $type: boolean }
+  $byStatus:
+    "401":
+      $schema:
+        detail: { $type: string }

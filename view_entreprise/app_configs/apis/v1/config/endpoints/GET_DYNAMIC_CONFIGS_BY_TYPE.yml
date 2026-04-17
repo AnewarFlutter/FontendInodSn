@@ -1,0 +1,28 @@
+# ------------------------------------------------------------------
+# GET_DYNAMIC_CONFIG_BY_TYPE - Lister les configurations par type de données
+# ------------------------------------------------------------------
+$path: /config/config/by-type/{data_type}/
+$method: GET
+$description: "Lister toutes les configurations d'un type de données donné"
+$auth: true
+$skip: false
+$params:
+  $path:
+    data_type: { $type: string, $optional: false, $description: "Type de données : boolean, string, integer, float, json" }
+$response:
+  $default:
+    $schema:
+      count: { $type: number }
+      results:
+        $type: array
+        $items:
+          $type: object
+          $schema:
+            id: { $type: number }
+            key: { $type: string }
+            value: { $type: string }
+            data_type: { $type: string }
+  $byStatus:
+    "404":
+      $schema:
+        detail: { $type: string }

@@ -1,0 +1,31 @@
+# ------------------------------------------------------------------
+# UPDATE_ITEM - Mettre à jour complètement un item
+# ------------------------------------------------------------------
+$path: /config/items/{item_id}/
+$method: PUT
+$description: "Mettre à jour complètement un item"
+$auth: true
+$skip: false
+$params:
+  $path:
+    item_id: { $type: number, $optional: false }
+  $body:
+    name: { $type: string, $optional: false }
+    item_type: { $type: number, $optional: false }
+    price: { $type: number, $optional: false }
+    is_active: { $type: boolean, $optional: false }
+$response:
+  $default:
+    $schema:
+      id: { $type: number }
+      name: { $type: string }
+      item_type: { $type: number }
+      price: { $type: number }
+      is_active: { $type: boolean }
+  $byStatus:
+    "400":
+      $schema:
+        error: { $type: string }
+    "404":
+      $schema:
+        detail: { $type: string }

@@ -1,0 +1,29 @@
+# --------------------------------------------------------------
+# suspendUser - POST
+# --------------------------------------------------------------
+$name: suspendUser
+$description: "Suspend un utilisateur. Permission: user.deactivate"
+$skip: true
+$async: true
+
+$params:
+  - $name: user_id
+    $type: string
+    $optional: false
+
+$returnDescription: "Confirmation de la suspension"
+$returnType:
+  $type: string
+  $nullable: true
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: USER.SUSPEND_USER
+  $mapping:
+    $path:
+      user_id: user_id
+  $responseMapping:
+    $returnValue: message

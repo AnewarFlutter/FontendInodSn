@@ -1,0 +1,27 @@
+# --------------------------------------------------------------
+# DeleteIngredientType - DELETE
+# --------------------------------------------------------------
+$name: deleteIngredientType
+$description: "Supprime un type d'ingredient"
+$skip: false
+$async: true
+
+$params:
+  - { $name: ingredientTypeId, $type: string, $optional: false }
+
+$returnDescription: "Resultat de la suppression"
+$returnType:
+  $type: object
+  $nullable: true
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.DELETE_INGREDIENT_TYPE
+  $mapping:
+    $path:
+      ingredient_type_id: ingredientTypeId
+  $responseMapping:
+    $returnValue: data

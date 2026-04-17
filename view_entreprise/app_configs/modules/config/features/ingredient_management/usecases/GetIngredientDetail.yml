@@ -1,0 +1,41 @@
+# --------------------------------------------------------------
+# GetIngredientDetail - GET
+# --------------------------------------------------------------
+$name: getIngredientDetail
+$description: "Récupère le détail d'un ingrédient par son identifiant"
+$skip: false
+$async: true
+
+$params:
+  - $name: ingredientId
+    $type: string
+    $optional: false
+
+$returnDescription: "Le détail de l'ingrédient"
+$returnType:
+  $type: IngredientBasic
+  $nullable: true
+  $related:
+    - $name: IngredientBasic
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.GET_INGREDIENT_DETAIL
+  $mapping:
+    $path:
+      ingredient_id: ingredientId
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: IngredientBasic
+    $from: "--module config --kind custom --step module"
+    $step: module

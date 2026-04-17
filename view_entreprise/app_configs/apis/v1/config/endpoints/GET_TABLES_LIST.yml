@@ -1,0 +1,33 @@
+# ------------------------------------------------------------------
+# GET_TABLES_LIST - Liste des tables
+# ------------------------------------------------------------------
+$path: /config/tables/
+$method: GET
+$description: "Lister toutes les tables avec filtres"
+$auth: true
+$skip: false
+$params:
+  $query:
+    is_active: { $type: boolean, $optional: true }
+    search: { $type: string, $optional: true }
+$response:
+  $default:
+    $schema:
+      count: { $type: number }
+      next: { $type: string, $nullable: true }
+      previous: { $type: string, $nullable: true }
+      results:
+        $type: array
+        $items:
+          $type: object
+          $schema:
+            id: { $type: number }
+            table_number: { $type: string }
+            capacity: { $type: number }
+            table_area: { $type: number }
+            status: { $type: string }
+            is_active: { $type: boolean }
+  $byStatus:
+    "401":
+      $schema:
+        detail: { $type: string }

@@ -1,0 +1,28 @@
+# ------------------------------------------------------------------
+# PATCH_OPTION_GROUP - Mettre à jour partiellement un groupe d'options
+# ------------------------------------------------------------------
+$path: /config/option-groups/{option_group_id}/
+$method: PATCH
+$description: "Mettre à jour partiellement un groupe d'options"
+$auth: true
+$skip: false
+$params:
+  $path:
+    option_group_id: { $type: number, $optional: false }
+  $body:
+    name: { $type: string, $optional: true }
+    display_order: { $type: number, $optional: true }
+    is_active: { $type: boolean, $optional: true }
+$response:
+  $default:
+    $schema:
+      id: { $type: number }
+      name: { $type: string }
+      is_active: { $type: boolean }
+  $byStatus:
+    "400":
+      $schema:
+        error: { $type: string }
+    "404":
+      $schema:
+        detail: { $type: string }

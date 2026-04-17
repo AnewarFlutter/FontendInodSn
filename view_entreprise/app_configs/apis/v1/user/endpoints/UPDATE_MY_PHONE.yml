@@ -1,0 +1,29 @@
+# ------------------------------------------------------------------
+# UPDATE_MY_PHONE - Mise à jour du numéro de téléphone (user connecté)
+# ------------------------------------------------------------------
+
+$path: /user/users/{user_id}/update-phone/
+$method: PATCH
+$description: "Modifier son propre numéro de téléphone (synchronise avec Auth Service). Champ requis : new_phone."
+$auth: true
+$skip: true
+$params:
+  $path:
+    user_id: { $type: string, $optional: false }
+  $body:
+    new_phone: { $type: string, $optional: false }
+$response:
+  $default:
+    $schema:
+      message: { $type: string }
+  $byStatus:
+    "400":
+      $description: "Numéro de téléphone invalide ou déjà utilisé"
+      $schema:
+        error: { $type: string }
+        code: { $type: string }
+    "404":
+      $description: "Utilisateur non trouvé"
+      $schema:
+        error: { $type: string }
+        code: { $type: string }

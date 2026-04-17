@@ -1,0 +1,19 @@
+# ------------------------------------------------------------------
+# DELETE_KITCHEN - Suppression (soft delete) d'une cuisine
+# ------------------------------------------------------------------
+$path: /config/kitchens/{kitchen_id}/
+$method: DELETE
+$description: "Supprimer une cuisine (soft delete, retourne 200)"
+$auth: true
+$skip: false
+$params:
+  $path:
+    kitchen_id: { $type: string, $optional: false }
+$response:
+  $default:
+    $schema:
+      detail: { $type: string }
+  $byStatus:
+    "404":
+      $schema:
+        detail: { $type: string }

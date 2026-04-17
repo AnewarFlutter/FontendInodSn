@@ -1,0 +1,24 @@
+# ------------------------------------------------------------------
+# UPLOAD_MY_AVATAR - Upload de la photo de profil
+# ------------------------------------------------------------------
+
+$path: /user/me/avatar/
+$method: POST
+$description: "Uploader sa photo de profil (multipart/form-data). Le champ multipart doit s'appeler 'avatar'."
+$auth: true
+$skip: true
+$params:
+  $body:
+    avatar: { $type: File, $optional: false, $description: "Fichier image JPEG ou PNG, max 5 MB — champ multipart nommé 'avatar'" }
+$response:
+  $default:
+    $schema:
+      message: { $type: string, $description: "ex: Photo de profil mise à jour avec succès" }
+      photo: { $type: string, $description: "URL relative de la photo uploadée, ex: /media/avatars/xxx.png" }
+      filename: { $type: string, $description: "Nom du fichier généré sur le serveur" }
+      size: { $type: string, $description: "Taille du fichier uploadé, ex: 0.07 KB" }
+  $byStatus:
+    "400":
+      $description: "Format de fichier invalide ou taille dépassée"
+      $schema:
+        error: { $type: string, $description: "ex: Aucun fichier fourni. Utilisez le champ 'avatar'." }

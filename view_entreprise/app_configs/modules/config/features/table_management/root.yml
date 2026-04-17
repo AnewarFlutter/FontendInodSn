@@ -1,0 +1,44 @@
+# ------------------------------------------------------------------
+# Feature : table_management (gestion des tables)
+# ------------------------------------------------------------------
+$name: table_management
+$description: "CRUD, activation/désactivation, changement de statut et statistiques des tables"
+$fileNameCasing: snakeCase
+$override: false
+$delete: false
+$skip: true
+$rewriteInController: true
+$rewriteInDataSourceImpl: false
+
+$enums: []
+$types:
+  - $name: CreateTablePayload
+    $attributes:
+      - { $name: table_number, $type: number, $optional: false }
+      - { $name: capacity, $type: number, $optional: false }
+      - { $name: area, $type: string, $optional: false }
+      - { $name: is_active, $type: boolean, $optional: false }
+
+  - $name: ChangeTableStatusPayload
+    $attributes:
+      - $name: status
+        $type: TableStatusEnum
+        $optional: false
+        $related:
+          $name: TableStatusEnum
+          $module: config
+          $kind: enum
+          $step: module
+
+$usecases:
+  - $include: "./usecases/GetTablesList.yml"
+  - $include: "./usecases/CreateTable.yml"
+  - $include: "./usecases/GetTableDetail.yml"
+  - $include: "./usecases/UpdateTable.yml"
+  - $include: "./usecases/PatchTable.yml"
+  - $include: "./usecases/DeleteTable.yml"
+  - $include: "./usecases/ActivateTable.yml"
+  - $include: "./usecases/DeactivateTable.yml"
+  - $include: "./usecases/ChangeTableStatus.yml"
+  - $include: "./usecases/GetTablesByArea.yml"
+  - $include: "./usecases/GetTablesStats.yml"

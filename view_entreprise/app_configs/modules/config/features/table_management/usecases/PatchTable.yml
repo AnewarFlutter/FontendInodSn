@@ -1,0 +1,50 @@
+# --------------------------------------------------------------
+# PatchTable - PATCH
+# --------------------------------------------------------------
+$name: patchTable
+$description: "Met à jour partiellement une table"
+$skip: false
+$async: true
+
+$params:
+  - $name: tableId
+    $type: string
+    $optional: false
+  - $name: payload
+    $type: CreateTablePayload
+    $optional: false
+    $related: "--module config --feature table_management --kind custom --step feature"
+
+$returnDescription: "La table patchée"
+$returnType:
+  $type: TableBasic
+  $nullable: true
+  $related:
+    - $name: TableBasic
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: false
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.PATCH_TABLE
+  $mapping:
+    $path:
+      table_id: tableId
+    $body:
+      payload: payload
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: CreateTablePayload
+    $from: "--module config --feature table_management --kind custom --step feature"
+    $step: feature
+  - $name: TableBasic
+    $from: "--module config --kind custom --step module"
+    $step: module

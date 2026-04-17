@@ -1,0 +1,26 @@
+# ------------------------------------------------------------------
+# CREATE_OPTION_GROUP - Créer un groupe d'options
+# ------------------------------------------------------------------
+$path: /config/option-groups/
+$method: POST
+$description: "Créer un nouveau groupe d'options"
+$auth: true
+$skip: false
+$params:
+  $body:
+    name: { $type: string, $optional: false }
+    display_order: { $type: number, $optional: true, $nullable: true }
+    is_active: { $type: boolean, $optional: false }
+$response:
+  $default:
+    $description: "201 Created"
+    $schema:
+      id: { $type: number }
+      name: { $type: string }
+      display_order: { $type: number, $nullable: true }
+      is_active: { $type: boolean }
+  $byStatus:
+    "400":
+      $schema:
+        error: { $type: string }
+        code: { $type: string }

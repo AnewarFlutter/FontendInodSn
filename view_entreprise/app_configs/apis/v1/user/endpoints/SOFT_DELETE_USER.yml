@@ -1,0 +1,30 @@
+# ------------------------------------------------------------------
+# SOFT_DELETE_USER - Soft delete d'un utilisateur (Admin)
+# ------------------------------------------------------------------
+
+$path: /user/users/{user_id}/delete/
+$method: DELETE
+$description: "Soft delete d'un utilisateur (restaurable). Permission: user.delete"
+$auth: true
+$skip: true
+$params:
+  $path:
+    user_id: { $type: string, $optional: false }
+$response:
+  $default:
+    $schema:
+      message: { $type: string, $description: "ex: Utilisateur supprimé avec succès" }
+      data:
+        $type: object
+        $schema:
+          success: { $type: boolean }
+          user_id: { $type: string }
+          email: { $type: string }
+          is_deleted: { $type: boolean }
+          deleted_at: { $type: string }
+          reason: { $type: string }
+  $byStatus:
+    "404":
+      $schema:
+        error: { $type: string }
+        code: { $type: string }

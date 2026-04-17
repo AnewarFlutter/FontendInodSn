@@ -1,0 +1,27 @@
+# ------------------------------------------------------------------
+# UPDATE_INGREDIENT_TYPE - Modifier complètement un type d'ingrédient
+# ------------------------------------------------------------------
+$path: /config/ingredient-types/{ingredient_type_id}/
+$method: PUT
+$description: "Mettre à jour complètement un type d'ingrédient"
+$auth: true
+$skip: false
+$params:
+  $path:
+    ingredient_type_id: { $type: string, $optional: false }
+  $body:
+    name: { $type: string, $optional: false }
+    description: { $type: string, $optional: true, $nullable: true }
+    display_order: { $type: number, $optional: true, $nullable: true }
+$response:
+  $default:
+    $schema:
+      status: { $type: string }
+      message: { $type: string }
+  $byStatus:
+    "400":
+      $schema:
+        error: { $type: string }
+    "404":
+      $schema:
+        detail: { $type: string }

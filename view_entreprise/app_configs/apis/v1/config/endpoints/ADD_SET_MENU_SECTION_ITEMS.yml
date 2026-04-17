@@ -1,0 +1,26 @@
+# ------------------------------------------------------------------
+# ADD_SET_MENU_SECTION_ITEMS - Ajouter des items à une section de formule
+# ------------------------------------------------------------------
+$path: /config/set-menu-sections/{set_menu_section_id}/add-items/
+$method: POST
+$description: "Ajouter des items à une section de formule"
+$auth: true
+$skip: false
+$params:
+  $path:
+    set_menu_section_id: { $type: number, $optional: false }
+  $body:
+    item_ids:
+      $type: array
+      $optional: false
+      $items:
+        $type: number
+$response:
+  $default:
+    $schema:
+      message: { $type: string }
+      id: { $type: number }
+  $byStatus:
+    "400":
+      $schema:
+        error: { $type: string }

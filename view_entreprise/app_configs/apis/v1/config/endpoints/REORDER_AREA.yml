@@ -1,0 +1,24 @@
+# ------------------------------------------------------------------
+# REORDER_AREA - Réordonner une zone
+# ------------------------------------------------------------------
+$path: /config/areas/{area_id}/reorder/
+$method: PATCH
+$description: "Modifier l'ordre d'affichage d'une zone"
+$auth: true
+$skip: false
+$params:
+  $path:
+    area_id: { $type: number, $optional: false }
+  $body:
+    new_order: { $type: number, $optional: false }
+$response:
+  $default:
+    $schema:
+      message: { $type: string }
+  $byStatus:
+    "400":
+      $schema:
+        error: { $type: string }
+    "404":
+      $schema:
+        detail: { $type: string }

@@ -1,0 +1,42 @@
+# --------------------------------------------------------------
+# AddItemIngredients - POST
+# --------------------------------------------------------------
+$name: addItemIngredients
+$description: "Ajoute des ingrédients à un item"
+$skip: false
+$async: true
+
+$params:
+  - $name: itemId
+    $type: string
+    $optional: false
+  - $name: payload
+    $type: AddItemIngredientsPayload
+    $optional: false
+    $related: "--module config --feature item_management --kind custom --step feature"
+
+$returnDescription: "Résultat de l'ajout d'ingrédients"
+$returnType:
+  $type: object
+  $nullable: true
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.ADD_ITEM_INGREDIENTS
+  $mapping:
+    $path:
+      item_id: itemId
+    $body:
+      ingredients: payload.ingredients
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: AddItemIngredientsPayload
+    $from: "--module config --feature item_management --kind custom --step feature"
+    $step: feature

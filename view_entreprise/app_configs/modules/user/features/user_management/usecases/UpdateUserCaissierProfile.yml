@@ -1,0 +1,41 @@
+# --------------------------------------------------------------
+# updateUserCaissierProfile - PATCH
+# --------------------------------------------------------------
+$name: updateUserCaissierProfile
+$description: "Modifie le profil caissier d'un utilisateur. Permission: user.update"
+$skip: true
+$async: true
+
+$params:
+  - $name: user_id
+    $type: string
+    $optional: false
+  - $name: payload
+    $type: UpdateUserCaissierProfilePayload
+    $related: "--module user --feature user_management --kind custom --step feature"
+    $optional: false
+
+$returnDescription: "Confirmation de la mise à jour du profil caissier"
+$returnType:
+  $type: string
+  $nullable: true
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: USER.UPDATE_USER_CAISSIER_PROFILE
+  $mapping:
+    $path:
+      user_id: user_id
+    $body:
+      pos_terminal_id: payload.pos_terminal_id
+      assigned_cash_register: payload.assigned_cash_register
+  $responseMapping:
+    $returnValue: message
+
+$imports:
+  - $name: UpdateUserCaissierProfilePayload
+    $from: "--module user --feature user_management --kind custom --step feature"
+    $step: feature

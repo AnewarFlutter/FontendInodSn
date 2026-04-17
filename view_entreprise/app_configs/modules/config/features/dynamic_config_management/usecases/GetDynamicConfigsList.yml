@@ -1,0 +1,49 @@
+# --------------------------------------------------------------
+# GetDynamicConfigsList - GET
+# --------------------------------------------------------------
+$name: getDynamicConfigsList
+$description: "Liste toutes les configurations dynamiques avec pagination et filtres"
+$skip: false
+$async: true
+
+$params:
+  - $name: data_type
+    $type: string
+    $optional: true
+  - $name: search
+    $type: string
+    $optional: true
+  - $name: ordering
+    $type: string
+    $optional: true
+
+$returnDescription: "Liste paginée des configurations dynamiques"
+$returnType:
+  $type: PaginatedDynamicConfigs
+  $nullable: true
+  $related:
+    - $name: PaginatedDynamicConfigs
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.GET_DYNAMIC_CONFIGS_LIST
+  $mapping:
+    $query:
+      data_type: data_type
+      search: search
+      ordering: ordering
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: PaginatedDynamicConfigs
+    $from: "--module config --kind custom --step module"
+    $step: module

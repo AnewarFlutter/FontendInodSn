@@ -1,0 +1,24 @@
+# ------------------------------------------------------------------
+# GET_SET_MENU_DETAIL - Détail d'une formule
+# ------------------------------------------------------------------
+$path: /config/set-menus/{set_menu_id}/
+$method: GET
+$description: "Récupérer le détail d'une formule"
+$auth: true
+$skip: false
+$params:
+  $path:
+    set_menu_id: { $type: number, $optional: false }
+$response:
+  $default:
+    $schema:
+      id: { $type: number }
+      name: { $type: string }
+      description: { $type: string, $optional: true, $nullable: true }
+      price: { $type: number }
+      display_order: { $type: number, $optional: true }
+      is_active: { $type: boolean }
+  $byStatus:
+    "404":
+      $schema:
+        detail: { $type: string }

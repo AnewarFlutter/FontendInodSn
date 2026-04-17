@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  # Service Frontend Next.js
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+      target: runner
+      args:
+        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+        - NEXT_PUBLIC_APP_ENV=${NEXT_PUBLIC_APP_ENV}
+        - NEXT_PUBLIC_APP_STATUS=${NEXT_PUBLIC_APP_STATUS}
+    container_name: nextjs-admin
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - NEXT_TELEMETRY_DISABLED=1
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+      - NEXT_PUBLIC_APP_ENV=${NEXT_PUBLIC_APP_ENV}
+      - NEXT_PUBLIC_APP_STATUS=${NEXT_PUBLIC_APP_STATUS}
+      - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3005"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    labels:
+      - "com.docker.compose.project=nextjs-admin"
+
+  # Service Nginx Reverse Proxy
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx
+    container_name: nginx-proxy
+    restart: unless-stopped
+    ports:
+      - "8080:80"      # HTTP (redirection vers HTTPS + challenge Certbot)
+      - "8443:443"    # HTTPS
+    volumes:
+      # Montage des certificats Let's Encrypt depuis le VPS
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - /var/lib/letsencrypt:/var/lib/letsencrypt:ro
+      # Répertoire pour le challenge ACME de Certbot
+      - /var/www/certbot:/var/www/certbot:ro
+    depends_on:
+      - frontend
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    labels:
+      - "com.docker.compose.project=nginx-proxy"
+
+networks:
+  app-network:
+    driver: bridge

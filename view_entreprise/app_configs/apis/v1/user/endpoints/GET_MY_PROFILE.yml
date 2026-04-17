@@ -1,0 +1,37 @@
+# ------------------------------------------------------------------
+# GET_MY_PROFILE - Récupération du profil complet de l'utilisateur connecté
+# ------------------------------------------------------------------
+
+$path: /user/me/
+$method: GET
+$description: "Récupérer son profil complet."
+$auth: true
+$skip: true
+$response:
+  $default:
+    $schema:
+      id: { $type: string }
+      email: { $type: string }
+      first_name: { $type: string }
+      last_name: { $type: string }
+      telephone: { $type: string, $optional: true, $nullable: true }
+      birth_date: { $type: string, $optional: true, $nullable: true }
+      gender: { $type: string, $optional: true, $description: "ex: M, F" }
+      nationality: { $type: string, $optional: true, $nullable: true }
+      address: { $type: string, $optional: true }
+      photo: { $type: string, $optional: true, $nullable: true, $description: "URL relative ex: /media/avatars/xxx.png" }
+      status_activation: { $type: string, $description: "ex: ACTIVE, SUSPENDED, DELETED" }
+      active_role: { $type: string, $optional: true, $nullable: true }
+      active_profile: { $type: object, $optional: true, $nullable: true }
+      permissions: { $type: array, $items: { $type: string } }
+      created_at: { $type: string }
+      updated_at: { $type: string }
+  $byStatus:
+    "401":
+      $description: "Token manquant ou invalide"
+      $schema:
+        detail: { $type: string }
+    "404":
+      $description: "Profil utilisateur non trouvé"
+      $schema:
+        detail: { $type: string }

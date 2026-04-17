@@ -1,0 +1,32 @@
+# UPDATE_USER_CUISINIER_PROFILE
+$path: /user/users/{user_id}/profile/cuisinier/
+$method: PATCH
+$description: "Modifier le profil cuisinier. Permission: user.update"
+$auth: true
+$skip: true
+$params:
+  $path:
+    user_id: { $type: string, $optional: false }
+  $body:
+    specialites: { $type: array, $items: { $type: string }, $optional: true }
+    poste_principal: { $type: string, $optional: true, $nullable: true }
+    allergenes_maitrises: { $type: array, $items: { $type: string }, $optional: true }
+$response:
+  $default:
+    $schema:
+      message: { $type: string }
+      data:
+        $type: object
+        $schema:
+          id: { $type: string }
+          user: { $type: string }
+          specialites: { $type: array, $items: { $type: string } }
+          poste_principal: { $type: string, $nullable: true }
+          allergenes_maitrises: { $type: array, $items: { $type: string } }
+          created_at: { $type: string }
+          updated_at: { $type: string }
+  $byStatus:
+    "404":
+      $schema:
+        error: { $type: string }
+        code: { $type: string, $description: "ex: PROFILE_NOT_FOUND" }

@@ -1,0 +1,30 @@
+# ------------------------------------------------------------------
+# CREATE_SET_MENU_SECTION - Créer une section de formule
+# ------------------------------------------------------------------
+$path: /config/set-menu-sections/
+$method: POST
+$description: "Créer une nouvelle section dans une formule"
+$auth: true
+$skip: false
+$params:
+  $body:
+    set_menu: { $type: number, $optional: false }
+    category_id: { $type: number, $optional: false }
+    max_selections: { $type: number, $optional: false }
+    item_ids:
+      $type: array
+      $optional: false
+      $items:
+        $type: number
+$response:
+  $default:
+    $description: "201 Created"
+    $schema:
+      id: { $type: number }
+      set_menu: { $type: number }
+      category_id: { $type: number }
+      max_selections: { $type: number }
+  $byStatus:
+    "400":
+      $schema:
+        error: { $type: string }

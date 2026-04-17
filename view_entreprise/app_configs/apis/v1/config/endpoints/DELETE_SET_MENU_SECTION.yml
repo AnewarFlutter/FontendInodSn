@@ -1,0 +1,20 @@
+# ------------------------------------------------------------------
+# DELETE_SET_MENU_SECTION - Supprimer une section de formule
+# ------------------------------------------------------------------
+$path: /config/set-menu-sections/{set_menu_section_id}/
+$method: DELETE
+$description: "Supprimer une section de formule"
+$auth: true
+$skip: false
+$params:
+  $path:
+    set_menu_section_id: { $type: number, $optional: false }
+$response:
+  $default:
+    $description: "204 No Content"
+    $schema:
+      message: { $type: string }
+  $byStatus:
+    "404":
+      $schema:
+        detail: { $type: string }

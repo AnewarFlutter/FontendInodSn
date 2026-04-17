@@ -1,0 +1,24 @@
+# ------------------------------------------------------------------
+# GET_INGREDIENT_TYPES_STATS - Statistiques des types d'ingrédients
+# ------------------------------------------------------------------
+$path: /config/ingredient-types/stats/
+$method: GET
+$description: "Récupérer les statistiques des types d'ingrédients"
+$auth: true
+$skip: false
+$params:
+  $query: {}
+$response:
+  $default:
+    $schema:
+      status: { $type: string }
+      data:
+        $type: object
+        $schema:
+          total_types: { $type: number }
+          types_actifs: { $type: number }
+          types_inactifs: { $type: number }
+  $byStatus:
+    "401":
+      $schema:
+        detail: { $type: string }

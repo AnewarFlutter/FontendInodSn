@@ -1,0 +1,20 @@
+# ------------------------------------------------------------------
+# DELETE_INGREDIENT - Supprimer un ingrédient
+# ------------------------------------------------------------------
+$path: /config/ingredients/{ingredient_id}/
+$method: DELETE
+$description: "Supprimer un ingrédient"
+$auth: true
+$skip: false
+$params:
+  $path:
+    ingredient_id: { $type: number, $optional: false }
+$response:
+  $default:
+    $description: "204 No Content"
+    $schema:
+      message: { $type: string }
+  $byStatus:
+    "404":
+      $schema:
+        detail: { $type: string }

@@ -1,0 +1,46 @@
+# --------------------------------------------------------------
+# ToggleItemKitchenArea - PATCH
+# --------------------------------------------------------------
+$name: toggleItemKitchenArea
+$description: "Active ou désactive une zone cuisine pour un item"
+$skip: false
+$async: true
+
+$params:
+  - $name: itemId
+    $type: string
+    $optional: false
+  - $name: kitchenAreaId
+    $type: string
+    $optional: false
+  - $name: payload
+    $type: ToggleItemKitchenAreaPayload
+    $optional: false
+    $related: "--module config --feature item_management --kind custom --step feature"
+
+$returnDescription: "Résultat du toggle de la zone cuisine"
+$returnType:
+  $type: object
+  $nullable: true
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.TOGGLE_ITEM_KITCHEN_AREA
+  $mapping:
+    $path:
+      item_id: itemId
+      kitchen_area_id: kitchenAreaId
+    $body:
+      is_active: payload.is_active
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: ToggleItemKitchenAreaPayload
+    $from: "--module config --feature item_management --kind custom --step feature"
+    $step: feature

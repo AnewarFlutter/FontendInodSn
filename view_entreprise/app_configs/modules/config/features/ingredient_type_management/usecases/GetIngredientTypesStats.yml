@@ -1,0 +1,34 @@
+# --------------------------------------------------------------
+# GetIngredientTypesStats - GET
+# --------------------------------------------------------------
+$name: getIngredientTypesStats
+$description: "Recupere les statistiques des types d'ingredients"
+$skip: false
+$async: true
+
+$params: []
+
+$returnDescription: "Statistiques des types d'ingredients"
+$returnType:
+  $type: IngredientTypeStats
+  $nullable: true
+  $related:
+    - $name: IngredientTypeStats
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.GET_INGREDIENT_TYPES_STATS
+  $mapping: {}
+  $responseMapping:
+    $returnValue: data
+
+$imports:
+  - $name: IngredientTypeStats
+    $from: "--module config --kind custom --step module"
+    $step: module

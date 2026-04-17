@@ -1,0 +1,37 @@
+# --------------------------------------------------------------
+# RemoveItemIngredients - POST
+# --------------------------------------------------------------
+$name: removeItemIngredients
+$description: "Retire des ingrédients d'un item"
+$skip: false
+$async: true
+
+$params:
+  - $name: itemId
+    $type: string
+    $optional: false
+  - $name: ingredient_ids
+    $type: string
+    $list: true
+    $optional: false
+
+$returnDescription: "Résultat du retrait d'ingrédients"
+$returnType:
+  $type: object
+  $nullable: true
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.REMOVE_ITEM_INGREDIENTS
+  $mapping:
+    $path:
+      item_id: itemId
+    $body:
+      ingredient_ids: ingredient_ids
+  $responseMapping:
+    $returnValue: ""

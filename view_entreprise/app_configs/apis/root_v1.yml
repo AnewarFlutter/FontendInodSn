@@ -1,0 +1,24 @@
+# ====================== ROOT API V1 ======================
+
+$version: v1
+$title: "Root API v1"
+$description: "API principale Hello Restauration"
+$environnement: dev
+$skip: false
+
+$baseUrl:
+  $envVar: NEXT_PUBLIC_API_URL
+  $default: http://localhost:8003
+
+$endpoints:
+  AUTH:
+    $description: "Service d'authentification - login, tokens et sessions"
+    $include: "./v1/auth/root.yml"
+
+  USER:
+    $description: "Service utilisateurs - profil, gestion admin et RBAC"
+    $include: "./v1/user/root.yml"
+
+  CONFIG:
+    $description: "Service configuration - types, items, zones, tables, options, ingrédients, menus"
+    $include: "./v1/config/root.yml"

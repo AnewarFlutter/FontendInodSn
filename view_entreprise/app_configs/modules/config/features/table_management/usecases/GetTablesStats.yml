@@ -1,0 +1,35 @@
+# --------------------------------------------------------------
+# GetTablesStats - GET
+# --------------------------------------------------------------
+$name: getTablesStats
+$description: "Récupère les statistiques des tables"
+$skip: false
+$async: true
+
+$params: []
+
+$returnDescription: "Statistiques des tables"
+$returnType:
+  $type: TableStats
+  $nullable: true
+  $related:
+    - $name: TableStats
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: false
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.GET_TABLES_STATS
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: TableStats
+    $from: "--module config --kind custom --step module"
+    $step: module

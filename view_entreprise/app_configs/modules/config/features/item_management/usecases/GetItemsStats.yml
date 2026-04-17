@@ -1,0 +1,35 @@
+# --------------------------------------------------------------
+# GetItemsStats - GET
+# --------------------------------------------------------------
+$name: getItemsStats
+$description: "Récupère les statistiques des items"
+$skip: false
+$async: true
+
+$params: []
+
+$returnDescription: "Statistiques des items"
+$returnType:
+  $type: ItemStats
+  $nullable: true
+  $related:
+    - $name: ItemStats
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.GET_ITEMS_STATS
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: ItemStats
+    $from: "--module config --kind custom --step module"
+    $step: module

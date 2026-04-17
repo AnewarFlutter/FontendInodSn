@@ -1,0 +1,23 @@
+# ------------------------------------------------------------------
+# GET_DYNAMIC_CONFIG_DETAIL - Détail d'une configuration dynamique
+# ------------------------------------------------------------------
+$path: /config/config/{config_id}/
+$method: GET
+$description: "Récupérer le détail d'une configuration dynamique par ID"
+$auth: true
+$skip: false
+$params:
+  $path:
+    config_id: { $type: number, $optional: false }
+$response:
+  $default:
+    $schema:
+      id: { $type: number }
+      key: { $type: string }
+      value: { $type: string }
+      data_type: { $type: string }
+      description: { $type: string, $optional: true, $nullable: true }
+  $byStatus:
+    "404":
+      $schema:
+        detail: { $type: string }

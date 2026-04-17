@@ -1,0 +1,26 @@
+# ------------------------------------------------------------------
+# UPDATE_ITEM_INGREDIENT - Mettre à jour un ingrédient d'un item
+# ------------------------------------------------------------------
+$path: /config/items/{item_id}/update-ingredient/{ingredient_id}/
+$method: PATCH
+$description: "Mettre à jour la quantité ou le type de quantité d'un ingrédient pour un item"
+$auth: true
+$skip: false
+$params:
+  $path:
+    item_id: { $type: number, $optional: false }
+    ingredient_id: { $type: number, $optional: false }
+  $body:
+    quantity: { $type: number, $optional: true }
+    quantity_type_id: { $type: number, $optional: true }
+$response:
+  $default:
+    $schema:
+      message: { $type: string }
+  $byStatus:
+    "400":
+      $schema:
+        error: { $type: string }
+    "404":
+      $schema:
+        detail: { $type: string }

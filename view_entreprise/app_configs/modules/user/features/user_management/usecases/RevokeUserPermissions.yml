@@ -1,0 +1,35 @@
+# --------------------------------------------------------------
+# revokeUserPermissions - DELETE
+# --------------------------------------------------------------
+$name: revokeUserPermissions
+$description: "Révoque des permissions individuelles d'un utilisateur. Permission: permission.revoke"
+$skip: true
+$async: true
+
+$params:
+  - $name: user_id
+    $type: string
+    $optional: false
+  - $name: permissions
+    $type: string
+    $list: true
+    $optional: false
+
+$returnDescription: "Confirmation de la révocation des permissions"
+$returnType:
+  $type: string
+  $nullable: true
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: USER.REVOKE_USER_PERMISSIONS
+  $mapping:
+    $path:
+      user_id: user_id
+    $body:
+      permissions: permissions
+  $responseMapping:
+    $returnValue: message

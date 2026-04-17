@@ -1,0 +1,21 @@
+# ------------------------------------------------------------------
+# ACTIVATE_SET_MENU - Activer une formule
+# ------------------------------------------------------------------
+$path: /config/set-menus/{set_menu_id}/activate/
+$method: POST
+$description: "Activer une formule"
+$auth: true
+$skip: false
+$params:
+  $path:
+    set_menu_id: { $type: number, $optional: false }
+$response:
+  $default:
+    $schema:
+      message: { $type: string }
+      id: { $type: number }
+      is_active: { $type: boolean }
+  $byStatus:
+    "404":
+      $schema:
+        detail: { $type: string }

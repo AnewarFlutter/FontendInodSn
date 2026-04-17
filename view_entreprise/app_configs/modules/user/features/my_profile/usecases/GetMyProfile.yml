@@ -1,0 +1,33 @@
+# --------------------------------------------------------------
+# getMyProfile - GET
+# --------------------------------------------------------------
+$name: getMyProfile
+$description: "Récupère le profil complet de l'administrateur connecté (infos personnelles + profils métier + rôles)"
+$skip: true
+$async: true
+
+$params: []
+
+$returnDescription: "Profil complet de l'admin connecté"
+$returnType:
+  $type: UserDetail
+  $nullable: true
+  $related:
+    - $name: UserDetail
+      $module: user
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: USER.GET_MY_PROFILE
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: UserDetail
+    $from: "--module user --kind custom --step module"
+    $step: module

@@ -1,0 +1,33 @@
+# ------------------------------------------------------------------
+# ADD_ITEM_INGREDIENTS - Ajouter des ingrédients à un item
+# ------------------------------------------------------------------
+$path: /config/items/{item_id}/add-ingredients/
+$method: POST
+$description: "Ajouter des ingrédients à un item"
+$auth: true
+$skip: false
+$params:
+  $path:
+    item_id: { $type: number, $optional: false }
+  $body:
+    ingredients:
+      $type: array
+      $optional: false
+      $items:
+        $type: object
+        $schema:
+          ingredient_id: { $type: number, $optional: false }
+          quantity: { $type: number, $optional: false }
+          quantity_type_id: { $type: number, $optional: false }
+          is_optional: { $type: boolean, $optional: false }
+$response:
+  $default:
+    $schema:
+      message: { $type: string }
+  $byStatus:
+    "400":
+      $schema:
+        error: { $type: string }
+    "404":
+      $schema:
+        detail: { $type: string }

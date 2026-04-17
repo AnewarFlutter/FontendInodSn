@@ -1,0 +1,50 @@
+# --------------------------------------------------------------
+# UpdateIngredient - PUT
+# --------------------------------------------------------------
+$name: updateIngredient
+$description: "Met à jour complètement un ingrédient"
+$skip: false
+$async: true
+
+$params:
+  - $name: ingredientId
+    $type: string
+    $optional: false
+  - $name: payload
+    $type: CreateIngredientPayload
+    $optional: false
+    $related: "--module config --feature ingredient_management --kind custom --step feature"
+
+$returnDescription: "L'ingrédient mis à jour"
+$returnType:
+  $type: IngredientBasic
+  $nullable: true
+  $related:
+    - $name: IngredientBasic
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.UPDATE_INGREDIENT
+  $mapping:
+    $path:
+      ingredient_id: ingredientId
+    $body:
+      payload: payload
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: CreateIngredientPayload
+    $from: "--module config --feature ingredient_management --kind custom --step feature"
+    $step: feature
+  - $name: IngredientBasic
+    $from: "--module config --kind custom --step module"
+    $step: module

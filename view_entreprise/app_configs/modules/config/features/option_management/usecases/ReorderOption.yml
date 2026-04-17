@@ -1,0 +1,36 @@
+# --------------------------------------------------------------
+# ReorderOption - PATCH
+# --------------------------------------------------------------
+$name: reorderOption
+$description: "Réordonne une option"
+$skip: false
+$async: true
+
+$params:
+  - $name: optionId
+    $type: string
+    $optional: false
+  - $name: new_order
+    $type: number
+    $optional: false
+
+$returnDescription: "Résultat du réordonnancement"
+$returnType:
+  $type: object
+  $nullable: true
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.REORDER_OPTION
+  $mapping:
+    $path:
+      option_id: optionId
+    $body:
+      new_order: new_order
+  $responseMapping:
+    $returnValue: ""

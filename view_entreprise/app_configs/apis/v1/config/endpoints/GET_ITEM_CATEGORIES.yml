@@ -1,0 +1,26 @@
+# ------------------------------------------------------------------
+# GET_ITEM_CATEGORIES - Catégories d'un item
+# ------------------------------------------------------------------
+$path: /config/items/{item_id}/categories/
+$method: GET
+$description: "Récupérer les catégories associées à un item"
+$auth: true
+$skip: false
+$params:
+  $path:
+    item_id: { $type: number, $optional: false }
+  $query: {}
+$response:
+  $default:
+    $schema:
+      results:
+        $type: array
+        $items:
+          $type: object
+          $schema:
+            id: { $type: number }
+            name: { $type: string }
+  $byStatus:
+    "404":
+      $schema:
+        detail: { $type: string }

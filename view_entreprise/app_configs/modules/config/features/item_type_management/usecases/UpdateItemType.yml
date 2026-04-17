@@ -1,0 +1,51 @@
+# --------------------------------------------------------------
+# UpdateItemType - PUT
+# --------------------------------------------------------------
+$name: updateItemType
+$description: "Met à jour complètement un type d'item"
+$skip: false
+$async: true
+
+$params:
+  - $name: itemTypeId
+    $type: string
+    $optional: false
+  - $name: payload
+    $type: UpdateItemTypePayload
+    $optional: false
+    $related: "--module config --feature item_type_management --kind custom --step feature"
+
+$returnDescription: "Le type d'item mis à jour"
+$returnType:
+  $type: ItemTypeBasic
+  $nullable: true
+  $related:
+    - $name: ItemTypeBasic
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.UPDATE_ITEM_TYPE
+  $mapping:
+    $path:
+      item_type_id: itemTypeId
+    $body:
+      name: payload.name
+      is_active: payload.is_active
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: UpdateItemTypePayload
+    $from: "--module config --feature item_type_management --kind custom --step feature"
+    $step: feature
+  - $name: ItemTypeBasic
+    $from: "--module config --kind custom --step module"
+    $step: module

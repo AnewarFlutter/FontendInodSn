@@ -1,0 +1,32 @@
+# ------------------------------------------------------------------
+# Feature : option_management (gestion des options)
+# ------------------------------------------------------------------
+$name: option_management
+$description: "CRUD, activation/désactivation et réordonnancement des options"
+$fileNameCasing: snakeCase
+$override: false
+$delete: false
+$skip: false
+$rewriteInController: true
+$rewriteInDataSourceImpl: false
+
+$enums: []
+$types:
+  - $name: CreateOptionPayload
+    $attributes:
+      - { $name: parent_group, $type: number, $optional: false }
+      - { $name: name, $type: string, $optional: false }
+      - { $name: additional_amount, $type: number, $optional: false }
+      - { $name: display_order, $type: number, $optional: true }
+      - { $name: is_active, $type: boolean, $optional: false }
+
+$usecases:
+  - $include: "./usecases/GetOptionsList.yml"
+  - $include: "./usecases/CreateOption.yml"
+  - $include: "./usecases/GetOptionDetail.yml"
+  - $include: "./usecases/UpdateOption.yml"
+  - $include: "./usecases/PatchOption.yml"
+  - $include: "./usecases/DeleteOption.yml"
+  - $include: "./usecases/ActivateOption.yml"
+  - $include: "./usecases/DeactivateOption.yml"
+  - $include: "./usecases/ReorderOption.yml"

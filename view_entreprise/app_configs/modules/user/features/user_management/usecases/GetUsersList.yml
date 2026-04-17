@@ -1,0 +1,47 @@
+# --------------------------------------------------------------
+# getUsersList - GET
+# --------------------------------------------------------------
+$name: getUsersList
+$description: "Liste tous les utilisateurs. Permission: user.view_all"
+$skip: true
+$async: true
+
+$params:
+  - $name: page
+    $type: number
+    $optional: true
+  - $name: page_size
+    $type: number
+    $optional: true
+  - $name: search
+    $type: string
+    $optional: true
+
+$returnDescription: "Liste paginée des utilisateurs"
+$returnType:
+  $type: PaginatedUsers
+  $nullable: true
+  $related:
+    - $name: PaginatedUsers
+      $module: user
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: USER.GET_USERS_LIST
+  $mapping:
+    $query:
+      page: page
+      page_size: page_size
+      search: search
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: PaginatedUsers
+    $from: "--module user --kind custom --step module"
+    $step: module

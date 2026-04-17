@@ -1,0 +1,45 @@
+# --------------------------------------------------------------
+# CreateDynamicConfig - POST
+# --------------------------------------------------------------
+$name: createDynamicConfig
+$description: "Crée une nouvelle configuration dynamique"
+$skip: false
+$async: true
+
+$params:
+  - $name: payload
+    $type: CreateDynamicConfigPayload
+    $optional: false
+    $related: "--module config --feature dynamic_config_management --kind custom --step feature"
+
+$returnDescription: "La configuration dynamique créée"
+$returnType:
+  $type: DynamicConfigBasic
+  $nullable: true
+  $related:
+    - $name: DynamicConfigBasic
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.CREATE_DYNAMIC_CONFIG
+  $mapping:
+    $body:
+      payload: payload
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: CreateDynamicConfigPayload
+    $from: "--module config --feature dynamic_config_management --kind custom --step feature"
+    $step: feature
+  - $name: DynamicConfigBasic
+    $from: "--module config --kind custom --step module"
+    $step: module

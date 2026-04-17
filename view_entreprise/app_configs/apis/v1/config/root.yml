@@ -1,0 +1,297 @@
+# ====================== CONFIG API ======================
+# Service configuration : types d'items, items, zones, tables, groupes d'options,
+# options, ingrédients, types de quantité, config dynamique, menus composés
+# Base gateway: /config/*
+
+$description: "Service configuration - gestion complète des ressources de configuration du restaurant"
+
+$routes:
+  # ── Types d'items ────────────────────────────────────────────
+  GET_ITEM_TYPES_LIST:
+    $include: "./endpoints/GET_ITEM_TYPES_LIST.yml"
+  CREATE_ITEM_TYPE:
+    $include: "./endpoints/CREATE_ITEM_TYPE.yml"
+  GET_ITEM_TYPE_DETAIL:
+    $include: "./endpoints/GET_ITEM_TYPE_DETAIL.yml"
+  UPDATE_ITEM_TYPE:
+    $include: "./endpoints/UPDATE_ITEM_TYPE.yml"
+  PATCH_ITEM_TYPE:
+    $include: "./endpoints/PATCH_ITEM_TYPE.yml"
+  DELETE_ITEM_TYPE:
+    $include: "./endpoints/DELETE_ITEM_TYPE.yml"
+  ACTIVATE_ITEM_TYPE:
+    $include: "./endpoints/ACTIVATE_ITEM_TYPE.yml"
+  DEACTIVATE_ITEM_TYPE:
+    $include: "./endpoints/DEACTIVATE_ITEM_TYPE.yml"
+  GET_ITEM_TYPES_STATS:
+    $include: "./endpoints/GET_ITEM_TYPES_STATS.yml"
+
+  # ── Items ─────────────────────────────────────────────────────
+  GET_ITEMS_LIST:
+    $include: "./endpoints/GET_ITEMS_LIST.yml"
+  CREATE_ITEM:
+    $include: "./endpoints/CREATE_ITEM.yml"
+  GET_ITEM_DETAIL:
+    $include: "./endpoints/GET_ITEM_DETAIL.yml"
+  UPDATE_ITEM:
+    $include: "./endpoints/UPDATE_ITEM.yml"
+  PATCH_ITEM:
+    $include: "./endpoints/PATCH_ITEM.yml"
+  DELETE_ITEM:
+    $include: "./endpoints/DELETE_ITEM.yml"
+  ACTIVATE_ITEM:
+    $include: "./endpoints/ACTIVATE_ITEM.yml"
+  DEACTIVATE_ITEM:
+    $include: "./endpoints/DEACTIVATE_ITEM.yml"
+  GET_ITEMS_STATS:
+    $include: "./endpoints/GET_ITEMS_STATS.yml"
+  GET_ITEM_CATEGORIES:
+    $include: "./endpoints/GET_ITEM_CATEGORIES.yml"
+  ADD_ITEM_CATEGORIES:
+    $include: "./endpoints/ADD_ITEM_CATEGORIES.yml"
+  REMOVE_ITEM_CATEGORIES:
+    $include: "./endpoints/REMOVE_ITEM_CATEGORIES.yml"
+  GET_ITEM_KITCHEN_AREAS:
+    $include: "./endpoints/GET_ITEM_KITCHEN_AREAS.yml"
+  ADD_ITEM_KITCHEN_AREAS:
+    $include: "./endpoints/ADD_ITEM_KITCHEN_AREAS.yml"
+  TOGGLE_ITEM_KITCHEN_AREA:
+    $include: "./endpoints/TOGGLE_ITEM_KITCHEN_AREA.yml"
+  REMOVE_ITEM_KITCHEN_AREAS:
+    $include: "./endpoints/REMOVE_ITEM_KITCHEN_AREAS.yml"
+  GET_ITEM_OPTION_GROUPS:
+    $include: "./endpoints/GET_ITEM_OPTION_GROUPS.yml"
+  ADD_ITEM_OPTION_GROUP:
+    $include: "./endpoints/ADD_ITEM_OPTION_GROUP.yml"
+  UPDATE_ITEM_OPTION_GROUP:
+    $include: "./endpoints/UPDATE_ITEM_OPTION_GROUP.yml"
+  REMOVE_ITEM_OPTION_GROUPS:
+    $include: "./endpoints/REMOVE_ITEM_OPTION_GROUPS.yml"
+  GET_ITEM_INGREDIENTS:
+    $include: "./endpoints/GET_ITEM_INGREDIENTS.yml"
+  ADD_ITEM_INGREDIENTS:
+    $include: "./endpoints/ADD_ITEM_INGREDIENTS.yml"
+  UPDATE_ITEM_INGREDIENT:
+    $include: "./endpoints/UPDATE_ITEM_INGREDIENT.yml"
+  REMOVE_ITEM_INGREDIENTS:
+    $include: "./endpoints/REMOVE_ITEM_INGREDIENTS.yml"
+
+  # ── Zones ─────────────────────────────────────────────────────
+  GET_AREAS_LIST:
+    $include: "./endpoints/GET_AREAS_LIST.yml"
+  CREATE_AREA:
+    $include: "./endpoints/CREATE_AREA.yml"
+  GET_AREA_DETAIL:
+    $include: "./endpoints/GET_AREA_DETAIL.yml"
+  UPDATE_AREA:
+    $include: "./endpoints/UPDATE_AREA.yml"
+  PATCH_AREA:
+    $include: "./endpoints/PATCH_AREA.yml"
+  DELETE_AREA:
+    $include: "./endpoints/DELETE_AREA.yml"
+  ACTIVATE_AREA:
+    $include: "./endpoints/ACTIVATE_AREA.yml"
+  DEACTIVATE_AREA:
+    $include: "./endpoints/DEACTIVATE_AREA.yml"
+  REORDER_AREA:
+    $include: "./endpoints/REORDER_AREA.yml"
+  GET_AREA_ITEMS:
+    $include: "./endpoints/GET_AREA_ITEMS.yml"
+  GET_AREA_TABLES:
+    $include: "./endpoints/GET_AREA_TABLES.yml"
+
+  # ── Tables ────────────────────────────────────────────────────
+  GET_TABLES_LIST:
+    $include: "./endpoints/GET_TABLES_LIST.yml"
+  CREATE_TABLE:
+    $include: "./endpoints/CREATE_TABLE.yml"
+  GET_TABLE_DETAIL:
+    $include: "./endpoints/GET_TABLE_DETAIL.yml"
+  UPDATE_TABLE:
+    $include: "./endpoints/UPDATE_TABLE.yml"
+  PATCH_TABLE:
+    $include: "./endpoints/PATCH_TABLE.yml"
+  DELETE_TABLE:
+    $include: "./endpoints/DELETE_TABLE.yml"
+  ACTIVATE_TABLE:
+    $include: "./endpoints/ACTIVATE_TABLE.yml"
+  DEACTIVATE_TABLE:
+    $include: "./endpoints/DEACTIVATE_TABLE.yml"
+  CHANGE_TABLE_STATUS:
+    $include: "./endpoints/CHANGE_TABLE_STATUS.yml"
+  GET_TABLES_BY_AREA:
+    $include: "./endpoints/GET_TABLES_BY_AREA.yml"
+  GET_TABLES_STATS:
+    $include: "./endpoints/GET_TABLES_STATS.yml"
+
+  # ── Groupes d'options ─────────────────────────────────────────
+  GET_OPTION_GROUPS_LIST:
+    $include: "./endpoints/GET_OPTION_GROUPS_LIST.yml"
+  CREATE_OPTION_GROUP:
+    $include: "./endpoints/CREATE_OPTION_GROUP.yml"
+  GET_OPTION_GROUP_DETAIL:
+    $include: "./endpoints/GET_OPTION_GROUP_DETAIL.yml"
+  UPDATE_OPTION_GROUP:
+    $include: "./endpoints/UPDATE_OPTION_GROUP.yml"
+  PATCH_OPTION_GROUP:
+    $include: "./endpoints/PATCH_OPTION_GROUP.yml"
+  DELETE_OPTION_GROUP:
+    $include: "./endpoints/DELETE_OPTION_GROUP.yml"
+  ACTIVATE_OPTION_GROUP:
+    $include: "./endpoints/ACTIVATE_OPTION_GROUP.yml"
+  DEACTIVATE_OPTION_GROUP:
+    $include: "./endpoints/DEACTIVATE_OPTION_GROUP.yml"
+  REORDER_OPTION_GROUP:
+    $include: "./endpoints/REORDER_OPTION_GROUP.yml"
+  GET_OPTION_GROUP_OPTIONS:
+    $include: "./endpoints/GET_OPTION_GROUP_OPTIONS.yml"
+
+  # ── Options ───────────────────────────────────────────────────
+  GET_OPTIONS_LIST:
+    $include: "./endpoints/GET_OPTIONS_LIST.yml"
+  CREATE_OPTION:
+    $include: "./endpoints/CREATE_OPTION.yml"
+  GET_OPTION_DETAIL:
+    $include: "./endpoints/GET_OPTION_DETAIL.yml"
+  UPDATE_OPTION:
+    $include: "./endpoints/UPDATE_OPTION.yml"
+  PATCH_OPTION:
+    $include: "./endpoints/PATCH_OPTION.yml"
+  DELETE_OPTION:
+    $include: "./endpoints/DELETE_OPTION.yml"
+  ACTIVATE_OPTION:
+    $include: "./endpoints/ACTIVATE_OPTION.yml"
+  DEACTIVATE_OPTION:
+    $include: "./endpoints/DEACTIVATE_OPTION.yml"
+  REORDER_OPTION:
+    $include: "./endpoints/REORDER_OPTION.yml"
+
+  # ── Ingrédients ───────────────────────────────────────────────
+  GET_INGREDIENTS_LIST:
+    $include: "./endpoints/GET_INGREDIENTS_LIST.yml"
+  CREATE_INGREDIENT:
+    $include: "./endpoints/CREATE_INGREDIENT.yml"
+  GET_INGREDIENT_DETAIL:
+    $include: "./endpoints/GET_INGREDIENT_DETAIL.yml"
+  UPDATE_INGREDIENT:
+    $include: "./endpoints/UPDATE_INGREDIENT.yml"
+  PATCH_INGREDIENT:
+    $include: "./endpoints/PATCH_INGREDIENT.yml"
+  DELETE_INGREDIENT:
+    $include: "./endpoints/DELETE_INGREDIENT.yml"
+
+  # ── Types de quantité ─────────────────────────────────────────
+  GET_QUANTITY_TYPES_LIST:
+    $include: "./endpoints/GET_QUANTITY_TYPES_LIST.yml"
+  CREATE_QUANTITY_TYPE:
+    $include: "./endpoints/CREATE_QUANTITY_TYPE.yml"
+  GET_QUANTITY_TYPE_DETAIL:
+    $include: "./endpoints/GET_QUANTITY_TYPE_DETAIL.yml"
+  UPDATE_QUANTITY_TYPE:
+    $include: "./endpoints/UPDATE_QUANTITY_TYPE.yml"
+  PATCH_QUANTITY_TYPE:
+    $include: "./endpoints/PATCH_QUANTITY_TYPE.yml"
+  DELETE_QUANTITY_TYPE:
+    $include: "./endpoints/DELETE_QUANTITY_TYPE.yml"
+
+  # ── Configuration dynamique ───────────────────────────────────
+  GET_DYNAMIC_CONFIGS_LIST:
+    $include: "./endpoints/GET_DYNAMIC_CONFIGS_LIST.yml"
+  CREATE_DYNAMIC_CONFIG:
+    $include: "./endpoints/CREATE_DYNAMIC_CONFIG.yml"
+  GET_DYNAMIC_CONFIG_DETAIL:
+    $include: "./endpoints/GET_DYNAMIC_CONFIG_DETAIL.yml"
+  UPDATE_DYNAMIC_CONFIG:
+    $include: "./endpoints/UPDATE_DYNAMIC_CONFIG.yml"
+  PATCH_DYNAMIC_CONFIG:
+    $include: "./endpoints/PATCH_DYNAMIC_CONFIG.yml"
+  DELETE_DYNAMIC_CONFIG:
+    $include: "./endpoints/DELETE_DYNAMIC_CONFIG.yml"
+  GET_DYNAMIC_CONFIG_BY_KEY:
+    $include: "./endpoints/GET_DYNAMIC_CONFIG_BY_KEY.yml"
+  UPDATE_DYNAMIC_CONFIG_BY_KEY:
+    $include: "./endpoints/UPDATE_DYNAMIC_CONFIG_BY_KEY.yml"
+  DELETE_DYNAMIC_CONFIG_BY_KEY:
+    $include: "./endpoints/DELETE_DYNAMIC_CONFIG_BY_KEY.yml"
+  GET_DYNAMIC_CONFIGS_BY_TYPE:
+    $include: "./endpoints/GET_DYNAMIC_CONFIGS_BY_TYPE.yml"
+
+  # ── Types d'ingrédients ───────────────────────────────────────
+  GET_INGREDIENT_TYPES_LIST:
+    $include: "./endpoints/GET_INGREDIENT_TYPES_LIST.yml"
+  CREATE_INGREDIENT_TYPE:
+    $include: "./endpoints/CREATE_INGREDIENT_TYPE.yml"
+  GET_INGREDIENT_TYPE_DETAIL:
+    $include: "./endpoints/GET_INGREDIENT_TYPE_DETAIL.yml"
+  UPDATE_INGREDIENT_TYPE:
+    $include: "./endpoints/UPDATE_INGREDIENT_TYPE.yml"
+  PATCH_INGREDIENT_TYPE:
+    $include: "./endpoints/PATCH_INGREDIENT_TYPE.yml"
+  DELETE_INGREDIENT_TYPE:
+    $include: "./endpoints/DELETE_INGREDIENT_TYPE.yml"
+  GET_INGREDIENT_TYPES_STATS:
+    $include: "./endpoints/GET_INGREDIENT_TYPES_STATS.yml"
+  REORDER_INGREDIENT_TYPE:
+    $include: "./endpoints/REORDER_INGREDIENT_TYPE.yml"
+
+  # ── Cuisines ──────────────────────────────────────────────────
+  GET_KITCHENS_LIST:
+    $include: "./endpoints/GET_KITCHENS_LIST.yml"
+  CREATE_KITCHEN:
+    $include: "./endpoints/CREATE_KITCHEN.yml"
+  GET_KITCHEN_DETAIL:
+    $include: "./endpoints/GET_KITCHEN_DETAIL.yml"
+  UPDATE_KITCHEN:
+    $include: "./endpoints/UPDATE_KITCHEN.yml"
+  PATCH_KITCHEN:
+    $include: "./endpoints/PATCH_KITCHEN.yml"
+  DELETE_KITCHEN:
+    $include: "./endpoints/DELETE_KITCHEN.yml"
+  ACTIVATE_KITCHEN:
+    $include: "./endpoints/ACTIVATE_KITCHEN.yml"
+  DEACTIVATE_KITCHEN:
+    $include: "./endpoints/DEACTIVATE_KITCHEN.yml"
+  GET_KITCHENS_STATS:
+    $include: "./endpoints/GET_KITCHENS_STATS.yml"
+  GET_KITCHENS_BY_AREA:
+    $include: "./endpoints/GET_KITCHENS_BY_AREA.yml"
+
+  # ── Menus composés ────────────────────────────────────────────
+  GET_SET_MENUS_LIST:
+    $include: "./endpoints/GET_SET_MENUS_LIST.yml"
+  CREATE_SET_MENU:
+    $include: "./endpoints/CREATE_SET_MENU.yml"
+  GET_SET_MENU_DETAIL:
+    $include: "./endpoints/GET_SET_MENU_DETAIL.yml"
+  UPDATE_SET_MENU:
+    $include: "./endpoints/UPDATE_SET_MENU.yml"
+  PATCH_SET_MENU:
+    $include: "./endpoints/PATCH_SET_MENU.yml"
+  DELETE_SET_MENU:
+    $include: "./endpoints/DELETE_SET_MENU.yml"
+  ACTIVATE_SET_MENU:
+    $include: "./endpoints/ACTIVATE_SET_MENU.yml"
+  DEACTIVATE_SET_MENU:
+    $include: "./endpoints/DEACTIVATE_SET_MENU.yml"
+  REORDER_SET_MENU:
+    $include: "./endpoints/REORDER_SET_MENU.yml"
+
+  # ── Sections de menus composés ────────────────────────────────
+  GET_SET_MENU_SECTIONS_LIST:
+    $include: "./endpoints/GET_SET_MENU_SECTIONS_LIST.yml"
+  CREATE_SET_MENU_SECTION:
+    $include: "./endpoints/CREATE_SET_MENU_SECTION.yml"
+  GET_SET_MENU_SECTION_DETAIL:
+    $include: "./endpoints/GET_SET_MENU_SECTION_DETAIL.yml"
+  UPDATE_SET_MENU_SECTION:
+    $include: "./endpoints/UPDATE_SET_MENU_SECTION.yml"
+  PATCH_SET_MENU_SECTION:
+    $include: "./endpoints/PATCH_SET_MENU_SECTION.yml"
+  DELETE_SET_MENU_SECTION:
+    $include: "./endpoints/DELETE_SET_MENU_SECTION.yml"
+  ADD_SET_MENU_SECTION_ITEMS:
+    $include: "./endpoints/ADD_SET_MENU_SECTION_ITEMS.yml"
+  REMOVE_SET_MENU_SECTION_ITEMS:
+    $include: "./endpoints/REMOVE_SET_MENU_SECTION_ITEMS.yml"
+
+$skip: false

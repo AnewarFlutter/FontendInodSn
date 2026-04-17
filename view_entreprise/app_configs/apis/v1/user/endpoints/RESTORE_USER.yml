@@ -1,0 +1,34 @@
+# ------------------------------------------------------------------
+# RESTORE_USER - Restauration d'un utilisateur soft-deleted (Admin)
+# ------------------------------------------------------------------
+
+$path: /user/users/{user_id}/restore/
+$method: POST
+$description: "Restaurer un utilisateur soft-deleted et le réactiver. Permission: user.restore"
+$auth: true
+$skip: true
+$params:
+  $path:
+    user_id: { $type: string, $optional: false }
+$response:
+  $default:
+    $schema:
+      message: { $type: string, $description: "ex: Utilisateur restauré et réactivé avec succès" }
+      data:
+        $type: object
+        $schema:
+          success: { $type: boolean }
+          user_id: { $type: string }
+          email: { $type: string }
+          is_deleted: { $type: boolean }
+          status_activation: { $type: string, $description: "ex: ACTIVE" }
+  $byStatus:
+    "400":
+      $description: "Le compte n'est pas en état supprimé"
+      $schema:
+        error: { $type: string }
+        code: { $type: string, $description: "ex: NOT_DELETED" }
+    "404":
+      $schema:
+        error: { $type: string }
+        code: { $type: string }

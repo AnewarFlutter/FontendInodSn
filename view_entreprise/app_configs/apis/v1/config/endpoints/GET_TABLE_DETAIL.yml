@@ -1,0 +1,25 @@
+# ------------------------------------------------------------------
+# GET_TABLE_DETAIL - Détail d'une table
+# ------------------------------------------------------------------
+$path: /config/tables/{table_id}/
+$method: GET
+$description: "Récupérer le détail d'une table"
+$auth: true
+$skip: false
+$params:
+  $path:
+    table_id: { $type: number, $optional: false }
+  $query: {}
+$response:
+  $default:
+    $schema:
+      id: { $type: number }
+      table_number: { $type: string }
+      capacity: { $type: number }
+      table_area: { $type: number }
+      status: { $type: string }
+      is_active: { $type: boolean }
+  $byStatus:
+    "404":
+      $schema:
+        detail: { $type: string }

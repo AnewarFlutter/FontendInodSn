@@ -1,0 +1,25 @@
+# ------------------------------------------------------------------
+# ADD_ITEM_KITCHEN_AREAS - Associer des zones cuisine à un item
+# ------------------------------------------------------------------
+$path: /config/items/{item_id}/add-kitchen-areas/
+$method: POST
+$description: "Associer des zones cuisine à un item"
+$auth: true
+$skip: false
+$params:
+  $path:
+    item_id: { $type: number, $optional: false }
+  $body:
+    kitchen_area_ids: { $type: array, $items: { $type: number }, $optional: false }
+    is_active: { $type: boolean, $optional: false }
+$response:
+  $default:
+    $schema:
+      message: { $type: string }
+  $byStatus:
+    "400":
+      $schema:
+        error: { $type: string }
+    "404":
+      $schema:
+        detail: { $type: string }

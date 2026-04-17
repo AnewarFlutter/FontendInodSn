@@ -1,0 +1,50 @@
+# --------------------------------------------------------------
+# UpdateOptionGroup - PUT
+# --------------------------------------------------------------
+$name: updateOptionGroup
+$description: "Met à jour complètement un groupe d'options"
+$skip: false
+$async: true
+
+$params:
+  - $name: optionGroupId
+    $type: string
+    $optional: false
+  - $name: payload
+    $type: CreateOptionGroupPayload
+    $optional: false
+    $related: "--module config --feature option_group_management --kind custom --step feature"
+
+$returnDescription: "Le groupe d'options mis à jour"
+$returnType:
+  $type: OptionGroupBasic
+  $nullable: true
+  $related:
+    - $name: OptionGroupBasic
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.UPDATE_OPTION_GROUP
+  $mapping:
+    $path:
+      option_group_id: optionGroupId
+    $body:
+      payload: payload
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: CreateOptionGroupPayload
+    $from: "--module config --feature option_group_management --kind custom --step feature"
+    $step: feature
+  - $name: OptionGroupBasic
+    $from: "--module config --kind custom --step module"
+    $step: module

@@ -1,0 +1,41 @@
+# --------------------------------------------------------------
+# DeactivateItemType - POST
+# --------------------------------------------------------------
+$name: deactivateItemType
+$description: "Désactive un type d'item par son identifiant"
+$skip: false
+$async: true
+
+$params:
+  - $name: itemTypeId
+    $type: string
+    $optional: false
+
+$returnDescription: "Le type d'item désactivé"
+$returnType:
+  $type: ItemTypeBasic
+  $nullable: true
+  $related:
+    - $name: ItemTypeBasic
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.DEACTIVATE_ITEM_TYPE
+  $mapping:
+    $path:
+      item_type_id: itemTypeId
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: ItemTypeBasic
+    $from: "--module config --kind custom --step module"
+    $step: module

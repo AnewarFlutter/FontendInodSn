@@ -1,0 +1,62 @@
+# --------------------------------------------------------------
+# login - POST
+# --------------------------------------------------------------
+
+$name: login
+$description: "Authentification d'un utilisateur avec email ou téléphone et contexte de rôle"
+$skip: true
+$async: true
+
+$params:
+  - $name: payload
+    $type: LoginPayload
+    $related: "--module auth --feature session --kind custom --step feature"
+    $optional: false
+
+$returnDescription: "Tokens d'accès et informations de l'utilisateur connecté"
+$returnType:
+  $type: LoginResponseData
+  $nullable: true
+  $related:
+    - $name: LoginResponseData
+      $module: auth
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: AUTH.LOGIN
+  $mapping:
+    $body:
+      identifier_type: payload.identifier_type
+      identifier: payload.identifier
+      password: payload.password
+      context: payload.context
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: LoginPayload
+    $from: "--module auth --feature session --kind custom --step feature"
+    $step: feature
+  - $name: LoginResponseData
+    $from: "--module auth --kind custom --step module"
+    $step: module
+  - $name: TokenPair
+    $from: "--module auth --kind custom --step module"
+    $step: module
+  - $name: LoginUserWrapper
+    $from: "--module auth --kind custom --step module"
+    $step: module
+  - $name: UserProfileData
+    $from: "--module auth --kind custom --step module"
+    $step: module
+  - $name: CurrentRole
+    $from: "--module auth --kind custom --step module"
+    $step: module
+  - $name: RolePermissions
+    $from: "--module auth --kind custom --step module"
+    $step: module

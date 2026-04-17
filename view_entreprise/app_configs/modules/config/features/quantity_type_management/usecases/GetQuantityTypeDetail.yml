@@ -1,0 +1,41 @@
+# --------------------------------------------------------------
+# GetQuantityTypeDetail - GET
+# --------------------------------------------------------------
+$name: getQuantityTypeDetail
+$description: "Récupère le détail d'un type de quantité par son identifiant"
+$skip: false
+$async: true
+
+$params:
+  - $name: quantityTypeId
+    $type: string
+    $optional: false
+
+$returnDescription: "Le détail du type de quantité"
+$returnType:
+  $type: QuantityTypeBasic
+  $nullable: true
+  $related:
+    - $name: QuantityTypeBasic
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.GET_QUANTITY_TYPE_DETAIL
+  $mapping:
+    $path:
+      quantity_type_id: quantityTypeId
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: QuantityTypeBasic
+    $from: "--module config --kind custom --step module"
+    $step: module

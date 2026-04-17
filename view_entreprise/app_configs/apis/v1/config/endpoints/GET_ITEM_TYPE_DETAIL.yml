@@ -1,0 +1,22 @@
+# ------------------------------------------------------------------
+# GET_ITEM_TYPE_DETAIL - Détail d'un type d'item
+# ------------------------------------------------------------------
+$path: /config/item-types/{item_type_id}/
+$method: GET
+$description: "Récupérer le détail d'un type d'item"
+$auth: true
+$skip: false
+$params:
+  $path:
+    item_type_id: { $type: number, $optional: false }
+  $query: {}
+$response:
+  $default:
+    $schema:
+      id: { $type: number }
+      name: { $type: string }
+      is_active: { $type: boolean }
+  $byStatus:
+    "404":
+      $schema:
+        detail: { $type: string }

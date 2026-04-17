@@ -1,0 +1,31 @@
+# ------------------------------------------------------------------
+# GET_MY_ROLES - Récupération des rôles actifs de l'admin
+# ------------------------------------------------------------------
+
+$path: /user/me/roles/
+$method: GET
+$description: "Récupérer ses rôles actifs."
+$auth: true
+$skip: true
+$response:
+  $default:
+    $schema:
+      count: { $type: number }
+      roles:
+        $type: array
+        $items:
+          $type: object
+          $schema:
+            id: { $type: string }
+            role: { $type: string, $description: "UUID du rôle" }
+            role_name: { $type: string }
+            role_description: { $type: string }
+            statut: { $type: string, $description: "ex: ACTIVE" }
+            attributed_by: { $type: string, $nullable: true }
+            date_attribution: { $type: string }
+            expires_at: { $type: string, $nullable: true }
+  $byStatus:
+    "401":
+      $description: "Token manquant ou invalide"
+      $schema:
+        detail: { $type: string }

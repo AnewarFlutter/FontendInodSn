@@ -1,0 +1,78 @@
+# ------------------------------------------------------------------
+# Feature : set_menu_management (gestion des formules et leurs sections)
+# ------------------------------------------------------------------
+$name: set_menu_management
+$description: "CRUD, activation/désactivation, réordonnancement des formules et gestion de leurs sections"
+$fileNameCasing: snakeCase
+$override: false
+$delete: false
+$skip: false
+$rewriteInController: true
+$rewriteInDataSourceImpl: false
+
+$enums: []
+$types:
+  - $name: SetMenuSectionInputPayload
+    $attributes:
+      - { $name: category_id, $type: number, $optional: false }
+      - { $name: name, $type: string, $optional: true }
+      - { $name: min_selections, $type: number, $optional: true }
+      - { $name: max_selections, $type: number, $optional: false }
+      - { $name: display_order, $type: number, $optional: true }
+      - $name: item_ids
+        $type: string
+        $list: true
+        $optional: false
+
+  - $name: CreateSetMenuPayload
+    $attributes:
+      - { $name: name, $type: string, $optional: false }
+      - { $name: description, $type: string, $optional: true }
+      - { $name: price, $type: number, $optional: false }
+      - { $name: display_order, $type: number, $optional: true }
+      - $name: sections
+        $type: SetMenuSectionInputPayload
+        $list: true
+        $optional: false
+        $related:
+          $name: SetMenuSectionInputPayload
+          $module: config
+          $feature: set_menu_management
+          $kind: custom
+          $step: feature
+
+  - $name: CreateSetMenuSectionPayload
+    $attributes:
+      - { $name: set_menu, $type: number, $optional: false }
+      - { $name: category_id, $type: number, $optional: false }
+      - { $name: max_selections, $type: string, $optional: false }
+      - $name: item_ids
+        $type: string
+        $list: true
+        $optional: false
+
+  - $name: SetMenuSectionItemsPayload
+    $attributes:
+      - $name: item_ids
+        $type: string
+        $list: true
+        $optional: false
+
+$usecases:
+  - $include: "./usecases/GetSetMenusList.yml"
+  - $include: "./usecases/CreateSetMenu.yml"
+  - $include: "./usecases/GetSetMenuDetail.yml"
+  - $include: "./usecases/UpdateSetMenu.yml"
+  - $include: "./usecases/PatchSetMenu.yml"
+  - $include: "./usecases/DeleteSetMenu.yml"
+  - $include: "./usecases/ActivateSetMenu.yml"
+  - $include: "./usecases/DeactivateSetMenu.yml"
+  - $include: "./usecases/ReorderSetMenu.yml"
+  - $include: "./usecases/GetSetMenuSectionsList.yml"
+  - $include: "./usecases/CreateSetMenuSection.yml"
+  - $include: "./usecases/GetSetMenuSectionDetail.yml"
+  - $include: "./usecases/UpdateSetMenuSection.yml"
+  - $include: "./usecases/PatchSetMenuSection.yml"
+  - $include: "./usecases/DeleteSetMenuSection.yml"
+  - $include: "./usecases/AddSetMenuSectionItems.yml"
+  - $include: "./usecases/RemoveSetMenuSectionItems.yml"

@@ -1,0 +1,20 @@
+# ------------------------------------------------------------------
+# ACTIVATE_OPTION_GROUP - Activer un groupe d'options
+# ------------------------------------------------------------------
+$path: /config/option-groups/{option_group_id}/activate/
+$method: POST
+$description: "Activer un groupe d'options"
+$auth: true
+$skip: false
+$params:
+  $path:
+    option_group_id: { $type: number, $optional: false }
+  $body: {}
+$response:
+  $default:
+    $schema:
+      message: { $type: string }
+  $byStatus:
+    "404":
+      $schema:
+        detail: { $type: string }

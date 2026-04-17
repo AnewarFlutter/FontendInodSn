@@ -1,0 +1,42 @@
+# --------------------------------------------------------------
+# GetIngredientTypesList - GET
+# --------------------------------------------------------------
+$name: getIngredientTypesList
+$description: "Liste tous les types d'ingrédients"
+$skip: false
+$async: true
+
+$params:
+  - { $name: search, $type: string, $optional: true }
+  - { $name: is_active, $type: boolean, $optional: true }
+  - { $name: ordering, $type: string, $optional: true }
+
+$returnDescription: "Liste des types d'ingrédients"
+$returnType:
+  $type: IngredientTypeBasic
+  $list: true
+  $nullable: true
+  $related:
+    - $name: IngredientTypeBasic
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.GET_INGREDIENT_TYPES_LIST
+  $mapping:
+    $query:
+      search: search
+      is_active: is_active
+      ordering: ordering
+  $responseMapping:
+    $returnValue: data
+
+$imports:
+  - $name: IngredientTypeBasic
+    $from: "--module config --kind custom --step module"
+    $step: module

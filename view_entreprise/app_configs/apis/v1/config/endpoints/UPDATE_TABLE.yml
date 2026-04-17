@@ -1,0 +1,31 @@
+# ------------------------------------------------------------------
+# UPDATE_TABLE - Mettre à jour complètement une table
+# ------------------------------------------------------------------
+$path: /config/tables/{table_id}/
+$method: PUT
+$description: "Mettre à jour complètement une table"
+$auth: true
+$skip: false
+$params:
+  $path:
+    table_id: { $type: number, $optional: false }
+  $body:
+    table_number: { $type: string, $optional: false }
+    capacity: { $type: number, $optional: false }
+    table_area: { $type: number, $optional: false }
+    is_active: { $type: boolean, $optional: false }
+$response:
+  $default:
+    $schema:
+      id: { $type: number }
+      table_number: { $type: string }
+      capacity: { $type: number }
+      table_area: { $type: number }
+      is_active: { $type: boolean }
+  $byStatus:
+    "400":
+      $schema:
+        error: { $type: string }
+    "404":
+      $schema:
+        detail: { $type: string }

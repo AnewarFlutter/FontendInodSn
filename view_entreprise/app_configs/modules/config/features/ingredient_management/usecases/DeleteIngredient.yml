@@ -1,0 +1,31 @@
+# --------------------------------------------------------------
+# DeleteIngredient - DELETE
+# --------------------------------------------------------------
+$name: deleteIngredient
+$description: "Supprime un ingrédient par son identifiant"
+$skip: false
+$async: true
+
+$params:
+  - $name: ingredientId
+    $type: string
+    $optional: false
+
+$returnDescription: "Confirmation de suppression"
+$returnType:
+  $type: object
+  $nullable: true
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.DELETE_INGREDIENT
+  $mapping:
+    $path:
+      ingredient_id: ingredientId
+  $responseMapping:
+    $returnValue: ""

@@ -1,0 +1,76 @@
+# ====================== USER API ======================
+# Service utilisateurs : profil, gestion admin des utilisateurs, RBAC
+# Base gateway: /user/*
+
+$description: "Service utilisateurs - profil courant, gestion admin des utilisateurs et RBAC"
+
+$routes:
+  # ── Mon profil ──────────────────────────────────────────────
+  GET_MY_PROFILE:
+    $include: "./endpoints/GET_MY_PROFILE.yml"
+  UPDATE_MY_PROFILE:
+    $include: "./endpoints/UPDATE_MY_PROFILE.yml"
+  UPLOAD_MY_AVATAR:
+    $include: "./endpoints/UPLOAD_MY_AVATAR.yml"
+  GET_MY_ROLES:
+    $include: "./endpoints/GET_MY_ROLES.yml"
+  GET_MY_PERMISSIONS:
+    $include: "./endpoints/GET_MY_PERMISSIONS.yml"
+
+  # ── Gestion des utilisateurs ────────────────────────────────
+  GET_USERS_LIST:
+    $include: "./endpoints/GET_USERS_LIST.yml"
+  GET_USER_DETAIL:
+    $include: "./endpoints/GET_USER_DETAIL.yml"
+  CREATE_USER:
+    $include: "./endpoints/CREATE_USER.yml"
+  UPDATE_USER:
+    $include: "./endpoints/UPDATE_USER.yml"
+  UPDATE_USER_EMAIL:
+    $include: "./endpoints/UPDATE_USER_EMAIL.yml"
+  UPDATE_USER_PHONE:
+    $include: "./endpoints/UPDATE_USER_PHONE.yml"
+  SOFT_DELETE_USER:
+    $include: "./endpoints/SOFT_DELETE_USER.yml"
+  RESTORE_USER:
+    $include: "./endpoints/RESTORE_USER.yml"
+  SUSPEND_USER:
+    $include: "./endpoints/SUSPEND_USER.yml"
+  ACTIVATE_USER:
+    $include: "./endpoints/ACTIVATE_USER.yml"
+
+  # ── Profils métier ──────────────────────────────────────────
+  ACTIVATE_USER_LIVREUR_PROFILE:
+    $include: "./endpoints/ACTIVATE_USER_LIVREUR_PROFILE.yml"
+  UPDATE_USER_CUISINIER_PROFILE:
+    $include: "./endpoints/UPDATE_USER_CUISINIER_PROFILE.yml"
+  UPDATE_USER_SERVEUR_PROFILE:
+    $include: "./endpoints/UPDATE_USER_SERVEUR_PROFILE.yml"
+  UPDATE_USER_CAISSIER_PROFILE:
+    $include: "./endpoints/UPDATE_USER_CAISSIER_PROFILE.yml"
+  UPDATE_USER_LIVREUR_PROFILE:
+    $include: "./endpoints/UPDATE_USER_LIVREUR_PROFILE.yml"
+  UPDATE_USER_MANAGER_PROFILE:
+    $include: "./endpoints/UPDATE_USER_MANAGER_PROFILE.yml"
+
+  # ── Rôles et permissions ────────────────────────────────────
+  ASSIGN_USER_ROLES:
+    $include: "./endpoints/ASSIGN_USER_ROLES.yml"
+  REVOKE_USER_ROLES:
+    $include: "./endpoints/REVOKE_USER_ROLES.yml"
+  GRANT_USER_PERMISSIONS:
+    $include: "./endpoints/GRANT_USER_PERMISSIONS.yml"
+  REVOKE_USER_PERMISSIONS:
+    $include: "./endpoints/REVOKE_USER_PERMISSIONS.yml"
+  GET_ROLES_LIST:
+    $include: "./endpoints/GET_ROLES_LIST.yml"
+  GET_PERMISSIONS_LIST:
+    $include: "./endpoints/GET_PERMISSIONS_LIST.yml"
+  GET_PERMISSIONS_CATEGORIES:
+    $include: "./endpoints/GET_PERMISSIONS_CATEGORIES.yml"
+
+  # ── Statistiques ────────────────────────────────────────────
+  GET_USER_STATS:
+    $include: "./endpoints/GET_USER_STATS.yml"
+
+$skip: true

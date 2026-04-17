@@ -1,0 +1,41 @@
+# ------------------------------------------------------------------
+# Feature : my_profile (Profil de l'administrateur connecté)
+# ------------------------------------------------------------------
+$name: my_profile
+$description: "Gestion du profil de l'administrateur connecté : consultation, modification, rôles, permissions et avatar"
+$fileNameCasing: snakeCase
+$override: false
+$delete: false
+$skip: true
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: false
+
+$enums: []
+
+$types:
+  - $name: UpdateMyProfilePayload
+    $attributes:
+      - { $name: first_name, $type: string, $optional: true }
+      - { $name: last_name, $type: string, $optional: true }
+      - { $name: birth_date, $type: string, $optional: true, $nullable: true, $description: "Format : YYYY-MM-DD" }
+      - $name: gender
+        $type: GenderEnum
+        $optional: true
+        $nullable: true
+        $related:
+          $name: GenderEnum
+          $module: user
+          $kind: enum
+          $step: module
+      - { $name: address, $type: string, $optional: true, $nullable: true }
+      - { $name: nationality, $type: string, $optional: true, $nullable: true }
+
+$usecases:
+  - $include: "./usecases/GetMyProfile.yml"
+  - $include: "./usecases/UpdateMyProfile.yml"
+  - $include: "./usecases/GetMyRoles.yml"
+  - $include: "./usecases/GetMyPermissions.yml"
+  - $include: "./usecases/UploadMyAvatar.yml"
+  - $include: "./usecases/UpdateMyPhone.yml"
+  - $include: "./usecases/ChangePassword.yml"

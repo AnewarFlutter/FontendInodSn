@@ -1,0 +1,40 @@
+/**
+ * RbacDataSource – Contrat d'accès aux données brutes pour l'entité Rbac
+ * 
+ * **Rôle** : Interface abstraite utilisée par le RepositoryImpl pour accéder aux données.
+ * 
+ * **Implémentations** :
+ * - `RestApiRbacDataSourceImpl`
+ * - `FirebaseRbacDataSourceImpl`
+ * - Mock pour tests
+ * 
+ * **Généré automatiquement** à partir des UseCases du module **user**.
+ * 
+ * **Attention** : Utilise **ModelRbac**, pas l'entité métier.
+ * 
+ * @example
+ * const ds: RbacDataSource = new RestApiRbacDataSourceImpl();
+ * const model = await ds.getUserById("123");
+ */
+export interface RbacDataSource {
+    /**
+    * Liste toutes les permissions disponibles dans le système. Permission: permission.list
+    *
+   * @returns Liste de toutes les permissions du système
+    */
+    getPermissionsList(): Promise<object[] | null>;
+
+    /**
+      * Liste les rôles assignables dans le système. Permission: role.list
+      *
+     * @returns Liste des rôles assignables
+      */
+    getRolesList(): Promise<object[] | null>;
+
+    /**
+      * Liste les catégories de permissions pour affichage groupé dans le frontend. Permission: permission.list
+      *
+     * @returns Catégories de permissions groupées
+      */
+    getPermissionsCategories(): Promise<object[] | null>;
+}

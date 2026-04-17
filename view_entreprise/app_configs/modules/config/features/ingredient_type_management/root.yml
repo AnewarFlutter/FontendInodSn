@@ -1,0 +1,33 @@
+# ------------------------------------------------------------------
+# Feature : ingredient_type_management (gestion des types d'ingrédients)
+# ------------------------------------------------------------------
+$name: ingredient_type_management
+$description: "CRUD et réordonnancement des types d'ingrédients"
+$fileNameCasing: snakeCase
+$override: false
+$delete: false
+$skip: false
+$rewriteInController: true
+$rewriteInDataSourceImpl: false
+
+$enums: []
+$types:
+  - $name: CreateIngredientTypePayload
+    $attributes:
+      - { $name: name, $type: string, $optional: false }
+      - { $name: description, $type: string, $optional: true, $nullable: true }
+      - { $name: display_order, $type: number, $optional: true, $nullable: true }
+
+  - $name: ReorderIngredientTypePayload
+    $attributes:
+      - { $name: new_order, $type: number, $optional: false }
+
+$usecases:
+  - $include: "./usecases/GetIngredientTypesList.yml"
+  - $include: "./usecases/CreateIngredientType.yml"
+  - $include: "./usecases/GetIngredientTypeDetail.yml"
+  - $include: "./usecases/UpdateIngredientType.yml"
+  - $include: "./usecases/PatchIngredientType.yml"
+  - $include: "./usecases/DeleteIngredientType.yml"
+  - $include: "./usecases/GetIngredientTypesStats.yml"
+  - $include: "./usecases/ReorderIngredientType.yml"

@@ -1,0 +1,45 @@
+# --------------------------------------------------------------
+# CreateIngredient - POST
+# --------------------------------------------------------------
+$name: createIngredient
+$description: "Crée un nouvel ingrédient"
+$skip: false
+$async: true
+
+$params:
+  - $name: payload
+    $type: CreateIngredientPayload
+    $optional: false
+    $related: "--module config --feature ingredient_management --kind custom --step feature"
+
+$returnDescription: "L'ingrédient créé"
+$returnType:
+  $type: IngredientBasic
+  $nullable: true
+  $related:
+    - $name: IngredientBasic
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.CREATE_INGREDIENT
+  $mapping:
+    $body:
+      payload: payload
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: CreateIngredientPayload
+    $from: "--module config --feature ingredient_management --kind custom --step feature"
+    $step: feature
+  - $name: IngredientBasic
+    $from: "--module config --kind custom --step module"
+    $step: module

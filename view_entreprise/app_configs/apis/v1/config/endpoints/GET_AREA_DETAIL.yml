@@ -1,0 +1,25 @@
+# ------------------------------------------------------------------
+# GET_AREA_DETAIL - Détail d'une zone
+# ------------------------------------------------------------------
+$path: /config/areas/{area_id}/
+$method: GET
+$description: "Récupérer le détail d'une zone"
+$auth: true
+$skip: false
+$params:
+  $path:
+    area_id: { $type: number, $optional: false }
+  $query: {}
+$response:
+  $default:
+    $schema:
+      id: { $type: number }
+      name: { $type: string }
+      area_type: { $type: string }
+      description: { $type: string, $nullable: true }
+      display_order: { $type: number, $nullable: true }
+      is_active: { $type: boolean }
+  $byStatus:
+    "404":
+      $schema:
+        detail: { $type: string }

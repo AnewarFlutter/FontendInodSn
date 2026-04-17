@@ -1,0 +1,27 @@
+# ------------------------------------------------------------------
+# PATCH_OPTION - Modifier partiellement une option
+# ------------------------------------------------------------------
+$path: /config/options/{option_id}/
+$method: PATCH
+$description: "Modifier partiellement une option"
+$auth: true
+$skip: false
+$params:
+  $path:
+    option_id: { $type: number, $optional: false }
+  $body:
+    name: { $type: string, $optional: true }
+    additional_amount: { $type: number, $optional: true }
+    display_order: { $type: number, $optional: true }
+    is_active: { $type: boolean, $optional: true }
+$response:
+  $default:
+    $schema:
+      id: { $type: number }
+      name: { $type: string }
+      additional_amount: { $type: number }
+      is_active: { $type: boolean }
+  $byStatus:
+    "400":
+      $schema:
+        error: { $type: string }

@@ -1,0 +1,27 @@
+# ------------------------------------------------------------------
+# Feature : quantity_type_management (gestion des types de quantité)
+# ------------------------------------------------------------------
+$name: quantity_type_management
+$description: "CRUD des types de quantité utilisés pour les ingrédients des items (ex: kg, L, g)"
+$fileNameCasing: snakeCase
+$override: false
+$delete: false
+$skip: false
+$rewriteInController: true
+$rewriteInDataSourceImpl: false
+
+$enums: []
+$types:
+  - $name: CreateQuantityTypePayload
+    $attributes:
+      - { $name: name, $type: string, $optional: false }
+      - { $name: abbreviation, $type: string, $optional: false }
+      - { $name: is_active, $type: boolean, $optional: false }
+
+$usecases:
+  - $include: "./usecases/GetQuantityTypesList.yml"
+  - $include: "./usecases/CreateQuantityType.yml"
+  - $include: "./usecases/GetQuantityTypeDetail.yml"
+  - $include: "./usecases/UpdateQuantityType.yml"
+  - $include: "./usecases/PatchQuantityType.yml"
+  - $include: "./usecases/DeleteQuantityType.yml"

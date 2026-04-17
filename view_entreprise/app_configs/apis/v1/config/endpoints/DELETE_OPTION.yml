@@ -1,0 +1,20 @@
+# ------------------------------------------------------------------
+# DELETE_OPTION - Supprimer une option
+# ------------------------------------------------------------------
+$path: /config/options/{option_id}/
+$method: DELETE
+$description: "Supprimer une option"
+$auth: true
+$skip: false
+$params:
+  $path:
+    option_id: { $type: number, $optional: false }
+$response:
+  $default:
+    $description: "204 No Content"
+    $schema:
+      message: { $type: string }
+  $byStatus:
+    "404":
+      $schema:
+        detail: { $type: string }

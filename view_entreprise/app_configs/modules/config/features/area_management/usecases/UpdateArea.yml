@@ -1,0 +1,50 @@
+# --------------------------------------------------------------
+# UpdateArea - PUT
+# --------------------------------------------------------------
+$name: updateArea
+$description: "Met à jour complètement une zone"
+$skip: false
+$async: true
+
+$params:
+  - $name: areaId
+    $type: string
+    $optional: false
+  - $name: payload
+    $type: CreateAreaPayload
+    $optional: false
+    $related: "--module config --feature area_management --kind custom --step feature"
+
+$returnDescription: "La zone mise à jour"
+$returnType:
+  $type: AreaBasic
+  $nullable: true
+  $related:
+    - $name: AreaBasic
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.UPDATE_AREA
+  $mapping:
+    $path:
+      area_id: areaId
+    $body:
+      payload: payload
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: CreateAreaPayload
+    $from: "--module config --feature area_management --kind custom --step feature"
+    $step: feature
+  - $name: AreaBasic
+    $from: "--module config --kind custom --step module"
+    $step: module

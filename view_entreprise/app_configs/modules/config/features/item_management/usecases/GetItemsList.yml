@@ -1,0 +1,65 @@
+# --------------------------------------------------------------
+# GetItemsList - GET
+# --------------------------------------------------------------
+$name: getItemsList
+$description: "Liste tous les items avec pagination, filtres et recherche"
+$skip: false
+$async: true
+
+$params:
+  - $name: is_active
+    $type: boolean
+    $optional: true
+  - $name: search
+    $type: string
+    $optional: true
+  - $name: ordering
+    $type: string
+    $optional: true
+  - $name: item_type
+    $type: number
+    $optional: true
+  - $name: category
+    $type: number
+    $optional: true
+  - $name: price_min
+    $type: number
+    $optional: true
+  - $name: price_max
+    $type: number
+    $optional: true
+
+$returnDescription: "Liste paginée des items"
+$returnType:
+  $type: PaginatedItems
+  $nullable: true
+  $related:
+    - $name: PaginatedItems
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.GET_ITEMS_LIST
+  $mapping:
+    $query:
+      is_active: is_active
+      search: search
+      ordering: ordering
+      item_type: item_type
+      category: category
+      price_min: price_min
+      price_max: price_max
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: PaginatedItems
+    $from: "--module config --kind custom --step module"
+    $step: module

@@ -1,0 +1,20 @@
+# ------------------------------------------------------------------
+# ACTIVATE_ITEM_TYPE - Activer un type d'item
+# ------------------------------------------------------------------
+$path: /config/item-types/{item_type_id}/activate/
+$method: POST
+$description: "Activer un type d'item"
+$auth: true
+$skip: false
+$params:
+  $path:
+    item_type_id: { $type: number, $optional: false }
+  $body: {}
+$response:
+  $default:
+    $schema:
+      message: { $type: string }
+  $byStatus:
+    "404":
+      $schema:
+        detail: { $type: string }

@@ -1,0 +1,50 @@
+# --------------------------------------------------------------
+# UpdateDynamicConfig - PUT
+# --------------------------------------------------------------
+$name: updateDynamicConfig
+$description: "Met à jour complètement une configuration dynamique"
+$skip: false
+$async: true
+
+$params:
+  - $name: configId
+    $type: string
+    $optional: false
+  - $name: payload
+    $type: CreateDynamicConfigPayload
+    $optional: false
+    $related: "--module config --feature dynamic_config_management --kind custom --step feature"
+
+$returnDescription: "La configuration dynamique mise à jour"
+$returnType:
+  $type: DynamicConfigBasic
+  $nullable: true
+  $related:
+    - $name: DynamicConfigBasic
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.UPDATE_DYNAMIC_CONFIG
+  $mapping:
+    $path:
+      config_id: configId
+    $body:
+      payload: payload
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: CreateDynamicConfigPayload
+    $from: "--module config --feature dynamic_config_management --kind custom --step feature"
+    $step: feature
+  - $name: DynamicConfigBasic
+    $from: "--module config --kind custom --step module"
+    $step: module

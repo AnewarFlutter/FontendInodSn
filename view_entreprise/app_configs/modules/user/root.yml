@@ -1,0 +1,89 @@
+# ====================== USER MODULE ======================
+
+$name: user
+$fileNameCasing: snakeCase
+$description: "Module utilisateurs : profil admin, gestion des utilisateurs et RBAC"
+$override: false
+$delete: false
+$skip: true
+
+$enums:
+  - $name: GenderEnum
+    $generate: true
+    $splitPerFile: true
+    $values: ["M", "F"]
+    $description: "Genre de l'utilisateur"
+    $descriptions:
+      M: "Masculin"
+      F: "Féminin"
+
+  - $name: UserRoleCodeEnum
+    $generate: true
+    $splitPerFile: true
+    $values: ["ADMIN", "SERVEUR", "LIVREUR", "CUISINIER", "CAISSIER_POS", "MANAGER"]
+    $description: "Codes de rôles assignables dans l'application"
+    $descriptions:
+      ADMIN: "Administrateur"
+      SERVEUR: "Serveur en salle"
+      LIVREUR: "Livreur"
+      CUISINIER: "Cuisinier"
+      CAISSIER_POS: "Caissier point de vente"
+      MANAGER: "Manager"
+
+$types:
+  - $name: UserBasic
+    $attributes:
+      - { $name: id, $type: string, $optional: false }
+      - { $name: auth_user_id, $type: string, $optional: false }
+      - { $name: email, $type: string, $optional: true, $nullable: true }
+      - { $name: first_name, $type: string, $optional: false }
+      - { $name: last_name, $type: string, $optional: false }
+      - { $name: telephone, $type: string, $optional: true, $nullable: true }
+      - { $name: is_active, $type: boolean, $optional: false }
+
+  - $name: UserDetail
+    $attributes:
+      - { $name: id, $type: string, $optional: false }
+      - { $name: auth_user_id, $type: string, $optional: false }
+      - { $name: email, $type: string, $optional: true, $nullable: true }
+      - { $name: first_name, $type: string, $optional: false }
+      - { $name: last_name, $type: string, $optional: false }
+      - { $name: telephone, $type: string, $optional: true, $nullable: true }
+      - $name: gender
+        $type: GenderEnum
+        $optional: true
+        $nullable: true
+        $related:
+          $name: GenderEnum
+          $module: user
+          $kind: enum
+          $step: module
+      - { $name: birth_date, $type: string, $optional: true, $nullable: true }
+      - { $name: address, $type: string, $optional: true, $nullable: true }
+      - { $name: nationality, $type: string, $optional: true, $nullable: true }
+      - { $name: avatar, $type: string, $optional: true, $nullable: true }
+      - { $name: is_active, $type: boolean, $optional: false }
+      - { $name: roles, $type: object, $list: true, $optional: false }
+      - { $name: permissions, $type: string, $list: true, $optional: true }
+      - { $name: created_at, $type: string, $optional: false }
+
+  - $name: PaginatedUsers
+    $attributes:
+      - { $name: count, $type: number, $optional: false }
+      - { $name: next, $type: string, $optional: true, $nullable: true }
+      - { $name: previous, $type: string, $optional: true, $nullable: true }
+      - $name: results
+        $type: UserBasic
+        $list: true
+        $optional: false
+        $related:
+          $name: UserBasic
+          $module: user
+          $kind: custom
+          $step: module
+
+$features:
+  - $include: "./features/my_profile/root.yml"
+  - $include: "./features/user_management/root.yml"
+  - $include: "./features/rbac/root.yml"
+  - $include: "./features/stats/root.yml"

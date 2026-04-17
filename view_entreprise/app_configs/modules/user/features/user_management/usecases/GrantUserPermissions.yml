@@ -1,0 +1,35 @@
+# --------------------------------------------------------------
+# grantUserPermissions - POST
+# --------------------------------------------------------------
+$name: grantUserPermissions
+$description: "Accorde des permissions individuelles à un utilisateur. Permission: permission.grant"
+$skip: true
+$async: true
+
+$params:
+  - $name: user_id
+    $type: string
+    $optional: false
+  - $name: permissions
+    $type: string
+    $list: true
+    $optional: false
+
+$returnDescription: "Confirmation de l'accord des permissions"
+$returnType:
+  $type: string
+  $nullable: true
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: USER.GRANT_USER_PERMISSIONS
+  $mapping:
+    $path:
+      user_id: user_id
+    $body:
+      permissions: permissions
+  $responseMapping:
+    $returnValue: message

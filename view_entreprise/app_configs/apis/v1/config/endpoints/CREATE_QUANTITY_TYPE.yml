@@ -1,0 +1,25 @@
+# ------------------------------------------------------------------
+# CREATE_QUANTITY_TYPE - Créer un type de quantité
+# ------------------------------------------------------------------
+$path: /config/quantity-types/
+$method: POST
+$description: "Créer un nouveau type de quantité"
+$auth: true
+$skip: false
+$params:
+  $body:
+    name: { $type: string, $optional: false }
+    abbreviation: { $type: string, $optional: false }
+    is_active: { $type: boolean, $optional: false }
+$response:
+  $default:
+    $description: "201 Created"
+    $schema:
+      id: { $type: number }
+      name: { $type: string }
+      abbreviation: { $type: string }
+      is_active: { $type: boolean }
+  $byStatus:
+    "400":
+      $schema:
+        error: { $type: string }

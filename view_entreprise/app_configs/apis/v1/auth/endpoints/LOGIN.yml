@@ -1,0 +1,87 @@
+# ------------------------------------------------------------------
+# LOGIN - Connexion par email ou téléphone avec contexte de rôle
+# ------------------------------------------------------------------
+
+$path: /auth/login/
+$method: POST
+$description: "Authentification par email ou téléphone. Retourne access_token et refresh_token. Le contexte sélectionne le rôle actif."
+$auth: false
+$skip: true
+$params:
+  $body:
+    identifier_type: { $type: string, $optional: false, $description: "Type d'identifiant : email, phone" }
+    identifier: { $type: string, $optional: false, $description: "Email ou numéro de téléphone" }
+    password: { $type: string, $optional: false }
+    context: { $type: string, $optional: false, $description: "Contexte de connexion : ADMIN, CAISSE, CUISINE, SERVICE, LIVRAISON" }
+$response:
+  $default:
+    $schema:
+      status: { $type: string, $description: "Statut de la réponse : SUCCESS" }
+      message: { $type: string }
+      token:
+        $type: object
+        $schema:
+          access_token: { $type: string }
+          refresh_token: { $type: string }
+          token_type: { $type: string, $description: "Type de token : Bearer" }
+          expires_in: { $type: number, $description: "Durée de validité du access_token en secondes" }
+      user:
+        $type: object
+        $schema:
+          data:
+            $type: object
+            $schema:
+              id: { $type: string }
+              auth_user_id: { $type: string }
+              email: { $type: string }
+              firstname: { $type: string }
+              lastname: { $type: string }
+              pseudo: { $type: string }
+              photo: { $type: string, $optional: true }
+              gender: { $type: string, $optional: true }
+              birth_date: { $type: string, $optional: true }
+              telephone: { $type: string, $optional: true }
+              created_at: { $type: string }
+              current_role:
+                $type: object
+                $schema:
+                  code: { $type: string, $description: "Code du rôle ex: SUPER_ADMIN" }
+                  name: { $type: string }
+                  level: { $type: number }
+                  context: { $type: string, $description: "Contexte : ADMIN, CAISSE, CUISINE, SERVICE, LIVRAISON" }
+                  permissions:
+                    $type: object
+                    $schema:
+                      base: { $type: array, $items: { $type: string } }
+                      custom:
+                        $type: object
+                        $schema:
+                          added: { $type: array, $items: { $type: string } }
+                          removed: { $type: array, $items: { $type: string } }
+              available_roles: { $type: array, $items: { $type: object } }
+          email_verified: { $type: boolean }
+          is_active: { $type: boolean }
+  $byStatus:
+    "400":
+      $description: "Erreur de validation DRF (champs manquants/invalides) ou échec logique métier (identifiants incorrects, compte verrouillé)"
+      $schema:
+        identifier_type: { $type: array, $items: { $type: string }, $optional: true, $description: "Erreurs sur le champ identifier_type" }
+        identifier: { $type: array, $items: { $type: string }, $optional: true, $description: "Erreurs sur le champ identifier" }
+        password: { $type: array, $items: { $type: string }, $optional: true, $description: "Erreurs sur le champ password" }
+        context: { $type: array, $items: { $type: string }, $optional: true, $description: "Erreurs sur le champ context ex: « ADMI » n'est pas un choix valide." }
+        non_field_errors: { $type: array, $items: { $type: string }, $optional: true, $description: "Erreurs globales non liées à un champ" }
+        status: { $type: string, $optional: true, $description: "ex: ERROR — présent en cas d'échec logique métier" }
+        message: { $type: string, $optional: true, $description: "ex: Mot de passe ou email incorrect" }
+        code: { $type: string, $optional: true, $description: "ex: INVALID_CREDENTIALS | ACCOUNT_LOCKED" }
+    "401":
+      $description: "Identifiants incorrects — réponse réelle observée avec remaining_attempts"
+      $schema:
+        status: { $type: string, $description: "ex: INVALID_CREDENTIALS" }
+        error: { $type: string, $description: "ex: Email ou mot de passe incorrect" }
+        remaining_attempts: { $type: number, $description: "Nombre de tentatives restantes avant blocage" }
+    "403":
+      $description: "Compte inactif, non approuvé, ou contexte de rôle non autorisé"
+      $schema:
+        status: { $type: string, $description: "ex: ERROR" }
+        message: { $type: string, $description: "ex: Votre compte n'est pas encore actif." }
+        code: { $type: string, $description: "ex: ACCOUNT_INACTIVE | CONTEXT_NOT_ALLOWED" }

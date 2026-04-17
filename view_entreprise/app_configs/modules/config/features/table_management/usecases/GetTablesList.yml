@@ -1,0 +1,45 @@
+# --------------------------------------------------------------
+# GetTablesList - GET
+# --------------------------------------------------------------
+$name: getTablesList
+$description: "Liste toutes les tables avec pagination et filtres"
+$skip: false
+$async: true
+
+$params:
+  - $name: is_active
+    $type: boolean
+    $optional: true
+  - $name: search
+    $type: string
+    $optional: true
+
+$returnDescription: "Liste paginée des tables"
+$returnType:
+  $type: PaginatedTables
+  $nullable: true
+  $related:
+    - $name: PaginatedTables
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: false
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.GET_TABLES_LIST
+  $mapping:
+    $query:
+      is_active: is_active
+      search: search
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: PaginatedTables
+    $from: "--module config --kind custom --step module"
+    $step: module

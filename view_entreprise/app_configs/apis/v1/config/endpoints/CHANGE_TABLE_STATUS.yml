@@ -1,0 +1,24 @@
+# ------------------------------------------------------------------
+# CHANGE_TABLE_STATUS - Changer le statut d'une table
+# ------------------------------------------------------------------
+$path: /config/tables/{table_id}/change-status/
+$method: POST
+$description: "Changer le statut d'une table (AVAILABLE, OCCUPIED, RESERVED)"
+$auth: true
+$skip: false
+$params:
+  $path:
+    table_id: { $type: number, $optional: false }
+  $body:
+    status: { $type: string, $optional: false, $description: "Statut de la table : AVAILABLE, OCCUPIED, RESERVED" }
+$response:
+  $default:
+    $schema:
+      message: { $type: string }
+  $byStatus:
+    "400":
+      $schema:
+        error: { $type: string }
+    "404":
+      $schema:
+        detail: { $type: string }

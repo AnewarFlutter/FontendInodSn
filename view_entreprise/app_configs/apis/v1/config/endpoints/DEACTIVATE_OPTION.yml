@@ -1,0 +1,21 @@
+# ------------------------------------------------------------------
+# DEACTIVATE_OPTION - Désactiver une option
+# ------------------------------------------------------------------
+$path: /config/options/{option_id}/deactivate/
+$method: POST
+$description: "Désactiver une option"
+$auth: true
+$skip: false
+$params:
+  $path:
+    option_id: { $type: number, $optional: false }
+$response:
+  $default:
+    $schema:
+      message: { $type: string }
+      id: { $type: number }
+      is_active: { $type: boolean }
+  $byStatus:
+    "404":
+      $schema:
+        detail: { $type: string }

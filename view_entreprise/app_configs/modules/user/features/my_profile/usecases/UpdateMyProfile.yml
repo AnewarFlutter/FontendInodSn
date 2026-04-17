@@ -1,0 +1,40 @@
+# --------------------------------------------------------------
+# updateMyProfile - PATCH
+# --------------------------------------------------------------
+$name: updateMyProfile
+$description: "Met à jour le profil personnel de l'administrateur connecté"
+$skip: true
+$async: true
+
+$params:
+  - $name: payload
+    $type: UpdateMyProfilePayload
+    $related: "--module user --feature my_profile --kind custom --step feature"
+    $optional: false
+
+$returnDescription: "Confirmation de la mise à jour du profil"
+$returnType:
+  $type: string
+  $nullable: true
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: USER.UPDATE_MY_PROFILE
+  $mapping:
+    $body:
+      first_name: payload.first_name
+      last_name: payload.last_name
+      telephone: payload.telephone
+      birth_date: payload.birth_date
+      gender: payload.gender
+      address: payload.address
+  $responseMapping:
+    $returnValue: message
+
+$imports:
+  - $name: UpdateMyProfilePayload
+    $from: "--module user --feature my_profile --kind custom --step feature"
+    $step: feature

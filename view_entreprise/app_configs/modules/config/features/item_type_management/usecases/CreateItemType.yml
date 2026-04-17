@@ -1,0 +1,46 @@
+# --------------------------------------------------------------
+# CreateItemType - POST
+# --------------------------------------------------------------
+$name: createItemType
+$description: "Crée un nouveau type d'item"
+$skip: false
+$async: true
+
+$params:
+  - $name: payload
+    $type: CreateItemTypePayload
+    $optional: false
+    $related: "--module config --feature item_type_management --kind custom --step feature"
+
+$returnDescription: "Le type d'item créé"
+$returnType:
+  $type: ItemTypeBasic
+  $nullable: true
+  $related:
+    - $name: ItemTypeBasic
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.CREATE_ITEM_TYPE
+  $mapping:
+    $body:
+      name: payload.name
+      is_active: payload.is_active
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: CreateItemTypePayload
+    $from: "--module config --feature item_type_management --kind custom --step feature"
+    $step: feature
+  - $name: ItemTypeBasic
+    $from: "--module config --kind custom --step module"
+    $step: module

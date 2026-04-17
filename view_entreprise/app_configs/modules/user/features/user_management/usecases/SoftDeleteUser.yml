@@ -1,0 +1,29 @@
+# --------------------------------------------------------------
+# softDeleteUser - DELETE
+# --------------------------------------------------------------
+$name: softDeleteUser
+$description: "Soft delete d'un utilisateur (restaurable). Permission: user.delete"
+$skip: true
+$async: true
+
+$params:
+  - $name: user_id
+    $type: string
+    $optional: false
+
+$returnDescription: "Confirmation du soft delete"
+$returnType:
+  $type: string
+  $nullable: true
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: USER.SOFT_DELETE_USER
+  $mapping:
+    $path:
+      user_id: user_id
+  $responseMapping:
+    $returnValue: message

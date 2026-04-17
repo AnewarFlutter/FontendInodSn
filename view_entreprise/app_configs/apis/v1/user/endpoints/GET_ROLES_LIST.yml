@@ -1,0 +1,30 @@
+# ------------------------------------------------------------------
+# GET_ROLES_LIST - Liste des rôles assignables (Admin)
+# ------------------------------------------------------------------
+
+$path: /user/roles/
+$method: GET
+$description: "Lister les rôles assignables selon le niveau de l'admin connecté. Permission: role.list"
+$auth: true
+$skip: true
+$response:
+  $default:
+    $schema:
+      data:
+        $type: object
+        $schema:
+          count: { $type: number }
+          user_level: { $type: number, $description: "Niveau de l'admin connecté" }
+          assignable_roles:
+            $type: array
+            $items:
+              $type: object
+              $schema:
+                code: { $type: string, $description: "ex: ADMIN, MANAGER, SERVEUR" }
+                name: { $type: string }
+                level: { $type: number }
+  $byStatus:
+    "403":
+      $schema:
+        error: { $type: string }
+        code: { $type: string }

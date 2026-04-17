@@ -1,0 +1,23 @@
+# ------------------------------------------------------------------
+# REORDER_OPTION - Réordonner une option
+# ------------------------------------------------------------------
+$path: /config/options/{option_id}/reorder/
+$method: PATCH
+$description: "Modifier l'ordre d'affichage d'une option"
+$auth: true
+$skip: false
+$params:
+  $path:
+    option_id: { $type: number, $optional: false }
+  $body:
+    new_order: { $type: number, $optional: false }
+$response:
+  $default:
+    $schema:
+      message: { $type: string }
+      id: { $type: number }
+      display_order: { $type: number }
+  $byStatus:
+    "404":
+      $schema:
+        detail: { $type: string }

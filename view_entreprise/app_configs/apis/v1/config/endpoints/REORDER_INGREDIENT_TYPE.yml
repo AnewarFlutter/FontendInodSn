@@ -1,0 +1,25 @@
+# ------------------------------------------------------------------
+# REORDER_INGREDIENT_TYPE - Réordonner un type d'ingrédient
+# ------------------------------------------------------------------
+$path: /config/ingredient-types/{ingredient_type_id}/reorder/
+$method: PATCH
+$description: "Changer l'ordre d'affichage d'un type d'ingrédient"
+$auth: true
+$skip: false
+$params:
+  $path:
+    ingredient_type_id: { $type: string, $optional: false }
+  $body:
+    new_order: { $type: number, $optional: false }
+$response:
+  $default:
+    $schema:
+      status: { $type: string }
+      message: { $type: string }
+  $byStatus:
+    "400":
+      $schema:
+        error: { $type: string }
+    "404":
+      $schema:
+        detail: { $type: string }

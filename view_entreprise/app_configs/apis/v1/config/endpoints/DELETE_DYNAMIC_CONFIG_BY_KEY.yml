@@ -1,0 +1,20 @@
+# ------------------------------------------------------------------
+# DELETE_DYNAMIC_CONFIG_BY_KEY - Supprimer une configuration par clé
+# ------------------------------------------------------------------
+$path: /config/config/by-key/{config_key}/
+$method: DELETE
+$description: "Supprimer une configuration dynamique par sa clé"
+$auth: true
+$skip: false
+$params:
+  $path:
+    config_key: { $type: string, $optional: false }
+$response:
+  $default:
+    $description: "204 No Content"
+    $schema:
+      message: { $type: string }
+  $byStatus:
+    "404":
+      $schema:
+        detail: { $type: string }

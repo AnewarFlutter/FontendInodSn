@@ -1,0 +1,41 @@
+# --------------------------------------------------------------
+# GetSetMenuDetail - GET
+# --------------------------------------------------------------
+$name: getSetMenuDetail
+$description: "Récupère le détail d'un menu composé par son identifiant"
+$skip: false
+$async: true
+
+$params:
+  - $name: setMenuId
+    $type: string
+    $optional: false
+
+$returnDescription: "Le détail du menu composé"
+$returnType:
+  $type: SetMenuBasic
+  $nullable: true
+  $related:
+    - $name: SetMenuBasic
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.GET_SET_MENU_DETAIL
+  $mapping:
+    $path:
+      set_menu_id: setMenuId
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: SetMenuBasic
+    $from: "--module config --kind custom --step module"
+    $step: module

@@ -1,0 +1,24 @@
+# ------------------------------------------------------------------
+# REMOVE_ITEM_CATEGORIES - Retirer des catégories d'un item
+# ------------------------------------------------------------------
+$path: /config/items/{item_id}/remove-categories/
+$method: POST
+$description: "Retirer des catégories d'un item"
+$auth: true
+$skip: false
+$params:
+  $path:
+    item_id: { $type: number, $optional: false }
+  $body:
+    category_ids: { $type: array, $items: { $type: number }, $optional: false }
+$response:
+  $default:
+    $schema:
+      message: { $type: string }
+  $byStatus:
+    "400":
+      $schema:
+        error: { $type: string }
+    "404":
+      $schema:
+        detail: { $type: string }

@@ -1,0 +1,47 @@
+# --------------------------------------------------------------
+# UpdateItemIngredient - PATCH
+# --------------------------------------------------------------
+$name: updateItemIngredient
+$description: "Met à jour un ingrédient associé à un item"
+$skip: false
+$async: true
+
+$params:
+  - $name: itemId
+    $type: string
+    $optional: false
+  - $name: ingredientId
+    $type: string
+    $optional: false
+  - $name: payload
+    $type: UpdateItemIngredientPayload
+    $optional: false
+    $related: "--module config --feature item_management --kind custom --step feature"
+
+$returnDescription: "Résultat de la mise à jour de l'ingrédient"
+$returnType:
+  $type: object
+  $nullable: true
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.UPDATE_ITEM_INGREDIENT
+  $mapping:
+    $path:
+      item_id: itemId
+      ingredient_id: ingredientId
+    $body:
+      quantity: payload.quantity
+      quantity_type_id: payload.quantity_type_id
+  $responseMapping:
+    $returnValue: ""
+
+$imports:
+  - $name: UpdateItemIngredientPayload
+    $from: "--module config --feature item_management --kind custom --step feature"
+    $step: feature

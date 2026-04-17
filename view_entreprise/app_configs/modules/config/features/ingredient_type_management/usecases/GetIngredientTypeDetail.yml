@@ -1,0 +1,37 @@
+# --------------------------------------------------------------
+# GetIngredientTypeDetail - GET
+# --------------------------------------------------------------
+$name: getIngredientTypeDetail
+$description: "Recupere le detail d'un type d'ingredient"
+$skip: false
+$async: true
+
+$params:
+  - { $name: ingredientTypeId, $type: string, $optional: false }
+
+$returnDescription: "Le detail du type d'ingredient"
+$returnType:
+  $type: IngredientTypeBasic
+  $nullable: true
+  $related:
+    - $name: IngredientTypeBasic
+      $module: config
+      $kind: custom
+      $step: module
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.GET_INGREDIENT_TYPE_DETAIL
+  $mapping:
+    $path:
+      ingredient_type_id: ingredientTypeId
+  $responseMapping:
+    $returnValue: data
+
+$imports:
+  - $name: IngredientTypeBasic
+    $from: "--module config --kind custom --step module"
+    $step: module

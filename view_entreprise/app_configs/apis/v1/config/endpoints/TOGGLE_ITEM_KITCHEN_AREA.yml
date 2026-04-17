@@ -1,0 +1,25 @@
+# ------------------------------------------------------------------
+# TOGGLE_ITEM_KITCHEN_AREA - Basculer l'état d'une zone cuisine pour un item
+# ------------------------------------------------------------------
+$path: /config/items/{item_id}/toggle-kitchen-area/{kitchen_area_id}/
+$method: PATCH
+$description: "Basculer l'état actif/inactif d'une zone cuisine pour un item"
+$auth: true
+$skip: false
+$params:
+  $path:
+    item_id: { $type: number, $optional: false }
+    kitchen_area_id: { $type: number, $optional: false }
+  $body:
+    is_active: { $type: boolean, $optional: false }
+$response:
+  $default:
+    $schema:
+      message: { $type: string }
+  $byStatus:
+    "400":
+      $schema:
+        error: { $type: string }
+    "404":
+      $schema:
+        detail: { $type: string }

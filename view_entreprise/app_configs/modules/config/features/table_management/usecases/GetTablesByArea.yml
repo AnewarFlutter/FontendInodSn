@@ -1,0 +1,31 @@
+# --------------------------------------------------------------
+# GetTablesByArea - GET
+# --------------------------------------------------------------
+$name: getTablesByArea
+$description: "Récupère les tables d'une zone spécifique"
+$skip: false
+$async: true
+
+$params:
+  - $name: area_id
+    $type: string
+    $optional: false
+
+$returnDescription: "Les tables de la zone"
+$returnType:
+  $type: object
+  $nullable: true
+
+$rewriteInController: true
+$rewriteInDataSourceImpl: false
+$rewriteInDataSource: true
+$rewriteInRepository: true
+$implementationInDataSource:
+  $type: api
+  $client: fetch
+  $endpoint: CONFIG.GET_TABLES_BY_AREA
+  $mapping:
+    $query:
+      area_id: area_id
+  $responseMapping:
+    $returnValue: ""
