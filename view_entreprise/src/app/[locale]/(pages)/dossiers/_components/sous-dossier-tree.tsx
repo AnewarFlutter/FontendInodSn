@@ -10,7 +10,6 @@ import {
   UserCog,
   Users,
   FileText,
-  X,
 } from "lucide-react"
 import { IconPlus } from "@tabler/icons-react"
 import {
@@ -28,6 +27,7 @@ import {
 interface SousDossierTreeProps {
   sousDossiers: SousDossier[]
   onAdd: () => void
+  onOpenParent?: (parentId: string) => void
 }
 
 function getMotifIcon(motif: SousDossier["motif"]) {
@@ -48,7 +48,7 @@ function getMotifLabel(motif: SousDossier["motif"]) {
   }
 }
 
-function SousDossierDetail({ sd, open, onClose }: { sd: SousDossier; open: boolean; onClose: () => void }) {
+function SousDossierDetail({ sd, open, onClose, onOpenParent }: { sd: SousDossier; open: boolean; onClose: () => void; onOpenParent?: (parentId: string) => void }) {
   const statusMeta = STATUS_META[sd.status]
   const MotifIcon = getMotifIcon(sd.motif)
 
@@ -56,19 +56,14 @@ function SousDossierDetail({ sd, open, onClose }: { sd: SousDossier; open: boole
     <Sheet open={open} onOpenChange={v => !v && onClose()}>
       <SheetContent side="right" className="w-full sm:max-w-sm flex flex-col gap-0 p-0 overflow-hidden">
         <SheetHeader className="px-6 pt-5 pb-4 border-b border-dashed shrink-0">
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-lg", statusMeta.bg)}>
-                <MotifIcon className={cn("h-4 w-4", statusMeta.text)} />
-              </div>
-              <div>
-                <SheetTitle className="text-sm leading-snug">{sd.intitule}</SheetTitle>
-                <p className="text-[11px] font-mono text-muted-foreground mt-0.5">{sd.reference}</p>
-              </div>
+          <div className="flex items-center gap-3">
+            <div className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-lg", statusMeta.bg)}>
+              <MotifIcon className={cn("h-4 w-4", statusMeta.text)} />
             </div>
-            <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0 cursor-pointer" onClick={onClose}>
-              <X className="h-4 w-4" />
-            </Button>
+            <div>
+              <SheetTitle className="text-sm leading-snug">{sd.intitule}</SheetTitle>
+              <p className="text-[11px] font-mono text-muted-foreground mt-0.5">{sd.reference}</p>
+            </div>
           </div>
         </SheetHeader>
 
@@ -117,12 +112,19 @@ function SousDossierDetail({ sd, open, onClose }: { sd: SousDossier; open: boole
           {/* Rattachement */}
           <div>
             <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">Rattachement</p>
-            <div className="rounded-lg border border-dashed bg-muted/20 px-4 py-3 flex items-center gap-2">
-              <GitBranch className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-              <p className="text-xs text-muted-foreground">
-                Sous-dossier rattaché au dossier parent <span className="font-mono font-semibold text-foreground">{sd.parentId}</span>
-              </p>
-            </div>
+            <button
+              type="button"
+              onClick={() => { onOpenParent?.(sd.parentId); onClose() }}
+              className="w-full rounded-lg border border-dashed bg-muted/20 px-4 py-3 flex items-center justify-between gap-2 hover:bg-muted/50 transition-colors cursor-pointer text-left"
+            >
+              <div className="flex items-center gap-2">
+                <GitBranch className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                <p className="text-xs text-muted-foreground">
+                  Ouvrir le dossier parent <span className="font-mono font-semibold text-foreground">{sd.parentId}</span>
+                </p>
+              </div>
+              <ChevronRight className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+            </button>
           </div>
 
         </div>
@@ -131,7 +133,7 @@ function SousDossierDetail({ sd, open, onClose }: { sd: SousDossier; open: boole
   )
 }
 
-export function SousDossierTree({ sousDossiers, onAdd }: SousDossierTreeProps) {
+export function SousDossierTree({ sousDossiers, onAdd, onOpenParent }: SousDossierTreeProps) {
   const [selected, setSelected] = React.useState<SousDossier | null>(null)
 
   if (sousDossiers.length === 0) {
@@ -227,6 +229,7 @@ export function SousDossierTree({ sousDossiers, onAdd }: SousDossierTreeProps) {
           sd={selected}
           open={!!selected}
           onClose={() => setSelected(null)}
+          onOpenParent={onOpenParent}
         />
       )}
     </>

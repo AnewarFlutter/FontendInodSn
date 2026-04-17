@@ -578,6 +578,10 @@ export default function DossiersPage() {
         onOpenChange={setDetailOpen}
         onStatusChange={handleStatusChange}
         onAddSousDossier={handleAddSousDossier}
+        onOpenParent={(parentId) => {
+          const parent = dossiers.find(d => d.id === parentId)
+          if (parent) openDetail(parent)
+        }}
       />
 
       <StatutTransitionSheet

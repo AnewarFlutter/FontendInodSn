@@ -309,6 +309,7 @@ export function DossierDetailSheet({
                 <SousDossierTree
                   sousDossiers={dossier.sousDossiers ?? []}
                   onAdd={() => onAddSousDossier(dossier.id)}
+                  onOpenParent={onOpenParent}
                 />
               </TabsContent>
 

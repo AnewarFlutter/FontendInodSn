@@ -222,3 +222,16 @@
   scrollbar-width: thin;
   scrollbar-color: var(--muted-foreground) transparent;
 }
+
+/* Cursor pointer sur tous les éléments cliquables */
+button:not([disabled]),
+a[href],
+[role="button"],
+[role="tab"],
+[role="menuitem"],
+[role="option"],
+label[for],
+select,
+summary {
+  cursor: pointer;
+}
