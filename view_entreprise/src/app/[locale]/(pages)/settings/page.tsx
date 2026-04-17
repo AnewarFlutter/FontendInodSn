@@ -670,51 +670,6 @@ export default function SettingsPage() {
                     <div>
                       <h3 className="text-lg font-medium mb-4">Notifications</h3>
                       <div className="space-y-4">
-                        {/* Commande */}
-                        <Card>
-                          <CardContent className="pt-6">
-                            <div className="flex items-center justify-between">
-                              <div className="flex-1">
-                                <p className="font-medium">Commande</p>
-                                <p className="text-sm text-muted-foreground">
-                                  Recevoir des notifications pour les nouvelles commandes.
-                                </p>
-                              </div>
-                              <Switch defaultChecked />
-                            </div>
-                          </CardContent>
-                        </Card>
-
-                        {/* Livraison */}
-                        <Card>
-                          <CardContent className="pt-6">
-                            <div className="flex items-center justify-between">
-                              <div className="flex-1">
-                                <p className="font-medium">Livraison</p>
-                                <p className="text-sm text-muted-foreground">
-                                  Recevoir des notifications pour les statuts de livraison.
-                                </p>
-                              </div>
-                              <Switch defaultChecked />
-                            </div>
-                          </CardContent>
-                        </Card>
-
-                        {/* Cuisine */}
-                        <Card>
-                          <CardContent className="pt-6">
-                            <div className="flex items-center justify-between">
-                              <div className="flex-1">
-                                <p className="font-medium">Cuisine</p>
-                                <p className="text-sm text-muted-foreground">
-                                  Recevoir des notifications pour les demandes de la cuisine.
-                                </p>
-                              </div>
-                              <Switch defaultChecked />
-                            </div>
-                          </CardContent>
-                        </Card>
-
                         {/* Email */}
                         <Card>
                           <CardContent className="pt-6">

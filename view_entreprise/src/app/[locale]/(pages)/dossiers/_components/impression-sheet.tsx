@@ -17,6 +17,7 @@ import {
   FileText,
   Check,
 } from "lucide-react"
+import QRCode from "react-qr-code"
 import { IconFileTypePdf, IconTable, IconFileText } from "@tabler/icons-react"
 import type { Dossier } from "../_lib/dossiers-data"
 import {
@@ -277,18 +278,12 @@ export function ImpressionSheet({
                 Aperçu code QR
               </p>
               <div className="rounded-xl border border-dashed bg-muted/30 px-4 py-4 flex items-center gap-4">
-                <div className="h-16 w-16 shrink-0 rounded-lg border-2 border-foreground/20 bg-white p-1.5">
-                  <svg viewBox="0 0 21 21" className="h-full w-full">
-                    <rect x="0" y="0" width="7" height="7" fill="none" stroke="black" strokeWidth="1" />
-                    <rect x="1" y="1" width="5" height="5" fill="black" />
-                    <rect x="14" y="0" width="7" height="7" fill="none" stroke="black" strokeWidth="1" />
-                    <rect x="15" y="1" width="5" height="5" fill="black" />
-                    <rect x="0" y="14" width="7" height="7" fill="none" stroke="black" strokeWidth="1" />
-                    <rect x="1" y="15" width="5" height="5" fill="black" />
-                    {[9, 11, 13, 9, 11, 13, 9, 11].map((x, i) => (
-                      <rect key={i} x={x} y={9 + i * 1.2} width="1" height="1" fill="black" />
-                    ))}
-                  </svg>
+                <div className="h-16 w-16 shrink-0 rounded-lg border border-dashed bg-white p-1.5">
+                  <QRCode
+                    value={`${dossier.reference}|${dossier.intitule}|${new Date().toISOString()}`}
+                    size={56}
+                    style={{ width: "100%", height: "100%" }}
+                  />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-semibold">{dossier.reference}</p>
