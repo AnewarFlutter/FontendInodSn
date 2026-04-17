@@ -46,6 +46,7 @@ interface DossierDetailSheetProps {
   onOpenChange: (v: boolean) => void
   onStatusChange: (id: string, s: DossierStatus, motif: string) => void
   onAddSousDossier: (parentId: string) => void
+  onOpenParent?: (parentId: string) => void
 }
 
 function InfoRow({
@@ -88,6 +89,7 @@ export function DossierDetailSheet({
   onOpenChange,
   onStatusChange,
   onAddSousDossier,
+  onOpenParent,
 }: DossierDetailSheetProps) {
   const [isRefreshing, setIsRefreshing] = React.useState(false)
   const [activeTab, setActiveTab] = React.useState("informations")
