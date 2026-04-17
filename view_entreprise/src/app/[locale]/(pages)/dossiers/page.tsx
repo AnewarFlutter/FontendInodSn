@@ -85,6 +85,20 @@ export default function DossiersPage() {
   const [tracabiliteDossier, setTracabiliteDossier] = React.useState<Dossier | null>(null)
   const [parentIdForCreate, setParentIdForCreate] = React.useState<string | undefined>()
 
+  const famillesScrollRef = React.useRef<HTMLDivElement>(null)
+  React.useEffect(() => {
+    const el = famillesScrollRef.current
+    if (!el) return
+    const onWheel = (e: WheelEvent) => {
+      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+        e.preventDefault()
+        el.scrollLeft += e.deltaY
+      }
+    }
+    el.addEventListener("wheel", onWheel, { passive: false })
+    return () => el.removeEventListener("wheel", onWheel)
+  }, [])
+
   const PAGE_SIZE = view === "grid" ? 8 : 10
 
   // Filtrage
@@ -377,7 +391,7 @@ export default function DossiersPage() {
       <hr className="border-dashed" />
 
       {/* Filtres famille */}
-      <div className="flex gap-3 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }}>
+      <div ref={famillesScrollRef} className="flex gap-3 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }}>
         {FAMILLES_FILTER.map(f => {
           const active = filterFamille === f.key
           const meta = f.key !== "tous" ? FAMILLE_META[f.key as FamilleDossier] : null
@@ -580,7 +594,12 @@ export default function DossiersPage() {
         onAddSousDossier={handleAddSousDossier}
         onOpenParent={(parentId) => {
           const parent = dossiers.find(d => d.id === parentId)
-          if (parent) openDetail(parent)
+          if (!parent) return
+          setDetailOpen(false)
+          setTimeout(() => {
+            setDetailDossier(parent)
+            setDetailOpen(true)
+          }, 250)
         }}
       />
 

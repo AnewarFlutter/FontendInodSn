@@ -315,25 +315,16 @@ export function DossierDetailSheet({
 
               {/* Onglet Historique */}
               <TabsContent value="historique" className="flex-1 overflow-y-auto px-6 py-5 mt-0">
-                <div className="relative">
-                  {/* Ligne verticale centrée sur les dots */}
-                  <div className="absolute left-[7px] top-3 bottom-3 w-px bg-border" />
-                  <div className="space-y-5">
-                    {timeline.map((event, i) => (
-                      <div key={i} className="relative flex items-start gap-3">
-                        {/* Dot */}
-                        <div className={cn(
-                          "relative z-10 h-4 w-4 shrink-0 rounded-full border-2 border-background shadow-sm mt-0.5",
-                          event.color
-                        )} />
-                        {/* Contenu */}
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-semibold leading-tight">{event.label}</p>
-                          <p className="text-[11px] text-muted-foreground mt-0.5">{formatDate(event.date)}</p>
-                        </div>
+                <div className="space-y-2">
+                  {timeline.map((event, i) => (
+                    <div key={i} className="flex items-center gap-3 rounded-xl border border-dashed px-4 py-3">
+                      <div className={cn("h-2 w-2 shrink-0 rounded-full", event.color)} />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-semibold">{event.label}</p>
+                        <p className="text-[11px] text-muted-foreground">{formatDate(event.date)}</p>
                       </div>
-                    ))}
-                  </div>
+                    </div>
+                  ))}
                 </div>
               </TabsContent>
 
