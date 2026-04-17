@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Search, Settings, LogOut, User, SquareTerminal, Sun, Moon } from "lucide-react"
 import { useState, useEffect } from "react"
+import { useTheme } from "next-themes"
 import {
   CommandDialog,
   CommandEmpty,
@@ -55,33 +56,13 @@ export function PagesLayoutUI({ children }: { children: React.ReactNode }) {
 function PagesLayoutContent({ children }: { children: React.ReactNode }) {
   const connectedUser = MOCK_CONNECTED_USER
 
-  const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('system')
+  const { theme, setTheme, resolvedTheme } = useTheme()
   const [open, setOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
+
   const router = useRouter()
 
-  useEffect(() => {
-    setMounted(true)
-    const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | 'system' | null
-    const initialTheme = savedTheme || 'system'
-    setTheme(initialTheme)
-    applyTheme(initialTheme)
-  }, [])
-
-  const applyTheme = (newTheme: 'light' | 'dark' | 'system') => {
-    if (newTheme === 'system') {
-      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-      document.documentElement.classList.toggle('dark', systemTheme === 'dark')
-    } else {
-      document.documentElement.classList.toggle('dark', newTheme === 'dark')
-    }
-  }
-
-  const changeTheme = (newTheme: 'light' | 'dark' | 'system') => {
-    setTheme(newTheme)
-    applyTheme(newTheme)
-    localStorage.setItem('theme', newTheme)
-  }
+  useEffect(() => { setMounted(true) }, [])
 
   const navigateTo = (url: string) => {
     setOpen(false)
@@ -91,10 +72,6 @@ function PagesLayoutContent({ children }: { children: React.ReactNode }) {
   const handleLogout = async () => {
     await logoutAction()
     router.push(APP_ROUTES.home.root)
-  }
-
-  if (!mounted) {
-    return null
   }
 
   return (
@@ -129,8 +106,8 @@ function PagesLayoutContent({ children }: { children: React.ReactNode }) {
 
           <div className="flex items-center gap-2 px-4">
             <NotificationSheet />
-            <Button variant="ghost" size="icon" onClick={() => changeTheme(theme === 'dark' ? 'light' : 'dark')}>
-              {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            <Button variant="ghost" size="icon" onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}>
+              {mounted && resolvedTheme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </Button>
 
 <DropdownMenu>
