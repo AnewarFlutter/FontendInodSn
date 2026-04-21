@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { ThemeProvider } from "@/components/theme-provider"
-import { geistSans, geistMono, kablammo, localGeistMono } from "@/app/styles/fonts";
+import { geistSans, geistMono, kablammo, localGeistMono } from "@/styles/fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -19,15 +19,15 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${kablammo.variable} ${localGeistMono.variable} antialiased overflow-x-hidden`}
       >
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="light"
-            enableSystem={false}
-            disableTransitionOnChange
-
-          >
-        {children}
-          </ThemeProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem={false}
+          disableTransitionOnChange
+          storageKey="theme"
+        >
+          {children}
+        </ThemeProvider>
       </body>
     </html> 
   );
